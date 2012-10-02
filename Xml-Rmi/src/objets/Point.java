@@ -2,6 +2,7 @@ package objets;
 import xmlrmi.*;
 
 public class Point {
+	// changer les annotations
 	@XMLRMIField{serializationName="x",serializationType="double"}
 	protected double a ;
 	@XMLRMIField{serializationName="y",serializationType="double"}
