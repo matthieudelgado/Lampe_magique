@@ -1,9 +1,21 @@
 package tools;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.ClassFile;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Mnemonic;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +29,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
@@ -165,7 +178,36 @@ public class ObjectToXML {
 
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
-
+		
+		BufferedInputStream fin;
+		ClassFile cf=null;
+		try {
+			fin = new BufferedInputStream(new FileInputStream("bin/objets/Point.class"));
+			 cf = new ClassFile(new DataInputStream(fin));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			// TODO Auto-generated catch block		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		MethodInfo minfo = cf.getMethod("toString");    // we assume move is not overloaded.
+		CodeAttribute ca = minfo.getCodeAttribute();
+		CodeIterator ci = ca.iterator();
+		
+		while (ci.hasNext()) {
+		    int index=0;
+			try {
+				index = ci.next();
+			} catch (BadBytecode e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    int op = ci.byteAt(index);
+		    System.out.println(Mnemonic.OPCODE[op]);
+		}
+		
+		
 		//ajouter ici toues les methodes
 
 		//		
