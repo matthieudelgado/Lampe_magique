@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<methodCall>
+	<methodeName>Display</methodeName>
+	<params>
+	<param>
+		<value>
+			<object oid="ici oid">
+<fields>
+<field name="x"/>
+<value>
+<double>1.0</double>
+</value>
+<field name="y"/>
+<value>
+<double>2.0</double>
+</value>
+<field name="mark"/>
+<value>
+<string>m</string>
+</value>
+</fields>
+<methods>
+	<method language = "Java">
+		public String toString()
+		{
+			return "x = "+this.x+" y = "+this.y+" marque = "+this.mark ;
+		}
+	</method>
+</methods>
+</object>
+</value>
+</param>
+</params>
+</methodCall>

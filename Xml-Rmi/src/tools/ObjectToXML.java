@@ -77,9 +77,9 @@ public class ObjectToXML {
 
 	// faire une methode qui cr�e un doc a partir d'un parsage d'un xml model
 
-	public Document fileToDoc(DocumentBuilder docBuilder, String nomDeFichier){
+	public Document fileToDoc(String nomDeFichier){
 		try {
-			return docBuilder.parse(new File(nomDeFichier));
+			return this.docBuilder.parse(new File(nomDeFichier));
 		} catch(SAXException e) {
 
 		} catch (IOException e) {
@@ -173,9 +173,8 @@ public class ObjectToXML {
 			fieldObj.setAccessible(false);
 		}
 
-
 		//Methodes
-
+		// avec javassist
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
 		
@@ -225,7 +224,7 @@ public class ObjectToXML {
 
 
 	public void copyPasteXml(String fichierACopier, String destination){
-		this.docToFile(this.fileToDoc(this.docBuilder, fichierACopier), destination);
+		this.docToFile(this.fileToDoc(fichierACopier), destination);
 	}
 
 	// cree un nouveau Document a partir du Builder

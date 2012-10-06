@@ -54,4 +54,6 @@ public class ThreadServer extends Thread{
 	private void doTreatement(Document doc) {
 		TestEcritureXML.afficherDocument(doc);
 	}
+	
+	// Construction de l'objet depuis un XML
 }
