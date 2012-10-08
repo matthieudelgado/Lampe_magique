@@ -1,0 +1,31 @@
+<methodResponse> 
+	<params>
+		<param> 
+			<value>void</value>
+		</param> 
+		<param>
+			<value> 
+				<object oid="http://www.jm.fr/1000000">
+					<fields> 
+						<field name="x"">
+							<value>
+								<double>10.0</double>
+							</value>
+						</field> 
+						<field name="y">
+							<value>
+								<double>20.0</double>
+							</value>
+						</field> 
+						<field name="mark">
+							<value>
+								<string>@</string>
+							</value>
+						</field>
+					</fields>
+					<methods></methods> 
+				</object>
+			</value>
+		 </param>
+	</params>
+</methodResponse> 

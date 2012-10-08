@@ -23,18 +23,21 @@ public class XMLToObject {
 		// on recupere le contenu de la balise method
 		String corpsMethode= doc.getElementsByTagName("method").item(0).getTextContent();
 		//String corpsMethode = "public String toString(){return \"r\";}";
+		String x = doc.getElementsByTagName("double").item(0).getTextContent();
+		String y = doc.getElementsByTagName("double").item(1).getTextContent();
+		
 		
 		System.out.println(corpsMethode);
 		
 			
 			 CtClass point = ClassPool.getDefault().makeClass("Point");
 			
-			CtField f  = new CtField(CtClass.intType,"x",point);
-			point.addField(f,"0");
+			CtField f  = new CtField(CtClass.doubleType,"x",point);
+			point.addField(f,x);
 			CtField f1  = new CtField(CtClass.charType,"mark",point);
 			point.addField(f1);
-			CtField f2  = new CtField(CtClass.intType,"y",point);
-			point.addField(f2,"3");
+			CtField f2  = new CtField(CtClass.doubleType,"y",point);
+			point.addField(f2,y);
 			
 			CtMethod m = CtNewMethod.make(corpsMethode, point);
 			point.addMethod(m);
