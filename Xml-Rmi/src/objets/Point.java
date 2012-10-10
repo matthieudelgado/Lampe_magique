@@ -33,11 +33,17 @@ public class Point implements XMLRMISerializable {
 	public String getOid(){
 		return "oidTest 007";
 	}
+	public void setOid(String oid){
+		this.oid=oid;
+	}
 
 	// recuperer de l'interface la classe pour avoir les méthode a passer dans l'XML
 	@Override
 	public String toXML(Class<?> inter) {
 		// TODO Auto-generated method stub
+		
+		
+		String s = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		
 		return null;
 	}

@@ -7,7 +7,7 @@
 			<value> 
 				<object oid="http://www.jm.fr/1000000">
 					<fields> 
-						<field name="x"">
+						<field name="x">
 							<value>
 								<double>10.0</double>
 							</value>
@@ -23,7 +23,8 @@
 							</value>
 						</field>
 					</fields>
-					<methods></methods> 
+					<methods>
+					</methods> 
 				</object>
 			</value>
 		 </param>

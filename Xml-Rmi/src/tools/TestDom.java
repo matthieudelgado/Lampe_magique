@@ -18,7 +18,7 @@ public class TestDom {
 		ObjectToXML objXml = new ObjectToXML();
 		//Document doc = objXml.creerDocument();
 		
-		Document docAppelClient = objXml.appelClientToDocument(p, "Display");
+		Document docAppelClient = objXml.appelClientToDocument(p,"display", null);
 		//objXml.afficherDocument(docAppelClient);
 		objXml.docToFile(docAppelClient, "data/appelClient.xml");
 		

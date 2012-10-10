@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.ClassFile;
@@ -99,14 +100,14 @@ public class ObjectToXML {
 
 	//Construction de l'appel client
 	// G�n�re un doc appel client � partir d'un objet
-	public Document appelClientToDocument(Object obj,String methode){
+	public Document appelClientToDocument(Object obj,String methode_serveur,ArrayList<String> methodes){
 
 		Document doc = this.creerDocument();
 		Element racine=doc.createElement("methodCall");
 		doc.appendChild(racine);
 
 		Element methodeName = doc.createElement("methodeName");
-		methodeName.setTextContent(methode);
+		methodeName.setTextContent(methode_serveur);
 		racine.appendChild(methodeName);
 
 		Element params = doc.createElement("params");
@@ -178,46 +179,9 @@ public class ObjectToXML {
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
 		
-		BufferedInputStream fin;
-		ClassFile cf=null;
-		try {
-			fin = new BufferedInputStream(new FileInputStream("bin/objets/Point.class"));
-			 cf = new ClassFile(new DataInputStream(fin));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			// TODO Auto-generated catch block		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		MethodInfo minfo = cf.getMethod("toString");    // we assume move is not overloaded.
-		CodeAttribute ca = minfo.getCodeAttribute();
-		CodeIterator ci = ca.iterator();
-		
-		while (ci.hasNext()) {
-		    int index=0;
-			try {
-				index = ci.next();
-			} catch (BadBytecode e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		    int op = ci.byteAt(index);
-		    System.out.println(Mnemonic.OPCODE[op]);
-		}
+		Element method = doc.createElement("method");
 		
 		
-		//ajouter ici toues les methodes
-
-		//		
-		//		for(int i=0;i<obj.getClass().getMethods().length;i++){
-		//			Element method =  doc.createElement("method");
-		//			method.setTextContent(obj.getClass().getMethods()[i].toString());
-		//			methods.appendChild(method);
-		//			
-		//		}
-
-
 
 		return doc;
 	}

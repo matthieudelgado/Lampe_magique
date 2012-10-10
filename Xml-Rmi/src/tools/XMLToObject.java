@@ -1,5 +1,7 @@
 package tools;
 
+import java.util.ArrayList;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -46,5 +48,14 @@ public class XMLToObject {
 			Object p1 =point.toClass().newInstance();
 		
 		return p1;
+	}
+	
+	public void updateFromXml(Document doc,ArrayList<Object> lo){
+		String oid=doc.getElementsByTagName("object").item(0).getAttributes().getNamedItem("oid").getTextContent();
+		System.out.println(oid);
+		Object objToUpdate;
+		
+		// pour tout les objets, recupere la valeur de l'oid dans l'annotation
+		
 	}
 }
