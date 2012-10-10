@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import org.w3c.dom.Element;
 
 import tools.ObjectToXML;
-import xmlrmi.*;
+import xmlrmi.XMLRMIField;
+import client.Client;
 
 public class Point implements XMLRMISerializable, Stringable {
 
@@ -45,9 +46,9 @@ public class Point implements XMLRMISerializable, Stringable {
 	@Override
 	public String toXML(Class<?> inter) {
 		initOid();
-		// TODO Auto-generated method stub
+		Client.repertoire.put(this.oid, this);
+		
 		String interString = inter.getName();
-
 		String tostring = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);

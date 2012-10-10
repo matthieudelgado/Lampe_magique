@@ -3,6 +3,8 @@ package client;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,13 +16,16 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import objets.XMLRMISerializable;
+
 import org.w3c.dom.Document;
 
 import tools.TestEcritureXML;
 import xmlrmi.XMLOutputStream;
 
 public class Client {
-
+	public static HashMap<String,XMLRMISerializable> repertoire = new HashMap<String,XMLRMISerializable>();
+	
 	public static void main(String[] args) {
 		Socket socket = null;
 		try {
