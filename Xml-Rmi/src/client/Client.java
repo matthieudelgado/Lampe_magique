@@ -21,6 +21,7 @@ import objets.XMLRMISerializable;
 import org.w3c.dom.Document;
 
 import tools.TestEcritureXML;
+import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
 
 public class Client {
@@ -43,17 +44,12 @@ public class Client {
 			
 			out.send();
 			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		} catch (TransformerException e) {
+			XMLInputStream in = new XMLInputStream(socket.getInputStream());
+			in.recive();
+			doc = docBuilder.parse(in);
+			 
+			
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
