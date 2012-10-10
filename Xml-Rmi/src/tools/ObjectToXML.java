@@ -131,13 +131,13 @@ public class ObjectToXML {
 		// ATTENTION ERREUR : il faut regarder l'annotation de chaque field
 		// L'objet appel cette méthode en lui mettant en parametre ses valeurs annotees
 		// pour chaque field de l'objet
-		
+
 		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
-			
+
 			Field fieldObj = obj.getClass().getDeclaredFields()[j];
-			
+
 			fieldObj.setAccessible(true);
-			
+
 			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
 			System.out.println("Nb d'annotations : "+annotations.length);
 			for(Annotation annotation : annotations){
@@ -147,7 +147,7 @@ public class ObjectToXML {
 					XMLRMIField myAnnotation = (XMLRMIField) annotation;
 					Element field = doc.createElement("field");
 					field.setAttribute("name", myAnnotation.serializationName());
-					
+
 					fields.appendChild(field);
 
 					Element valueField = doc.createElement("value");
@@ -178,10 +178,14 @@ public class ObjectToXML {
 		// avec javassist
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
-		
-		Element method = doc.createElement("method");
-		
-		
+
+
+		for(int i = 0;i<methodes.size();i++){
+			Element method = doc.createElement("method");
+			method.setAttribute("language", "Java");
+			method.setTextContent(methodes.get(i));
+			methods.appendChild(method);
+		}
 
 		return doc;
 	}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <methodCall>
-<methodeName>Display</methodeName>
+<methodeName>display</methodeName>
 <params>
 <param>
 <value>
@@ -19,7 +19,9 @@
 <string>m</string>
 </value>
 </fields>
-<methods/>
+<methods>
+<method language="Java">public String toString(){return "x = "+this.a+ " y =  " + this.b;}</method>
+</methods>
 </object>
 </value>
 </param>

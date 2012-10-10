@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import xmlrmi.*;
 
-public class Point implements XMLRMISerializable {
+public class Point implements XMLRMISerializable, Stringable {
 
 	// attention construire une partie de l'XML en local pour les champs dans la metthode de contstruction XML
 	
@@ -26,6 +26,7 @@ public class Point implements XMLRMISerializable {
 		this.b=y;
 	}
 	
+	@Override
 	public String toString(){
 		return "x = "+this.a+ " y =  " + this.b;
 	}
@@ -45,7 +46,7 @@ public class Point implements XMLRMISerializable {
 		
 		String s = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		
-		return null;
+		return s;
 	}
 
 	@Override
