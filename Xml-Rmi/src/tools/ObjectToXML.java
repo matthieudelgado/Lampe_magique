@@ -45,42 +45,19 @@ import xmlrmi.XMLRMIField;
 
 public class ObjectToXML {
 
-	DocumentBuilder docBuilder;
-	Document docXml;
 
-
-	public DocumentBuilder getDocBuilder() {
-		return docBuilder;
-	}
-
-	public void setDocBuilder(DocumentBuilder docBuilder) {
-		this.docBuilder = docBuilder;
-	}
-
-	public Document getDocXml() {
-		return docXml;
-	}
-
-
-	public void setDocXml(Document docXml) {
-		this.docXml = docXml;
-	}
-
-	public ObjectToXML() {
-		DocumentBuilder docBuilder = null;
-		try {
-			docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch(ParserConfigurationException e) {
-
-		}
-		this.setDocBuilder(docBuilder);
-	}
 
 	// faire une methode qui cr�e un doc a partir d'un parsage d'un xml model
 
-	public Document fileToDoc(String nomDeFichier){
+	public static Document fileToDoc(String nomDeFichier){
+		DocumentBuilder docB = null;
 		try {
-			return this.docBuilder.parse(new File(nomDeFichier));
+			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch(ParserConfigurationException e) {
+
+		}
+		try {
+			return docB.parse(new File(nomDeFichier));
 		} catch(SAXException e) {
 
 		} catch (IOException e) {
@@ -91,7 +68,7 @@ public class ObjectToXML {
 	}
 
 	// en cours de test
-	public void objectToXML(Object objet,Document doc){
+	public static void objectToXML(Object objet,Document doc){
 		doc.getElementsByTagName("methodName").item(0).setTextContent("nom de la methode");
 		Element e =(Element) doc.getElementsByTagName("field").item(0);
 		e.setAttribute("name", objet.getClass().getName());
@@ -100,9 +77,9 @@ public class ObjectToXML {
 
 	//Construction de l'appel client
 	// G�n�re un doc appel client � partir d'un objet
-	public Document appelClientToDocument(Object obj,String methode_serveur,ArrayList<String> methodes){
+	public static Document appelClientToDocument(Object obj,String methode_serveur,ArrayList<String> methodes){
 
-		Document doc = this.creerDocument();
+		Document doc = ObjectToXML.creerDocument();
 		Element racine=doc.createElement("methodCall");
 		doc.appendChild(racine);
 
@@ -191,40 +168,28 @@ public class ObjectToXML {
 	}
 
 
-	public void copyPasteXml(String fichierACopier, String destination){
-		this.docToFile(this.fileToDoc(fichierACopier), destination);
+	public static void copyPasteXml(String fichierACopier, String destination){
+		ObjectToXML.docToFile(ObjectToXML.fileToDoc(fichierACopier), destination);
 	}
 
 	// cree un nouveau Document a partir du Builder
-	public Document creerDocument(){
-		DocumentBuilder docBuilder = this.getDocBuilder();	
-		Document doc = docBuilder.newDocument();
+	public static Document creerDocument(){
+		//DocumentBuilder docBuilder = this.getDocBuilder();	
+		DocumentBuilder docB = null;
+		try {
+			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch(ParserConfigurationException e) {
+
+		}
+
+		Document doc = docB.newDocument();
 		return doc;
 	}
 
 
-	// pour tester la construction du XML
-	// A effacer plus tard
-	public Document creerDocument2(){
-		DocumentBuilder docBuilder = this.getDocBuilder();
 
-		Document doc = docBuilder.newDocument();
 
-		Element racine = doc.createElement("methodCall");
-		doc.appendChild(racine);
-
-		Element methodeName = doc.createElement("methodName");
-		methodeName.setTextContent("display"); // a remplacer par le nom de la m�thode � appeler
-		racine.appendChild(methodeName);
-
-		Element params = doc.createElement("params");
-		racine.appendChild(params);
-
-		return doc;
-
-	}
-
-	public void docToFile(Document doc, String nomDeFichier){
+	public static void docToFile(Document doc, String nomDeFichier){
 
 		Source source = new DOMSource(doc);
 
@@ -257,17 +222,15 @@ public class ObjectToXML {
 	}
 
 
-	// A ENLEVER
-
 	/**
 	 * Affiche � l'�cran un document XML fourni sous forme d'un objet DOM
 	 * Document.
 	 * 
 	 * @param doc le document
 	 */
-	public void afficherDocument(Document doc) {
+	public static void afficherDocument(Document doc) {
 		Element e = doc.getDocumentElement();
-		afficherElement(e);
+		ObjectToXML.afficherElement(e);
 	}
 
 	/**
@@ -276,7 +239,7 @@ public class ObjectToXML {
 	 * 
 	 * @param e l'�l�ment � afficher
 	 */
-	public void afficherElement(Element e) {
+	public static void afficherElement(Element e) {
 		System.out.print("<" + e.getNodeName() + " ");
 
 		NamedNodeMap attr = e.getAttributes();
