@@ -116,7 +116,6 @@ public class ObjectToXML {
 			fieldObj.setAccessible(true);
 
 			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
-			System.out.println("Nb d'annotations : "+annotations.length);
 			for(Annotation annotation : annotations){
 
 				if(annotation instanceof XMLRMIField){

@@ -1,8 +1,11 @@
 package objets;
 
 
+import java.util.ArrayList;
+
 import org.w3c.dom.Element;
 
+import tools.ObjectToXML;
 import xmlrmi.*;
 
 public class Point implements XMLRMISerializable, Stringable {
@@ -42,11 +45,17 @@ public class Point implements XMLRMISerializable, Stringable {
 	@Override
 	public String toXML(Class<?> inter) {
 		// TODO Auto-generated method stub
+		String interString = inter.getName();
+		
+		String tostring = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
+		ArrayList<String> aString= new ArrayList<String>();
+		aString.add(tostring);
+		
+		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this, "display", aString)),"data/appelClient.xml");
 		
 		
-		String s = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		
-		return s;
+		return null;
 	}
 
 	@Override
