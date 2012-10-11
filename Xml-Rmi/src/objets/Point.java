@@ -64,12 +64,10 @@ public class Point implements XMLRMISerializable, Stringable {
 	}
 
 	@Override
-	/**
-	 * 
-	 */
 	public void updateFromXML(Element theXML) {
-		// TODO Auto-generated method stub
-
+		//on recoit un element du xml (a priori a partir de la balise "value")
+		// TODO creer une methode updateFromElement(Element theXML,Object this) dans ObjectToXML
+		
 	}
 
 	@Override

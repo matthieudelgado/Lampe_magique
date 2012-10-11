@@ -52,6 +52,7 @@ import xmlrmi.XMLRMIField;
 /**
  * 
  * @author marcgregoire
+ * @author matthieudelgado
  * classe contenant des méthodes static permettant la gestion des fichiers XML
  */
 public class ObjectToXML {
@@ -115,14 +116,11 @@ public class ObjectToXML {
 		object.setAttribute("oid", oid);
 		value.appendChild(object);
 
-		// TODO: Systeme d'annotation pour catcher ce que l'on veut
+		// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)
 
 		Element fields =  doc.createElement("fields");
 		object.appendChild(fields);
 
-		// ATTENTION ERREUR : il faut regarder l'annotation de chaque field
-		// L'objet appel cette m√©thode en lui mettant en parametre ses valeurs annotees
-		// pour chaque field de l'objet
 
 		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
 
@@ -165,8 +163,6 @@ public class ObjectToXML {
 			fieldObj.setAccessible(false);
 		}
 
-		//Methodes
-		// avec javassist
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
 
@@ -285,7 +281,7 @@ public class ObjectToXML {
 		}
 		System.out.println("</" + e.getNodeName() + ">");
 	}
-	
+
 	/**
 	 * Crée un objet Object à partir d'un objet Document contenant les attribut et les méthodes\n
 	 * necessaires à la construction de l'Object.
@@ -296,47 +292,57 @@ public class ObjectToXML {
 	 * @throws IllegalAccessException
 	 */
 	public static Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException{
-		
+
 		// on recupere le contenu de la balise method
 		String corpsMethode= doc.getElementsByTagName("method").item(0).getTextContent();
 		//String corpsMethode = "public String toString(){return \"r\";}";
 		String x = doc.getElementsByTagName("double").item(0).getTextContent();
 		String y = doc.getElementsByTagName("double").item(1).getTextContent();
-		
-		
+
+
 		System.out.println(corpsMethode);
-		
-			
-			 CtClass point = ClassPool.getDefault().makeClass("Point");
-			
-			CtField f  = new CtField(CtClass.doubleType,"x",point);
-			point.addField(f,x);
-			CtField f1  = new CtField(CtClass.charType,"mark",point);
-			point.addField(f1);
-			CtField f2  = new CtField(CtClass.doubleType,"y",point);
-			point.addField(f2,y);
-			
-			CtMethod m = CtNewMethod.make(corpsMethode, point);
-			point.addMethod(m);
-		
-	
-			Object p1 =point.toClass().newInstance();
-		
+
+
+		CtClass point = ClassPool.getDefault().makeClass("Point");
+
+		CtField f  = new CtField(CtClass.doubleType,"x",point);
+		point.addField(f,x);
+		CtField f1  = new CtField(CtClass.charType,"mark",point);
+		point.addField(f1);
+		CtField f2  = new CtField(CtClass.doubleType,"y",point);
+		point.addField(f2,y);
+
+		CtMethod m = CtNewMethod.make(corpsMethode, point);
+		point.addMethod(m);
+
+
+		Object p1 =point.toClass().newInstance();
+
 		return p1;
 	}
-	
+
 	/**
 	 * 
 	 * @param doc
 	 * @param lo
 	 */
-	public void updateFromXml(Document doc,ArrayList<Object> lo){
+	// a quoi sert cette methode?
+	public static void updateFromXml(Document doc,ArrayList<Object> lo){
 		String oid=doc.getElementsByTagName("object").item(0).getAttributes().getNamedItem("oid").getTextContent();
 		System.out.println(oid);
 		Object objToUpdate;
-		
+
 		// pour tout les objets, recupere la valeur de l'oid dans l'annotation
-		
+
+	}
+
+	/**
+	 * Permet de mettre a jour un objet a partir d'un element et de tout ses fils
+	 * @param e
+	 * @param obj
+	 */
+	public static void updateObjectFromElement(Element e, Object obj){
+		// on part a partir de la balise value
 	}
 
 
