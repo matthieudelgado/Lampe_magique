@@ -24,7 +24,7 @@ public class Point implements XMLRMISerializable, Stringable {
 	@XMLRMIField(serializationName = "mark", serializationType = "string")
 	protected char marque='m';
 
-	private String oid = "";
+	private String oid = "a";
 	
 	private String methode_appelante;
 
@@ -47,6 +47,9 @@ public class Point implements XMLRMISerializable, Stringable {
 
 	// recuperer de l'interface la classe pour avoir les m�thode a passer dans l'XML
 	@Override
+	/**
+	 * 
+	 */
 	public String toXML(Class<?> inter) {
 		initOid();
 		Client.repertoire.put(this.oid, this);
@@ -55,23 +58,28 @@ public class Point implements XMLRMISerializable, Stringable {
 		String tostring = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);
-
-		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this, this.getMethode_appelante(), aString)),"data/appelClient.xml");
+		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this.getOid(),this, this.getMethode_appelante(), aString)),"data/"+this.getOid()+".xml");
 		
 		return null;
 	}
 
 	@Override
+	/**
+	 * 
+	 */
 	public void updateFromXML(Element theXML) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
+	/**
+	 * Initialise l'oid de l'objet
+	 */
 	public void initOid() {
 		if(this.oid == "") return;
 		synchronized(compteur){
-			this.oid = "/"+this.getClass()+"/"+compteur;
+			this.oid =""+this.getClass().getName()+"_"+compteur;
 			compteur++;
 		}
 	}
