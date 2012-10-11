@@ -3,6 +3,7 @@ package objets;
 
 import java.util.ArrayList;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import tools.ObjectToXML;
@@ -24,6 +25,8 @@ public class Point implements XMLRMISerializable, Stringable {
 	protected char marque='m';
 
 	private String oid = "";
+	
+	private String methode_appelante;
 
 	private static Integer compteur = 0;
 
@@ -53,10 +56,8 @@ public class Point implements XMLRMISerializable, Stringable {
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);
 
-		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this, "display", aString)),"data/appelClient.xml");
-
-
-
+		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this, this.getMethode_appelante(), aString)),"data/appelClient.xml");
+		
 		return null;
 	}
 
@@ -73,5 +74,13 @@ public class Point implements XMLRMISerializable, Stringable {
 			this.oid = "/"+this.getClass()+"/"+compteur;
 			compteur++;
 		}
+	}
+
+	public String getMethode_appelante() {
+		return methode_appelante;
+	}
+
+	public void setMethode_appelante(String methode_appelante) {
+		this.methode_appelante = methode_appelante;
 	}
 }

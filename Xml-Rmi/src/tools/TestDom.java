@@ -17,6 +17,7 @@ public class TestDom {
 	public static void main(String[] args) {
 			
 		Point p = new Point(1,2);
+		p.setMethode_appelante("display");
 		p.toXML(Stringable.class);
 		
 		

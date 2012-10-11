@@ -14,7 +14,7 @@ public class TestReponseServeur {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Point p1 = new Point(2,3);
-		p1.setOid("http://www.jm.fr/1000000");
+	//	p1.setOid("http://www.jm.fr/1000000");
 		
 		Point p2 = new Point(4,4);
 		

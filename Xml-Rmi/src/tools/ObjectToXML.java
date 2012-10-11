@@ -75,6 +75,97 @@ public class ObjectToXML {
 
 	}
 
+	
+	// unifie la partie du xml creer par le client et celle creer par l'objet
+	public static Document unificationElements(Document doc,Element e){
+		Element value =  (Element) doc.getElementsByTagName("value").item(0);
+		value.appendChild(e);
+		return doc;
+	}
+	
+	
+	
+	public static Element objectElement(Object obj, ArrayList<String> methodes){
+		Document doc = ObjectToXML.creerDocument();
+		
+		Element value = (Element) doc.getElementsByTagName("value").item(0);
+		
+		
+		Element object = doc.createElement("object");
+		object.setAttribute("oid", "ici oid");
+		value.appendChild(object);
+
+		// TODO: Systeme d'annotation pour catcher ce que l'on veut
+
+		Element fields =  doc.createElement("fields");
+		object.appendChild(fields);
+
+		// ATTENTION ERREUR : il faut regarder l'annotation de chaque field
+		// L'objet appel cette méthode en lui mettant en parametre ses valeurs annotees
+		// pour chaque field de l'objet
+
+		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
+
+			Field fieldObj = obj.getClass().getDeclaredFields()[j];
+
+			fieldObj.setAccessible(true);
+
+			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
+			for(Annotation annotation : annotations){
+
+				if(annotation instanceof XMLRMIField){
+					// Balise Field
+					XMLRMIField myAnnotation = (XMLRMIField) annotation;
+					Element field = doc.createElement("field");
+					field.setAttribute("name", myAnnotation.serializationName());
+
+					fields.appendChild(field);
+
+					Element valueField = doc.createElement("value");
+					fields.appendChild(valueField);
+
+					Element type = doc.createElement(myAnnotation.serializationType());
+					//type.setTextContent("Valeur a entrer");
+					try {
+						type.setTextContent(fieldObj.get(obj).toString());
+					} catch (DOMException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					valueField.appendChild(type);
+
+				}
+			}
+			fieldObj.setAccessible(false);
+		}
+
+		//Methodes
+		// avec javassist
+		Element methods = doc.createElement("methods");
+		object.appendChild(methods);
+
+
+		for(int i = 0;i<methodes.size();i++){
+			Element method = doc.createElement("method");
+			method.setAttribute("language", "Java");
+			method.setTextContent(methodes.get(i));
+			methods.appendChild(method);
+		}
+
+		return value;
+		
+	}
+	
+	
+	
+	
+	// TODO attention aux types des attributs
 	//Construction de l'appel client
 	// G�n�re un doc appel client � partir d'un objet
 	public static Document appelClientToDocument(Object obj,String methode_serveur,ArrayList<String> methodes){
