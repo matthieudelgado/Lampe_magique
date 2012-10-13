@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import objets.Stringable;
+
 import org.w3c.dom.Document;
 
 import tools.TestEcritureXML;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
 
-public class ThreadServer extends Thread{
+public class ThreadServer extends Thread implements IServer{
 	private Socket socket;
 	private XMLOutputStream out;
 	private XMLInputStream in;
@@ -39,7 +42,7 @@ public class ThreadServer extends Thread{
 				doTreatement(doc);
 			}
 		}
-		catch (Exception e){ }
+		catch (Exception e){ e.printStackTrace();}
 		finally 
 		{
 			try
@@ -53,6 +56,11 @@ public class ThreadServer extends Thread{
 
 	private void doTreatement(Document doc) {
 		TestEcritureXML.afficherDocument(doc);
+	}
+
+	@Override
+	public void display(Stringable s) {
+		System.out.println("Un point 2D : " + s.toString()) ;
 	}
 	
 	// Construction de l'objet depuis un XML
