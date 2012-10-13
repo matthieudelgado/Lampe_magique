@@ -14,20 +14,21 @@ public class TestReponseServeur {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		Point p1 = new Point(2,3);
-	//	p1.setOid("http://www.jm.fr/1000000");
+		System.out.println(p1.toString());
+	//	p1.setOid("http://www.jm.fr/1000000");		
 		
-		Point p2 = new Point(4,4);
+//		ArrayList<Object> listObj = new ArrayList<Object>();
+//		listObj.add(p1);
+//		listObj.add(p2);
 		
 		
-		ArrayList<Object> listObj = new ArrayList<Object>();
-		listObj.add(p1);
-		listObj.add(p2);
+		Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/reponseServeur.xml")); 
+		//Document doc = otx.fileToDoc("data/reponseServeur.xml");
+		//xto.updateFromXml(doc, null);//listObj); //??
+		//System.out.println(otx.getOidFromXML(doc));
+		ObjectToXML.updateObjectFromElement(doc, p1);
 		
-		ObjectToXML otx = new ObjectToXML();
-		XMLToObject xto = new XMLToObject();
-		
-		Document doc = otx.fileToDoc("data/reponseServeur.xml");
-		xto.updateFromXml(doc, listObj);
+		System.out.println(p1.toString());
 		
 	}
 
