@@ -1,11 +1,15 @@
 package tools;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -44,7 +48,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import xmlrmi.XMLRMIField;
@@ -57,6 +63,46 @@ import xmlrmi.XMLRMIField;
  */
 public class ObjectToXML {
 
+	public static String fileToString(String nomFichier){
+		String chaine="";
+		try{
+			InputStream ips=new FileInputStream(nomFichier); 
+			InputStreamReader ipsr=new InputStreamReader(ips);
+			BufferedReader br=new BufferedReader(ipsr);
+			String ligne;
+			while ((ligne=br.readLine())!=null){
+				chaine+=ligne+"\n";
+			}
+			br.close(); 
+		}		
+		catch (Exception e){
+			System.out.println(e.toString());
+		}
+		return chaine.replaceAll(">\\s*<", "><"); 
+	}
+
+	public static Document stringToDoc(String chaine){
+		//DocumentBuilder docBuilder = this.getDocBuilder();	
+		DocumentBuilder docB = null;
+		try {
+			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		} catch(ParserConfigurationException e) {
+
+		}
+
+		Document doc=null;
+		try {
+			doc = docB.parse(new InputSource(new StringReader(chaine)));
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return doc;
+	}
+
 
 	/**
 	 * Prend en argument un nom de fichier et renvoie un objet Document
@@ -64,6 +110,8 @@ public class ObjectToXML {
 	 * @return un objet Document correspondant à la structure du fichier XML
 	 */
 	public static Document fileToDoc(String nomDeFichier){
+		//String contenuFichier=	
+
 		DocumentBuilder docB = null;
 		try {
 			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -299,9 +347,7 @@ public class ObjectToXML {
 		String x = doc.getElementsByTagName("double").item(0).getTextContent();
 		String y = doc.getElementsByTagName("double").item(1).getTextContent();
 
-
 		System.out.println(corpsMethode);
-
 
 		CtClass point = ClassPool.getDefault().makeClass("Point");
 
@@ -315,34 +361,74 @@ public class ObjectToXML {
 		CtMethod m = CtNewMethod.make(corpsMethode, point);
 		point.addMethod(m);
 
-
 		Object p1 =point.toClass().newInstance();
-
 		return p1;
 	}
 
-	/**
-	 * 
-	 * @param doc
-	 * @param lo
-	 */
-	// a quoi sert cette methode?
-	public static void updateFromXml(Document doc,ArrayList<Object> lo){
-		String oid=doc.getElementsByTagName("object").item(0).getAttributes().getNamedItem("oid").getTextContent();
-		System.out.println(oid);
-		Object objToUpdate;
-
-		// pour tout les objets, recupere la valeur de l'oid dans l'annotation
-
+	public static String getOidFromXML(Document doc){
+		String oid="";
+		oid = doc.getElementsByTagName("object").item(0).getAttributes().item(0).getTextContent();
+		return oid;
 	}
 
+
+
+
 	/**
-	 * Permet de mettre a jour un objet a partir d'un element et de tout ses fils
-	 * @param e
+	 * Permet de mettre a jour un objet a partir d'un doc
+	 * @param doc
 	 * @param obj
 	 */
-	public static void updateObjectFromElement(Element e, Object obj){
-		// on part a partir de la balise value
+	public static void updateObjectFromElement(Document doc, Object obj){
+		// pour chaque annotation correspondant au name de <field> dans le xml, il faut modifier la valeur de l'attribut sous l'annotation
+		NodeList fields=doc.getElementsByTagName("field");
+		int nbField = fields.getLength();
+		String name=""; // Contiendra la valeur de name pour chaque field traité
+
+
+		//ArrayList<Field> fieldAnnote=new ArrayList<Field>();
+
+		//recupere la liste des attributs annotés
+		// et les stocke dans fieldAnnote
+		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
+
+			Field fieldObj = obj.getClass().getDeclaredFields()[j];
+
+			fieldObj.setAccessible(true);
+
+			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
+			for(Annotation annotation : annotations){
+
+				if(annotation instanceof XMLRMIField){
+					//on regarde parmi toutes les balise field, laquelle correspond a l'annotation de ce field
+					//des qu'on l'a trouve on update le fiedl associe a cette annotation
+					XMLRMIField myAnnotation = (XMLRMIField) annotation;
+					for(int i=0;i<nbField;i++){ // attention pour chaque element de field, il faut le caster en Element
+						name=fields.item(i).getAttributes().item(0).getTextContent();
+
+						if(name.equals(myAnnotation.serializationName())){ // si l'annotation correspond a la bonne balise <field> du XML
+							//alors il faut update le champ correspond a l'annotation en l'occurence fieldObj
+
+							//erreur probable ici, switch par type?
+							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
+							System.out.println("type : "+type);
+							//Object value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
+
+
+						}
+					}
+
+
+				}
+			}
+			fieldObj.setAccessible(false);
+		}
+
+		//System.out.println("nombre de field declare dans obj : "+fieldAnnote.size());
+
+
+
+
 	}
 
 
