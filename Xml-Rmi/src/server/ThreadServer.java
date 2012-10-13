@@ -1,11 +1,15 @@
 package server;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.net.Socket;
 import java.util.ArrayList;
+
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.NotFoundException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -97,14 +101,24 @@ public class ThreadServer extends Thread implements IServer{
 			for(int i = 0 ; i < parameterTypes.length; i++){
 				System.err.println(parameterTypes[i].getSimpleName());
 				Object o = XMLToObject.createObjectFromNode(paramList.get(i));
-				if( ! parameterTypes[i].isInstance(o) ){
+				//si le parametre attendu est une interface, il faut tester
+				//que l'objet implemente les methode de l'interface
+				if(parameterTypes[i].isInterface()){
+					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
+						o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
+						args.add(o);
+					} else {
+						trouve = false;
+						break;
+					}
+				} else if( ! parameterTypes[i].isInstance(o) ){
 					trouve = false;
 					break;
 				} else {
 					args.add(o);
 				}
 			}
-			if(trouve = false){
+			if(trouve == false){
 				args.clear();
 				continue;
 			} else{
@@ -123,6 +137,31 @@ public class ThreadServer extends Thread implements IServer{
 
 	}
 	
+
+	private Object addInterface(Object o, Class<?> class1) throws Exception {
+		CtClass clazz = ClassPool.getDefault().get(o.getClass().getName());
+		clazz.addInterface(ClassPool.getDefault().get(class1.getName()));
+		Object ret = clazz.toClass().newInstance();
+		for(Field f : ret.getClass().getDeclaredFields()){
+			ret.getClass().getField(f.getName()).set(ret, o.getClass().getField(f.getName()).get(o));
+		}
+		return ret;
+	}
+
+	private boolean implement(Object o, Class<?> class1) {
+		Method[] methods = class1.getDeclaredMethods();
+		for(Method m : methods){
+			try {
+				if( o.getClass().getMethod(m.getName(), m.getParameterTypes()) == null){
+					return false;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public void display(Stringable s) {
