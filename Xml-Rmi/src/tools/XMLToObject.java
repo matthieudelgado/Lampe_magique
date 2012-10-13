@@ -54,9 +54,9 @@ public class XMLToObject {
 	}
 
 	public static Object createObjectFromNode(Node node) throws Exception{
+		System.err.println(node.getNodeName());
 		if(!node.getParentNode().getNodeName().equalsIgnoreCase("value")) 
 			throw new Exception("le pere de l'objet n'est pas value"); 
-
 		if(node.getNodeName().equalsIgnoreCase("int")){
 			return Integer.parseInt(((Text)node.getFirstChild()).getData());
 		} else if(node.getNodeName().equalsIgnoreCase("double")){
@@ -79,6 +79,7 @@ public class XMLToObject {
 		} else if(node.getNodeName().equalsIgnoreCase("struct")){
 			//TODO a completer
 		} else if(node.getNodeName().equalsIgnoreCase("object")){
+			System.err.println("hello");
 			//on creer une hashmap pour garder la valeur des champs
 			HashMap<String, Object> fieldMap = new HashMap<String, Object>();
 			//on creer une classe avec pour nom l'oid de l'objet
@@ -95,10 +96,12 @@ public class XMLToObject {
 					for(int j = 0; j< nl2.getLength(); j++){
 						n = nl2.item(j);
 						//on ajoute chaque field dans la classe et on stoque la valeur dans la hashmap
-						if(!n.getNodeName().equals("field"))continue;
+						if(!n.getNodeName().equals("field")) continue;
 						name = n.getAttributes().getNamedItem("name").getNodeValue();
+						System.err.println("name = "+name);
 						CtField f  = new CtField(CtClass.voidType,name,clazz);
-						fieldMap.put(name, createObjectFromNode(n.getFirstChild().getFirstChild()));
+						clazz.addField(f);
+						fieldMap.put(name, createObjectFromNode(getFirstGranChild(n)));
 					}
 				} else if(current.getNodeName().equalsIgnoreCase("methods")){
 					//on ajoute la method a la classe
@@ -106,7 +109,8 @@ public class XMLToObject {
 					for(int j = 0; j< nl2.getLength(); j++){
 						n = nl2.item(j);
 						if(!n.getNodeName().equals("method"))continue;
-						if(!n.getAttributes().getNamedItem("name").getNodeValue().equalsIgnoreCase("java"))continue;
+						if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
+						System.err.println(n.getTextContent());
 						CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
 						clazz.addMethod(m);
 					}
@@ -122,6 +126,22 @@ public class XMLToObject {
 		} 
 
 		return null;
+	}
+	
+	private static Node getFirstGranChild(Node node){
+		NodeList nl = node.getChildNodes(), nl2;
+		for(int i = 0; i< nl.getLength(); i++){
+			if(nl.item(i).getNodeType() == 3) continue;
+			nl2 = nl.item(i).getChildNodes();
+			for(int j = 0; j<nl2.getLength();j++){
+
+				if(nl2.item(j).getNodeType() == 3)continue;
+				return nl2.item(j);
+			}
+				
+			
+		}
+			return null;
 	}
 
 	public void updateFromXml(Document doc,ArrayList<Object> lo){

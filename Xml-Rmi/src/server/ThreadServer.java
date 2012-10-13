@@ -76,14 +76,20 @@ public class ThreadServer extends Thread implements IServer{
 		String MethodeName = ((Text)n).getData();
 		//on recupère les parametres de la methode dans le xml
 		ArrayList<Node> paramList = new ArrayList<Node>();
-		NodeList params = doc.getElementsByTagName("value");
+		NodeList params = doc.getElementsByTagName("value"), childs;
 		Node current = null;
 		for(int i = 0; i < params.getLength() ; i++) {
 			current = params.item(i);
-			if(current.getParentNode().getNodeName().equalsIgnoreCase("param"))
-				paramList.add(current.getFirstChild());
+			if(current.getParentNode().getNodeName().equalsIgnoreCase("param")){
+				childs = current.getChildNodes();
+				for(int j = 0; j< childs.getLength();j++){
+					if(childs.item(j).getNodeType() != 3){
+						paramList.add(childs.item(j));
+						break;
+					}
+				}
+			}
 		}
-		
 		
 		//on verfie qu'elle existe dans l'inteface IServer
 		Class<IServer> itf = IServer.class;
@@ -101,6 +107,7 @@ public class ThreadServer extends Thread implements IServer{
 			for(int i = 0 ; i < parameterTypes.length; i++){
 				System.err.println(parameterTypes[i].getSimpleName());
 				Object o = XMLToObject.createObjectFromNode(paramList.get(i));
+				System.err.println(o);
 				//si le parametre attendu est une interface, il faut tester
 				//que l'objet implemente les methode de l'interface
 				if(parameterTypes[i].isInterface()){
