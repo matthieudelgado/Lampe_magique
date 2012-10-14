@@ -339,6 +339,7 @@ public class ObjectToXML {
 	 * @throws InstantiationException
 	 * @throws IllegalAccessException
 	 */
+	//TODO A modifier
 	public static Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException{
 
 		// on recupere le contenu de la balise method
@@ -349,7 +350,7 @@ public class ObjectToXML {
 
 		System.out.println(corpsMethode);
 
-		CtClass point = ClassPool.getDefault().makeClass("Point");
+		CtClass point = ClassPool.getDefault().makeClass("Point"); //TODO A CHANGER 
 
 		CtField f  = new CtField(CtClass.doubleType,"x",point);
 		point.addField(f,x);
@@ -411,10 +412,25 @@ public class ObjectToXML {
 
 							//erreur probable ici, switch par type?
 							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
+							if(type.equals("double")){
+								double value=Double.parseDouble(fields.item(i).getFirstChild().getFirstChild().getTextContent());
+								try {
+									fieldObj.setDouble(obj, value);
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}else if(type.equals("string")){
+								String value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
+								
+								//TODO	fieldObj.set(obj, value);
+								
+							}
 							System.out.println("type : "+type);
 							//Object value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
-
-
 						}
 					}
 

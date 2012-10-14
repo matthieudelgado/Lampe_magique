@@ -18,6 +18,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import tools.ObjectToXML;
 import tools.TestEcritureXML;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
@@ -30,9 +31,17 @@ public class Client {
 		try {
 			//socket = new Socket("localhost", 5555);
 
+			// Matthieu
 			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/appelClient.xml");
+			//Fin Matthieu
+			
+			/* Marc */
+			//Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/appelClient.xml")); 
+			
+			//Fin Marc
+			
 			socket = new Socket("localhost", 5555);
 			XMLOutputStream out = new XMLOutputStream(socket.getOutputStream());
 			StreamResult sr = new StreamResult(out);
@@ -44,6 +53,7 @@ public class Client {
 
 			XMLInputStream in = new XMLInputStream(socket.getInputStream());
 			in.recive();
+			
 			doc = docBuilder.parse(in);
 			/*NodeList nl = doc.getElementsByTagName("object"), nl2, nl3;
 			Node n, n2, n3, n4;
