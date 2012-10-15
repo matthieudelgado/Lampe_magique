@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<methodCall>
+<methodeName>methode1</methodeName>
+<params>
+<param>
+<value>
+<int>5</int>
+</value>
+</param>
+<param>
+<value>
+<double>4.5</double>
+</value>
+</param>
+<param>
+<value>
+<object oid="testC">
+<fields>
+<field name="x">
+<value>
+<double>1.0</double>
+</value>
+</field>
+<field name="y">
+<value>
+<double>2.0</double>
+</value>
+</field>
+<field name="mark">
+<value>
+<string>m</string>
+</value>
+</field>
+</fields>
+<methods>
+<method language="Java">public String toString(){return "x = "+this.a+ " y =  " + this.b;}</method>
+</methods>
+</object>
+</value>
+</param>
+</params>
+</methodCall>

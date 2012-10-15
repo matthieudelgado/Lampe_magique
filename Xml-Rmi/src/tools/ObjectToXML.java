@@ -129,6 +129,72 @@ public class ObjectToXML {
 		return null;
 	}
 
+	//TODO 
+	//erreur ici
+	public static Element getNodeRacineFromXML(String nomFichier, Document doc){
+		Element n = doc.createElement("param");
+	//	n.appendChild(ObjectToXML.stringToDoc(ObjectToXML.fileToString(nomFichier)).getFirstChild()); 
+		n.setTextContent("ICI OBJET");
+		return n;
+	}
+
+	//TODO
+	public static Document mergeDocs(Document doc, Element param) {
+		Node racine= doc.getElementsByTagName("params").item(0);
+		Element racine2=  param;
+		
+		racine.appendChild(racine2);
+		
+		return doc;
+	}
+
+	//TODO
+	//pour les parametres primitif, le client leur crŽŽ leur balise un par un
+	public static Element getNodePrimitif(Object p,Document doc){
+		
+		Element param = doc.createElement("param");
+	
+		Element value = doc.createElement("value");
+		param.appendChild(value);
+
+		
+		String type = p.getClass().getSimpleName();
+		Element ty=null;
+		if(type.equals("Integer")){
+			ty = doc.createElement("int");
+			ty.setTextContent(p.toString());
+		}else if(type.equals("Double")){
+			ty = doc.createElement("double");
+			ty.setTextContent(p.toString());
+		}
+		
+		value.appendChild(ty);
+
+		
+		
+		return param;
+	}
+
+	//TODO
+	public static Document appelClient(String methode){
+		Document doc = ObjectToXML.creerDocument();
+
+		Element racine=doc.createElement("methodCall");
+		doc.appendChild(racine);
+
+		Element methodeName = doc.createElement("methodeName");
+		methodeName.setTextContent(methode);
+		racine.appendChild(methodeName);
+
+		Element params = doc.createElement("params");
+		racine.appendChild(params);
+
+
+
+
+		return doc;
+	}
+
 
 	// TODO attention aux types des attributs
 	//Construction de l'appel client
@@ -141,25 +207,11 @@ public class ObjectToXML {
 	 * @param methodes
 	 * @return
 	 */
-	public static Document appelClientToDocument(String oid,Object obj,String methode_serveur,ArrayList<String> methodes){
+	public static Element appelClientToDocument(String oid,Object obj,ArrayList<String> methodes,Document doc){
 
-		Document doc = ObjectToXML.creerDocument();
-		Element racine=doc.createElement("methodCall");
-		doc.appendChild(racine);
-
-		Element methodeName = doc.createElement("methodeName");
-		methodeName.setTextContent(methode_serveur);
-		racine.appendChild(methodeName);
-
-		Element params = doc.createElement("params");
-		racine.appendChild(params);
-
-		Element param = doc.createElement("param");
-		params.appendChild(param);
-
+		
 		Element value = doc.createElement("value");
-		param.appendChild(value);
-
+		
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
 		value.appendChild(object);
@@ -188,7 +240,7 @@ public class ObjectToXML {
 					fields.appendChild(field);
 
 					Element valueField = doc.createElement("value");
-					fields.appendChild(valueField);
+					field.appendChild(valueField);
 
 					Element type = doc.createElement(myAnnotation.serializationType());
 					//type.setTextContent("Valeur a entrer");
@@ -222,7 +274,7 @@ public class ObjectToXML {
 			methods.appendChild(method);
 		}
 
-		return doc;
+		return value;
 	}
 
 
@@ -268,7 +320,7 @@ public class ObjectToXML {
 		try {
 			transfo = TransformerFactory.newInstance().newTransformer();
 		} catch(TransformerConfigurationException e) {
-			System.err.println("Impossible de crï¿½er un transformateur XML.");
+			System.err.println("Impossible de creer un transformateur XML.");
 			System.exit(1);
 		}
 
@@ -283,7 +335,7 @@ public class ObjectToXML {
 		try {
 			transfo.transform(source, resultat);
 		} catch(TransformerException e) {
-			System.err.println("La transformation a ï¿½chouï¿½ : " + e);
+			System.err.println("La transformation a echoue : " + e);
 			System.exit(1);
 		}
 	}
@@ -409,25 +461,30 @@ public class ObjectToXML {
 
 						if(name.equals(myAnnotation.serializationName())){ // si l'annotation correspond a la bonne balise <field> du XML
 							//alors il faut update le champ correspond a l'annotation en l'occurence fieldObj
-
-							//erreur probable ici, switch par type?
 							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
 							if(type.equals("double")){
 								double value=Double.parseDouble(fields.item(i).getFirstChild().getFirstChild().getTextContent());
 								try {
 									fieldObj.setDouble(obj, value);
 								} catch (IllegalArgumentException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								} catch (IllegalAccessException e) {
-									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}else if(type.equals("int")){
+								int value=Integer.parseInt(fields.item(i).getFirstChild().getFirstChild().getTextContent());
+								try {
+									fieldObj.setInt(obj, value);
+								} catch (IllegalArgumentException e) {
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
 									e.printStackTrace();
 								}
 							}else if(type.equals("string")){
 								String value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
-								
+
 								//TODO	fieldObj.set(obj, value);
-								
+
 							}
 							System.out.println("type : "+type);
 							//Object value = fields.item(i).getFirstChild().getFirstChild().getTextContent();

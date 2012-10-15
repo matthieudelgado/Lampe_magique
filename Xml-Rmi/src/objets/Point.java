@@ -24,9 +24,8 @@ public class Point implements XMLRMISerializable, Stringable {
 	@XMLRMIField(serializationName = "mark", serializationType = "string")
 	protected char marque='m';
 
-	private String oid = "a";
+	private String oid = "testC";
 	
-	private String methode_appelante;
 
 	private static Integer compteur = 0;
 
@@ -50,17 +49,17 @@ public class Point implements XMLRMISerializable, Stringable {
 	/**
 	 * 
 	 */
-	public String toXML(Class<?> inter) {
-		initOid();
+	public Element toXML(Class<?> inter,Document doc) {
+		//initOid();
 		Client.repertoire.put(this.oid, this);
 		
 		String interString = inter.getName();
 		String tostring = "public String toString(){return \"x = \"+this.a+ \" y =  \" + this.b;}";
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);
-		ObjectToXML.docToFile((ObjectToXML.appelClientToDocument(this.getOid(),this, this.getMethode_appelante(), aString)),"data/"+this.getOid()+".xml");
+		return ObjectToXML.appelClientToDocument(this.getOid(),this, aString,doc);
 		
-		return null;
+		
 	}
 
 	@Override
@@ -82,11 +81,5 @@ public class Point implements XMLRMISerializable, Stringable {
 		}
 	}
 
-	public String getMethode_appelante() {
-		return methode_appelante;
-	}
-
-	public void setMethode_appelante(String methode_appelante) {
-		this.methode_appelante = methode_appelante;
-	}
+	
 }
