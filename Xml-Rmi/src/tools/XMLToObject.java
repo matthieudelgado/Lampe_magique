@@ -141,16 +141,16 @@ public class XMLToObject {
 	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException {
 		if(n.getNodeName().equalsIgnoreCase("int")){
 			CtField f = new CtField(CtClass.intType,name,clazz);
-			clazz.addField(f, "\""+value+"\"");
+			clazz.addField(f, value.toString());
 		} else if(n.getNodeName().equalsIgnoreCase("double")){
 			CtField f = new CtField(CtClass.doubleType,name,clazz);
-			clazz.addField(f, "\""+value+"\"");
+			clazz.addField(f, value.toString());
 		} else if(n.getNodeName().equalsIgnoreCase("boolean")){
 			CtField f = new CtField(CtClass.booleanType,name,clazz);
-			clazz.addField(f, "\""+value+"\"");
+			clazz.addField(f, value.toString());
 		} else if(n.getNodeName().equalsIgnoreCase("string")){
 			CtField f = new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
-			clazz.addField(f, "\""+value+"\"");
+			clazz.addField(f, "\""+value.toString()+"\"");
 		} else {
 			System.out.println("type non traité dans addCtFieldToCtClass");
 		}
