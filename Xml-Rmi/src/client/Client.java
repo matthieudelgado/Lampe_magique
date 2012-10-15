@@ -34,7 +34,7 @@ public class Client {
 			// Matthieu
 			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/appelClient.xml");
+			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
 			//Fin Matthieu
 			
 			/* Marc */

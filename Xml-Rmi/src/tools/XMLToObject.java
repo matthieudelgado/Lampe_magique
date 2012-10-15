@@ -116,7 +116,7 @@ public class XMLToObject {
 					}
 				}
 			}
-			
+
 			//on initialise les champs de l'instance
 			Object o = clazz.toClass().newInstance();
 			for(String s : fieldMap.keySet()){
@@ -127,21 +127,26 @@ public class XMLToObject {
 
 		return null;
 	}
-	
+
 	private static Node getFirstGranChild(Node node){
+		System.err.println("node nam : "+node.getNodeName());
 		NodeList nl = node.getChildNodes(), nl2;
 		for(int i = 0; i< nl.getLength(); i++){
+			System.out.println("un fils");
+
 			if(nl.item(i).getNodeType() == 3) continue;
+			System.out.println("un fils non vide");
 			nl2 = nl.item(i).getChildNodes();
 			for(int j = 0; j<nl2.getLength();j++){
 
 				if(nl2.item(j).getNodeType() == 3)continue;
 				return nl2.item(j);
 			}
-				
-			
+
+
 		}
-			return null;
+		System.err.println("hi!");
+		return null;
 	}
 
 	public void updateFromXml(Document doc,ArrayList<Object> lo){

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <methodCall>
-<methodeName>display3</methodeName>
+<methodeName>display</methodeName>
 <params>
 <param>
 <value>

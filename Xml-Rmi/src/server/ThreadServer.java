@@ -73,7 +73,8 @@ public class ThreadServer extends Thread implements IServer{
 		
 		//on recherche la méthode appelée
 		Node n = doc.getElementsByTagName("methodeName").item(0).getFirstChild();
-		String MethodeName = ((Text)n).getData();
+		System.out.println("nom de methode "+n.getTextContent());
+		String MethodeName = n.getTextContent();
 		//on recupère les parametres de la methode dans le xml
 		ArrayList<Node> paramList = new ArrayList<Node>();
 		NodeList params = doc.getElementsByTagName("value"), childs;
@@ -90,6 +91,7 @@ public class ThreadServer extends Thread implements IServer{
 				}
 			}
 		}
+		//Dans paramList ici on a les parametre de la methode display
 		
 		//on verfie qu'elle existe dans l'inteface IServer
 		Class<IServer> itf = IServer.class;

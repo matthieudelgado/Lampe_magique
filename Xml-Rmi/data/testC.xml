@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <methodCall>
-<methodeName>methode1</methodeName>
+<methodeName>display</methodeName>
 <params>
-<param>
-<value>
-<int>5</int>
-</value>
-</param>
-<param>
-<value>
-<double>4.5</double>
-</value>
-</param>
 <param>
 <value>
 <object oid="testC">
@@ -33,7 +23,7 @@
 </field>
 </fields>
 <methods>
-<method language="Java">public String toString(){return "x = "+this.a+ " y =  " + this.b;}</method>
+<method language="Java">public String toString(){return "x = "+this.x+ " y =  " + this.y;}</method>
 </methods>
 </object>
 </value>
