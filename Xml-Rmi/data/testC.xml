@@ -23,7 +23,7 @@
 </field>
 </fields>
 <methods>
-<method language="Java">public String toString(){return "x = "+this.x+ " y =  " + this.y;}</method>
+<method language="Java">public String toString(){return "x = "+this.x+ " y =  " + this.y+ "marque "+this.mark;}</method>
 </methods>
 </object>
 </value>

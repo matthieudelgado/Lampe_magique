@@ -1,6 +1,7 @@
 package tools;
 
 import javassist.CannotCompileException;
+import javassist.NotFoundException;
 
 import org.w3c.dom.Document;
 
@@ -14,7 +15,7 @@ public class TestXmlToObject {
 		ObjectToXML otx = new ObjectToXML();
 		
 		
-		Document doc =  otx.fileToDoc( "data/appelServeur.xml");
+		Document doc =  otx.fileToDoc( "data/testC.xml");
 		
 		XMLToObject xto =  new XMLToObject();
 		 Object p;
@@ -29,6 +30,9 @@ public class TestXmlToObject {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

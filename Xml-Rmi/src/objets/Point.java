@@ -54,7 +54,7 @@ public class Point implements XMLRMISerializable, Stringable {
 		Client.repertoire.put(this.oid, this);
 		
 		String interString = inter.getName();
-		String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y;}";
+		String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \"marque \"+this.mark;}";
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);
 		return ObjectToXML.appelClientToDocument(this.getOid(),this, aString,doc);

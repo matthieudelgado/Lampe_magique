@@ -7,8 +7,12 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtField.Initializer;
+import javassist.bytecode.Bytecode;
+import javassist.compiler.Javac;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.NotFoundException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -23,15 +27,15 @@ public class XMLToObject {
 		this.doc=null;
 	}
 
-	public Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException{
+	public Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException, NotFoundException{
 
 		// on recupere le contenu de la balise method
 		String corpsMethode= doc.getElementsByTagName("method").item(0).getTextContent();
 		//String corpsMethode = "public String toString(){return \"r\";}";
 		String x = doc.getElementsByTagName("double").item(0).getTextContent();
 		String y = doc.getElementsByTagName("double").item(1).getTextContent();
-
-
+		String a =doc.getElementsByTagName("string").item(0).getTextContent();
+		a="\""+a+"\"";
 		System.out.println(corpsMethode);
 
 
@@ -39,8 +43,9 @@ public class XMLToObject {
 
 		CtField f  = new CtField(CtClass.doubleType,"x",point);
 		point.addField(f,x);
-		CtField f1  = new CtField(CtClass.charType,"mark",point);
-		point.addField(f1);
+		CtField f1  = new CtField(ClassPool.getDefault().get("java.lang.String"),"mark",point);
+		point.addField(f1,a);
+		
 		CtField f2  = new CtField(CtClass.doubleType,"y",point);
 		point.addField(f2,y);
 
@@ -49,7 +54,8 @@ public class XMLToObject {
 
 
 		Object p1 =point.toClass().newInstance();
-
+		
+		
 		return p1;
 	}
 
@@ -86,7 +92,7 @@ public class XMLToObject {
 			String oid = node.getAttributes().getNamedItem("oid").getNodeValue();
 			CtClass clazz = ClassPool.getDefault().makeClass(oid);
 			NodeList nl = node.getChildNodes(), nl2;
-			Node current, n;
+			Node current, n, granChild;
 			String name;
 			for(int i = 0; i< nl.getLength(); i++){
 				current = nl.item(i);
@@ -99,9 +105,11 @@ public class XMLToObject {
 						if(!n.getNodeName().equals("field")) continue;
 						name = n.getAttributes().getNamedItem("name").getNodeValue();
 						System.err.println("name = "+name);
-						CtField f  = new CtField(CtClass.voidType,name,clazz);
-						clazz.addField(f);
-						fieldMap.put(name, createObjectFromNode(getFirstGranChild(n)));
+						granChild = getFirstGranChild(n);
+						CtField f = getCTField(granChild, name, clazz);
+						f= new CtField(CtClass.doubleType,name,clazz);
+						clazz.addField(f,"2.0"); // TODO A CHANGER 
+						fieldMap.put(name, createObjectFromNode(granChild));
 					}
 				} else if(current.getNodeName().equalsIgnoreCase("methods")){
 					//on ajoute la method a la classe
@@ -111,12 +119,15 @@ public class XMLToObject {
 						if(!n.getNodeName().equals("method"))continue;
 						if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
 						System.err.println(n.getTextContent());
+						//String nm ="public String toString(){return \"x = \"+this.x+ \" y = \" + this.y;}";
 						CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
 						clazz.addMethod(m);
 					}
 				}
 			}
 
+			
+			
 			//on initialise les champs de l'instance
 			Object o = clazz.toClass().newInstance();
 			for(String s : fieldMap.keySet()){
@@ -126,6 +137,21 @@ public class XMLToObject {
 		} 
 
 		return null;
+	}
+
+	private static CtField getCTField(Node n, String name, CtClass clazz) throws CannotCompileException, NotFoundException {
+		if(n.getNodeName().equalsIgnoreCase("int"))	return new CtField(CtClass.intType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("boolean"))	return new CtField(CtClass.booleanType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("string"))	return new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
+		return null;
+
 	}
 
 	private static Node getFirstGranChild(Node node){
