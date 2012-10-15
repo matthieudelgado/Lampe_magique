@@ -106,10 +106,11 @@ public class XMLToObject {
 						name = n.getAttributes().getNamedItem("name").getNodeValue();
 						System.err.println("name = "+name);
 						granChild = getFirstGranChild(n);
-						CtField f = getCTField(granChild, name, clazz);
-						f= new CtField(CtClass.doubleType,name,clazz);
-						clazz.addField(f,"2.0"); // TODO A CHANGER 
-						fieldMap.put(name, createObjectFromNode(granChild));
+						Object value = createObjectFromNode(granChild);
+						addCtFieldToCtClass(granChild, name, clazz, value);
+						//f= new CtField(CtClass.doubleType,name,clazz);
+						//clazz.addField(f,"2.0"); // TODO A CHANGER 
+						//fieldMap.put(name, );
 					}
 				} else if(current.getNodeName().equalsIgnoreCase("methods")){
 					//on ajoute la method a la classe
@@ -130,38 +131,37 @@ public class XMLToObject {
 			
 			//on initialise les champs de l'instance
 			Object o = clazz.toClass().newInstance();
-			for(String s : fieldMap.keySet()){
-				o.getClass().getDeclaredField(s).set(o, fieldMap.get(s));
-			}
+
 			return o;
 		} 
 
 		return null;
 	}
 
-	private static CtField getCTField(Node n, String name, CtClass clazz) throws CannotCompileException, NotFoundException {
-		if(n.getNodeName().equalsIgnoreCase("int"))	return new CtField(CtClass.intType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("boolean"))	return new CtField(CtClass.booleanType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("string"))	return new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		else if(n.getNodeName().equalsIgnoreCase("double"))	return new CtField(CtClass.doubleType,name,clazz);
-		return null;
+	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException {
+		if(n.getNodeName().equalsIgnoreCase("int")){
+			CtField f = new CtField(CtClass.intType,name,clazz);
+			clazz.addField(f, "\""+value+"\"");
+		} else if(n.getNodeName().equalsIgnoreCase("double")){
+			CtField f = new CtField(CtClass.doubleType,name,clazz);
+			clazz.addField(f, "\""+value+"\"");
+		} else if(n.getNodeName().equalsIgnoreCase("boolean")){
+			CtField f = new CtField(CtClass.booleanType,name,clazz);
+			clazz.addField(f, "\""+value+"\"");
+		} else if(n.getNodeName().equalsIgnoreCase("string")){
+			CtField f = new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
+			clazz.addField(f, "\""+value+"\"");
+		} else {
+			System.out.println("type non traité dans addCtFieldToCtClass");
+		}
 
 	}
 
 	private static Node getFirstGranChild(Node node){
-		System.err.println("node nam : "+node.getNodeName());
 		NodeList nl = node.getChildNodes(), nl2;
 		for(int i = 0; i< nl.getLength(); i++){
-			System.out.println("un fils");
 
 			if(nl.item(i).getNodeType() == 3) continue;
-			System.out.println("un fils non vide");
 			nl2 = nl.item(i).getChildNodes();
 			for(int j = 0; j<nl2.getLength();j++){
 
