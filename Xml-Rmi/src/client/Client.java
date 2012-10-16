@@ -25,7 +25,13 @@ import tools.TestEcritureXML;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public class Client {
+	
 	public static HashMap<String,XMLRMISerializable> repertoire = new HashMap<String,XMLRMISerializable>();
 
 	public static void main(String[] args) {

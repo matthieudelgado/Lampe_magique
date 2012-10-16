@@ -15,7 +15,11 @@ import org.w3c.dom.NodeList;
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
 import client.Client;
-
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public class Point implements XMLRMISerializable, Stringable {
 
 	// attention construire une partie de l'XML en local pour les champs dans la metthode de contstruction XML
@@ -52,9 +56,6 @@ public class Point implements XMLRMISerializable, Stringable {
 
 	// recuperer de l'interface la classe pour avoir les m�thode a passer dans l'XML
 	@Override
-	/**
-	 * 
-	 */
 	public Element toXML(Class<?> inter,Document doc) {
 		//initOid();
 		Client.repertoire.put(this.oid, this);
@@ -67,7 +68,6 @@ public class Point implements XMLRMISerializable, Stringable {
 	}
 
 	@Override
-	
 	public void updateFromXML(Element theXML) {
 		ObjectToXML.updateObjectFromElement(theXML, this);
 	}
