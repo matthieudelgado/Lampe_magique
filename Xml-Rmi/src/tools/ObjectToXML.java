@@ -509,7 +509,6 @@ public class ObjectToXML {
 				//TODO
 			}else if(type.equals("string")){
 				String value = valueElement.getTextContent();
-				value="\""+value+"\"";
 				fieldObj.set(obj, value);
 			}
 		} catch (IllegalArgumentException e) {
