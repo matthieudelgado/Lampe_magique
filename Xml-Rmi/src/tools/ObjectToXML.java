@@ -85,6 +85,11 @@ public class ObjectToXML {
 		return chaine.replaceAll(">\\s*<", "><"); 
 	}
 
+	/**
+	 * 
+	 * @param chaine
+	 * @return
+	 */
 	public static Document stringToDoc(String chaine){
 		//DocumentBuilder docBuilder = this.getDocBuilder();	
 		DocumentBuilder docB = null;
@@ -114,8 +119,6 @@ public class ObjectToXML {
 	 * @return un objet Document correspondant ˆ la structure du fichier XML
 	 */
 	public static Document fileToDoc(String nomDeFichier){
-		//String contenuFichier=	
-
 		DocumentBuilder docB = null;
 		try {
 			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -133,16 +136,13 @@ public class ObjectToXML {
 		return null;
 	}
 
-	//TODO 
-	//erreur ici
-	public static Element getNodeRacineFromXML(String nomFichier, Document doc){
-		Element n = doc.createElement("param");
-		//	n.appendChild(ObjectToXML.stringToDoc(ObjectToXML.fileToString(nomFichier)).getFirstChild()); 
-		n.setTextContent("ICI OBJET");
-		return n;
-	}
 
-	//TODO
+	/**
+	 * Ajoute dans l'appel client, param comme un fils de la balise params
+	 * @param doc
+	 * @param param
+	 * @return
+	 */
 	public static Document mergeDocs(Document doc, Element param) {
 		Node racine= doc.getElementsByTagName("params").item(0);
 		Element racine2=  param;
@@ -152,8 +152,13 @@ public class ObjectToXML {
 		return doc;
 	}
 
-	//TODO
-	//pour les parametres primitif, le client leur crŽŽ leur balise un par un
+	
+	/**
+	 * A pour charge la partie des parametres non Object de l'appel client
+	 * @param p
+	 * @param doc
+	 * @return
+	 */
 	public static Element getNodePrimitif(Object p,Document doc){
 
 		Element param = doc.createElement("param");
@@ -179,7 +184,11 @@ public class ObjectToXML {
 		return param;
 	}
 
-	//TODO
+	/**
+	 * Creer le document de l'appel Client ainsi que son entete a partir d'un nom de methode
+	 * @param methode
+	 * @return
+	 */
 	public static Document appelClient(String methode){
 		Document doc = ObjectToXML.creerDocument();
 
@@ -291,7 +300,11 @@ public class ObjectToXML {
 		ObjectToXML.docToFile(ObjectToXML.fileToDoc(fichierACopier), destination);
 	}
 
-	// cree un nouveau Document a partir du Builder
+	
+	/**
+	 * Permet de creer un document
+	 * @return Document
+	 */
 	public static Document creerDocument(){
 		//DocumentBuilder docBuilder = this.getDocBuilder();	
 		DocumentBuilder docB = null;
@@ -470,6 +483,13 @@ public class ObjectToXML {
 	}
 
 
+	/**
+	 * Permet de mettre a jour un champs en fonction de son type
+	 * @param type
+	 * @param obj
+	 * @param fieldObj
+	 * @param valueElement
+	 */
 	public static void updateFieldByType(String type,Object obj,Field fieldObj, Node valueElement){
 		try{
 			if(type.equals("double")){
@@ -499,6 +519,13 @@ public class ObjectToXML {
 		}
 	}
 	
+	/**
+	 * Cree un Document representant un appel client a partir d'un nom de methode et d'une liste\n
+	 * d'arguments
+	 * @param methode
+	 * @param params
+	 * @return Document
+	 */
 	public static Document createAppelClient(String methode,ArrayList<Object> params){
 		Document doc = ObjectToXML.appelClient(methode);
 		boolean trouve = false;
