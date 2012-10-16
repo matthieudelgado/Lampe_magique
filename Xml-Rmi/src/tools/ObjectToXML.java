@@ -42,6 +42,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 
+import objets.Point;
+import objets.Stringable;
+import objets.XMLRMISerializable;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -133,7 +137,7 @@ public class ObjectToXML {
 	//erreur ici
 	public static Element getNodeRacineFromXML(String nomFichier, Document doc){
 		Element n = doc.createElement("param");
-	//	n.appendChild(ObjectToXML.stringToDoc(ObjectToXML.fileToString(nomFichier)).getFirstChild()); 
+		//	n.appendChild(ObjectToXML.stringToDoc(ObjectToXML.fileToString(nomFichier)).getFirstChild()); 
 		n.setTextContent("ICI OBJET");
 		return n;
 	}
@@ -142,22 +146,22 @@ public class ObjectToXML {
 	public static Document mergeDocs(Document doc, Element param) {
 		Node racine= doc.getElementsByTagName("params").item(0);
 		Element racine2=  param;
-		
+
 		racine.appendChild(racine2);
-		
+
 		return doc;
 	}
 
 	//TODO
 	//pour les parametres primitif, le client leur créé leur balise un par un
 	public static Element getNodePrimitif(Object p,Document doc){
-		
+
 		Element param = doc.createElement("param");
-	
+
 		Element value = doc.createElement("value");
 		param.appendChild(value);
 
-		
+
 		String type = p.getClass().getSimpleName();
 		Element ty=null;
 		if(type.equals("Integer")){
@@ -167,11 +171,11 @@ public class ObjectToXML {
 			ty = doc.createElement("double");
 			ty.setTextContent(p.toString());
 		}
-		
+
 		value.appendChild(ty);
 
-		
-		
+
+
 		return param;
 	}
 
@@ -209,9 +213,9 @@ public class ObjectToXML {
 	 */
 	public static Element appelClientToDocument(String oid,Object obj,ArrayList<String> methodes,Document doc){
 
-		
+
 		Element value = doc.createElement("value");
-		
+
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
 		value.appendChild(object);
@@ -432,86 +436,91 @@ public class ObjectToXML {
 	 * @param doc
 	 * @param obj
 	 */
-	public static void updateObjectFromElement(Document doc, Object obj){
+	public static void updateObjectFromElement(Element el, Object obj){
 		// pour chaque annotation correspondant au name de <field> dans le xml, il faut modifier la valeur de l'attribut sous l'annotation
-		NodeList fields=doc.getElementsByTagName("field");
+		NodeList fields = el.getChildNodes();
 		int nbField = fields.getLength();
 		String name=""; // Contiendra la valeur de name pour chaque field traité
-
-
-		//ArrayList<Field> fieldAnnote=new ArrayList<Field>();
 
 		//recupere la liste des attributs annotés
 		// et les stocke dans fieldAnnote
 		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
-
 			Field fieldObj = obj.getClass().getDeclaredFields()[j];
-
 			fieldObj.setAccessible(true);
-
 			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
-			for(Annotation annotation : annotations){
 
+			for(Annotation annotation : annotations){
 				if(annotation instanceof XMLRMIField){
 					//on regarde parmi toutes les balise field, laquelle correspond a l'annotation de ce field
 					//des qu'on l'a trouve on update le fiedl associe a cette annotation
 					XMLRMIField myAnnotation = (XMLRMIField) annotation;
+
 					for(int i=0;i<nbField;i++){ // attention pour chaque element de field, il faut le caster en Element
 						name=fields.item(i).getAttributes().item(0).getTextContent();
-
 						if(name.equals(myAnnotation.serializationName())){ // si l'annotation correspond a la bonne balise <field> du XML
 							//alors il faut update le champ correspond a l'annotation en l'occurence fieldObj
 							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
-							if(type.equals("double")){
-								double value=Double.parseDouble(fields.item(i).getFirstChild().getFirstChild().getTextContent());
-								try {
-									fieldObj.setDouble(obj, value);
-								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
-								} catch (IllegalAccessException e) {
-									e.printStackTrace();
-								}
-							}else if(type.equals("int")){
-								int value=Integer.parseInt(fields.item(i).getFirstChild().getFirstChild().getTextContent());
-								try {
-									fieldObj.setInt(obj, value);
-								} catch (IllegalArgumentException e) {
-									e.printStackTrace();
-								} catch (IllegalAccessException e) {
-									e.printStackTrace();
-								}
-							}else if(type.equals("string")){
-								String value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
-								value="\""+value+"\"";
-								try {
-									fieldObj.set(fieldObj,(Object) value);
-								} catch (IllegalArgumentException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (IllegalAccessException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-
-							}
-							System.out.println("type : "+type);
-							//Object value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
+							ObjectToXML.updateFieldByType(type, obj, fieldObj, fields.item(i).getFirstChild().getFirstChild());
 						}
 					}
-
-
 				}
 			}
 			fieldObj.setAccessible(false);
 		}
-
-		//System.out.println("nombre de field declare dans obj : "+fieldAnnote.size());
-
-
-
-
 	}
 
+
+	public static void updateFieldByType(String type,Object obj,Field fieldObj, Node valueElement){
+		try{
+			if(type.equals("double")){
+				double value=Double.parseDouble(valueElement.getTextContent());
+				fieldObj.setDouble(obj, value);
+			}else if(type.equals("int")){
+				int value=Integer.parseInt(valueElement.getTextContent());
+				fieldObj.setInt(obj, value);
+			}else if(type.equals("char")){
+				//TODO
+			}else if(type.equals("boolean")){
+				boolean value = Boolean.parseBoolean(valueElement.getTextContent());
+				fieldObj.setBoolean(obj, value);
+			}else if(type.equals("datetime")){
+				//TODO
+			}else if(type.equals("base64")){
+				//TODO
+			}else if(type.equals("string")){
+				String value = valueElement.getTextContent();
+				value="\""+value+"\"";
+				fieldObj.set(obj, value);
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Document createAppelClient(String methode,ArrayList<Object> params){
+		Document doc = ObjectToXML.appelClient(methode);
+		boolean trouve = false;
+		for(int i=0;i<params.size();i++){  // verifier si le param implement l'interface XMLRMISerializable, dans ce cas c'est un type object
+			for(int j = 0;j<params.get(i).getClass().getInterfaces().length;j++){
+				if(params.get(i).getClass().getInterfaces()[j].equals(XMLRMISerializable.class)){ // ici c'est le cas de notre point
+					Element paramObject = doc.createElement("param");
+					Point p = new Point(1,2);
+					Element obje=p.toXML(Stringable.class,doc);
+					paramObject.appendChild(obje);
+					ObjectToXML.mergeDocs(doc, paramObject);
+					trouve=true;
+				}
+			}
+			if(!trouve){
+				Element p2 = ObjectToXML.getNodePrimitif(params.get(i), doc);
+				ObjectToXML.mergeDocs(doc, p2);
+			}
+			trouve=false;
+		}
+		return doc;
+	}
 
 }
 

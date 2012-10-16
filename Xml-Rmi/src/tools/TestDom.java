@@ -17,7 +17,7 @@ public class TestDom {
 	public static void main(String[] args) {
 			
 		String methodeAppelante = "display";
-		Document doc = ObjectToXML.appelClient(methodeAppelante);
+		//Document doc = ObjectToXML.appelClient(methodeAppelante);
 		
 		//** Parametre de la methode Appelante
 		//int i=5;
@@ -30,15 +30,21 @@ public class TestDom {
 //		Element p2 = ObjectToXML.getNodePrimitif(d, doc);
 //		ObjectToXML.mergeDocs(doc, p2);
 		
-		Element paramObject = doc.createElement("param");
-		Point p = new Point(1,2);
-		Element obje=p.toXML(Stringable.class,doc);
-		paramObject.appendChild(obje);
+//		Element paramObject = doc.createElement("param");
+		Point p = new Point(1.0,2.0);
+//		Element obje=p.toXML(Stringable.class,doc);
+//		paramObject.appendChild(obje);
+//		
+//		ObjectToXML.mergeDocs(doc, paramObject);
 		
-		ObjectToXML.mergeDocs(doc, paramObject);
 		
-		//ObjectToXML.afficherDocument(doc);
-		ObjectToXML.docToFile(doc, "data/"+p.getOid()+".xml");
+		ArrayList<Object> params = new ArrayList<Object>();
+		//params.add(d);
+		params.add(p);
+		Document doc = ObjectToXML.createAppelClient(methodeAppelante, params);
+		
+		ObjectToXML.afficherDocument(doc);
+		//ObjectToXML.docToFile(doc, "data/"+p.getOid()+".xml");
 	
 	}
 }

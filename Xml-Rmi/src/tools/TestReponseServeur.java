@@ -21,15 +21,10 @@ public class TestReponseServeur {
 //		ArrayList<Object> listObj = new ArrayList<Object>();
 //		listObj.add(p1);
 //		listObj.add(p2);
-		
-		
 		Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/reponseServeur.xml")); 
-		//Document doc = otx.fileToDoc("data/reponseServeur.xml");
-		//xto.updateFromXml(doc, null);//listObj); //??
-		//System.out.println(otx.getOidFromXML(doc));
+
 		Element e= (Element) doc.getElementsByTagName("fields").item(0); 
 		p1.updateFromXML(e);
-		//ObjectToXML.updateObjectFromElement(doc, p1);
 		
 		System.out.println(p1.toString());
 		

@@ -2,6 +2,7 @@ package client;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -11,6 +12,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import objets.Point;
 import objets.XMLRMISerializable;
 
 import org.w3c.dom.Document;
@@ -32,14 +34,19 @@ public class Client {
 			//socket = new Socket("localhost", 5555);
 
 			// Matthieu
-			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
+//			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+//			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+//			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
 			//Fin Matthieu
 			
 			/* Marc */
 			//Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/appelClient.xml")); 
 			
+			Point p = new Point(1.0,2.0);
+			
+			ArrayList<Object> params = new ArrayList<Object>();
+			params.add(p);
+			Document doc = ObjectToXML.createAppelClient("display", params);
 			//Fin Marc
 			
 			socket = new Socket("localhost", 5555);
@@ -54,7 +61,8 @@ public class Client {
 			XMLInputStream in = new XMLInputStream(socket.getInputStream());
 			in.recive();
 			
-			doc = docBuilder.parse(in);
+			//doc = docBuilder.parse(in);
+			
 			/*NodeList nl = doc.getElementsByTagName("object"), nl2, nl3;
 			Node n, n2, n3, n4;
 			String newOid;
