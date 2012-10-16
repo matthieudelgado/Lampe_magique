@@ -59,7 +59,7 @@ public class XMLToObject {
 		return p1;
 	}
 
-	public static Object createObjectFromNode(Node node) throws Exception{
+	public static Object createObjectFromNode(Node node, Class<?> parameterType) throws Exception{
 		System.err.println(node.getNodeName());
 		if(!node.getParentNode().getNodeName().equalsIgnoreCase("value")) 
 			throw new Exception("le pere de l'objet n'est pas value"); 
@@ -79,7 +79,7 @@ public class XMLToObject {
 			ArrayList<Object> array = new ArrayList<Object>();
 			NodeList nl = node.getChildNodes();
 			for(int i = 0; i < nl.getLength(); i++){
-				array.add(createObjectFromNode(nl.item(i)));
+				array.add(createObjectFromNode(nl.item(i), parameterType));
 			}
 			return array;
 		} else if(node.getNodeName().equalsIgnoreCase("struct")){
@@ -91,6 +91,10 @@ public class XMLToObject {
 			//on creer une classe avec pour nom l'oid de l'objet
 			String oid = node.getAttributes().getNamedItem("oid").getNodeValue();
 			CtClass clazz = ClassPool.getDefault().makeClass(oid);
+			if(parameterType.isInterface())
+				clazz.addInterface(ClassPool.getDefault().get(parameterType.getName()));
+			clazz.stopPruning(true);
+
 			NodeList nl = node.getChildNodes(), nl2;
 			Node current, n, granChild;
 			String name;
@@ -106,7 +110,7 @@ public class XMLToObject {
 						name = n.getAttributes().getNamedItem("name").getNodeValue();
 						System.err.println("name = "+name);
 						granChild = getFirstGranChild(n);
-						Object value = createObjectFromNode(granChild);
+						Object value = createObjectFromNode(granChild, Object.class);
 						addCtFieldToCtClass(granChild, name, clazz, value);
 						//f= new CtField(CtClass.doubleType,name,clazz);
 						//clazz.addField(f,"2.0"); // TODO A CHANGER 

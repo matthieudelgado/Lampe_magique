@@ -108,14 +108,15 @@ public class ThreadServer extends Thread implements IServer{
 			//on compare le type des parametres avec le xml
 			for(int i = 0 ; i < parameterTypes.length; i++){
 				System.err.println(parameterTypes[i].getSimpleName());
-				Object o = XMLToObject.createObjectFromNode(paramList.get(i));
+				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
 				System.err.println(o);
 				//si le parametre attendu est une interface, il faut tester
 				//que l'objet implemente les methode de l'interface
 				if(parameterTypes[i].isInterface()){
 					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
-						o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
+						//o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
 						args.add(o);
+						trouve = true;
 					} else {
 						trouve = false;
 						break;
@@ -149,6 +150,7 @@ public class ThreadServer extends Thread implements IServer{
 
 	private Object addInterface(Object o, Class<?> class1) throws Exception {
 		CtClass clazz = ClassPool.getDefault().get(o.getClass().getName());
+		clazz.defrost();
 		clazz.addInterface(ClassPool.getDefault().get(class1.getName()));
 		Object ret = clazz.toClass().newInstance();
 		for(Field f : ret.getClass().getDeclaredFields()){
