@@ -482,8 +482,16 @@ public class ObjectToXML {
 								}
 							}else if(type.equals("string")){
 								String value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
-
-								//TODO	fieldObj.set(obj, value);
+								value="\""+value+"\"";
+								try {
+									fieldObj.set(fieldObj,(Object) value);
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 
 							}
 							System.out.println("type : "+type);

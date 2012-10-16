@@ -3,6 +3,7 @@ package tools;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import objets.Point;
 
@@ -26,7 +27,9 @@ public class TestReponseServeur {
 		//Document doc = otx.fileToDoc("data/reponseServeur.xml");
 		//xto.updateFromXml(doc, null);//listObj); //??
 		//System.out.println(otx.getOidFromXML(doc));
-		ObjectToXML.updateObjectFromElement(doc, p1);
+		Element e= (Element) doc.getElementsByTagName("fields").item(0); 
+		p1.updateFromXML(e);
+		//ObjectToXML.updateObjectFromElement(doc, p1);
 		
 		System.out.println(p1.toString());
 		

@@ -1,10 +1,16 @@
 package objets;
 
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import javassist.ClassPool;
+import javassist.CtField;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
@@ -22,7 +28,7 @@ public class Point implements XMLRMISerializable, Stringable {
 	protected double b;
 
 	@XMLRMIField(serializationName = "mark", serializationType = "string")
-	protected char marque='m';
+	protected String marque="m";
 
 	private String oid = "testC";
 	
@@ -36,7 +42,7 @@ public class Point implements XMLRMISerializable, Stringable {
 
 	@Override
 	public String toString(){
-		return "x = "+this.a+ " y =  " + this.b;
+		return "x = "+this.a+ " y =  " + this.b+" mark = "+this.marque;
 	}
 
 	public String getOid(){
@@ -54,7 +60,7 @@ public class Point implements XMLRMISerializable, Stringable {
 		Client.repertoire.put(this.oid, this);
 		
 		String interString = inter.getName();
-		String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \"marque \"+this.mark;}";
+		String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque \"+this.mark;}";
 		ArrayList<String> aString= new ArrayList<String>();
 		aString.add(tostring);
 		return ObjectToXML.appelClientToDocument(this.getOid(),this, aString,doc);
@@ -63,9 +69,80 @@ public class Point implements XMLRMISerializable, Stringable {
 	}
 
 	@Override
+	//TODO faire appel a une methode static pour plus de proprete
 	public void updateFromXML(Element theXML) {
-		//on recoit un element du xml (a priori a partir de la balise "value")
-		// TODO creer une methode updateFromElement(Element theXML,Object this) dans ObjectToXML
+		NodeList fields = theXML.getChildNodes();
+		
+		int nbField = fields.getLength();
+		String name=""; // Contiendra la valeur de name pour chaque field traité
+
+		//recupere la liste des attributs annotés
+		// et les stocke dans fieldAnnote
+		for(int j =0; j<this.getClass().getDeclaredFields().length;j++){
+
+			Field fieldObj = this.getClass().getDeclaredFields()[j];
+
+			fieldObj.setAccessible(true);
+
+			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
+			for(Annotation annotation : annotations){
+
+				if(annotation instanceof XMLRMIField){
+					//on regarde parmi toutes les balise field, laquelle correspond a l'annotation de ce field
+					//des qu'on l'a trouve on update le fiedl associe a cette annotation
+					XMLRMIField myAnnotation = (XMLRMIField) annotation;
+					for(int i=0;i<nbField;i++){ // attention pour chaque element de field, il faut le caster en Element
+						name=fields.item(i).getAttributes().item(0).getTextContent();
+
+						if(name.equals(myAnnotation.serializationName())){ // si l'annotation correspond a la bonne balise <field> du XML
+							//alors il faut update le champ correspond a l'annotation en l'occurence fieldObj
+							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
+							if(type.equals("double")){
+								double value=Double.parseDouble(fields.item(i).getFirstChild().getFirstChild().getTextContent());
+								try {
+									fieldObj.setDouble(this, value);
+								} catch (IllegalArgumentException e) {
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									e.printStackTrace();
+								}
+							}else if(type.equals("int")){
+								int value=Integer.parseInt(fields.item(i).getFirstChild().getFirstChild().getTextContent());
+								try {
+									fieldObj.setInt(this, value);
+								} catch (IllegalArgumentException e) {
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									e.printStackTrace();
+								}
+							}else if(type.equals("string")){
+								String value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
+								value="\""+value+"\"";
+								try {
+									fieldObj.set(this, value);
+								} catch (IllegalArgumentException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IllegalAccessException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								//IDEE Invokation du set correspondant au champs
+								// passer avec des annnotation?
+								
+
+							}
+							System.out.println("type : "+type);
+							//Object value = fields.item(i).getFirstChild().getFirstChild().getTextContent();
+						}
+					}
+
+
+				}
+			}
+			fieldObj.setAccessible(false);
+		}
+
 		
 	}
 
