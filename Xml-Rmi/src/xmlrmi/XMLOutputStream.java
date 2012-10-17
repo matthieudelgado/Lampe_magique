@@ -5,6 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+/**
+ * 
+ * @author matthieudelgado
+ * @author marcgregoire
+ * Cette classe est une surcouche de ByteArrayOutputStream.
+ * Elle permet d'ecrire un document xm sur un outputstream.
+ */
 public class XMLOutputStream extends  ByteArrayOutputStream {
 
 	private DataOutputStream outchannel;

@@ -4,7 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
+/**
+ * 
+ * @author matthieudelgado
+ * @author marcgregoire
+ * Cette classe est une surcouche de ByteArrayInputStream.
+ * Elle permet de lire un document xm sur un inputstream.
+ *
+ */
 public class XMLInputStream extends ByteArrayInputStream {
 
 	 private DataInputStream inchannel;

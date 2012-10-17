@@ -1,34 +1,26 @@
 package server;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
 import objets.Stringable;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import tools.ObjectToXML;
 import tools.TestEcritureXML;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
+
 /**
  * 
  * @author matthieudelgado
