@@ -1,5 +1,11 @@
 package test;
 
+/**
+ * 
+ * @author matthieudelgado
+ * @author marcgregoire
+ * Cette class lance les tests unitaires de l'application
+ */
 public class Test {
 
 	/**

@@ -21,12 +21,17 @@ import org.w3c.dom.Text;
 
 public class XMLToObject {
 
-	private Document doc;
 
-	public XMLToObject() {
-		this.doc=null;
-	}
-
+	/**
+	 * TODO a redefinir en static
+	 * TODO a renomer
+	 * @param doc
+	 * @return
+	 * @throws CannotCompileException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws NotFoundException
+	 */
 	public Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException, NotFoundException{
 
 		// on recupere le contenu de la balise method
@@ -154,7 +159,7 @@ public class XMLToObject {
 			clazz.addField(f, value.toString());
 		} else if(n.getNodeName().equalsIgnoreCase("string")){
 			CtField f = new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
-			clazz.addField(f, "\""+value.toString()+"jj\"");
+			clazz.addField(f, "\""+value.toString()+"\"");
 		} else {
 			System.out.println("type non traité dans addCtFieldToCtClass");
 		}
