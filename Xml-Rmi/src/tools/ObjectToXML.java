@@ -152,7 +152,7 @@ public class ObjectToXML {
 		return doc;
 	}
 
-	
+
 	/**
 	 * A pour charge la partie des parametres non Object de l'appel client
 	 * @param p
@@ -219,6 +219,7 @@ public class ObjectToXML {
 	 * @param methode_serveur
 	 * @param methodes
 	 * @return
+	 * TODO rename cette methode passe un objet en xml
 	 */
 	public static Element appelClientToDocument(String oid,Object obj,ArrayList<String> methodes,Document doc){
 
@@ -300,7 +301,7 @@ public class ObjectToXML {
 		ObjectToXML.docToFile(ObjectToXML.fileToDoc(fichierACopier), destination);
 	}
 
-	
+
 	/**
 	 * Permet de creer un document
 	 * @return Document
@@ -517,7 +518,7 @@ public class ObjectToXML {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Cree un Document representant un appel client a partir d'un nom de methode et d'une liste\n
 	 * d'arguments
@@ -546,6 +547,81 @@ public class ObjectToXML {
 			trouve=false;
 		}
 		return doc;
+	}
+
+	public static Element objectWithoutAnnotationsToElement(String oid,
+			Object obj, ArrayList<String> methodes, Document doc) {
+
+		Element value = doc.createElement("value");
+		//faire un switch sur le type de obj
+		if( ! (obj instanceof Object)){
+			System.err.println("objectWthoutAnnoatationToElement : pas un objet");
+			return value;
+		} else {
+
+
+
+			Element object = doc.createElement("object");
+			object.setAttribute("oid", oid);
+			value.appendChild(object);
+
+			// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)
+
+			Element fields =  doc.createElement("fields");
+			object.appendChild(fields);
+
+
+			for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
+
+				Field fieldObj = obj.getClass().getDeclaredFields()[j];
+
+				fieldObj.setAccessible(true);
+
+
+				// Balise Field
+				Element field = doc.createElement("field");
+				field.setAttribute("name", fieldObj.getName());
+
+				fields.appendChild(field);
+
+				Element valueField = doc.createElement("value");
+				field.appendChild(valueField);
+
+				//TODO faire un switch sur le type
+				Element type = doc.createElement(fieldObj.getType().getSimpleName().toLowerCase());
+				//type.setTextContent("Valeur a entrer");
+				try {
+					type.setTextContent(fieldObj.get(obj).toString());
+				} catch (DOMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				valueField.appendChild(type);
+
+
+
+				fieldObj.setAccessible(false);
+			}
+
+			Element methods = doc.createElement("methods");
+			object.appendChild(methods);
+
+
+			for(int i = 0;i<methodes.size();i++){
+				Element method = doc.createElement("method");
+				method.setAttribute("language", "Java");
+				method.setTextContent(methodes.get(i));
+				methods.appendChild(method);
+			}
+
+			return value;
+		}
 	}
 
 }

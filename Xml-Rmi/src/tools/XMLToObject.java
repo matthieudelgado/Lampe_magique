@@ -154,7 +154,7 @@ public class XMLToObject {
 			clazz.addField(f, value.toString());
 		} else if(n.getNodeName().equalsIgnoreCase("string")){
 			CtField f = new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
-			clazz.addField(f, "\""+value.toString()+"\"");
+			clazz.addField(f, "\""+value.toString()+"jj\"");
 		} else {
 			System.out.println("type non traité dans addCtFieldToCtClass");
 		}

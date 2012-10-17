@@ -1,6 +1,5 @@
 package client;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,9 +15,7 @@ import objets.Point;
 import objets.XMLRMISerializable;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.Element;
 
 import tools.ObjectToXML;
 import tools.TestEcritureXML;
@@ -31,7 +28,7 @@ import xmlrmi.XMLOutputStream;
  * @author matthieudelgado
  */
 public class Client {
-	
+
 	public static HashMap<String,XMLRMISerializable> repertoire = new HashMap<String,XMLRMISerializable>();
 
 	public static void main(String[] args) {
@@ -40,21 +37,22 @@ public class Client {
 			//socket = new Socket("localhost", 5555);
 
 			// Matthieu
-//			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-//			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-//			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
+			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
+			//			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
 			//Fin Matthieu
-			
+
 			/* Marc */
 			//Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/appelClient.xml")); 
-			
+
 			Point p = new Point(1.0,2.0);
-			
+			System.err.println("p avant : "+p.toString());
+
 			ArrayList<Object> params = new ArrayList<Object>();
 			params.add(p);
 			Document doc = ObjectToXML.createAppelClient("display", params);
 			//Fin Marc
-			
+
 			socket = new Socket("localhost", 5555);
 			XMLOutputStream out = new XMLOutputStream(socket.getOutputStream());
 			StreamResult sr = new StreamResult(out);
@@ -66,9 +64,13 @@ public class Client {
 
 			XMLInputStream in = new XMLInputStream(socket.getInputStream());
 			in.recive();
+
+			Document doc2 = docBuilder.parse(in);
+			TestEcritureXML.afficherDocument(doc2);
+			Element e = (Element) doc2.getElementsByTagName("fields").item(0);
+			p.updateFromXML(e);
 			
-			//doc = docBuilder.parse(in);
-			
+			System.err.println("p update : "+p.toString());
 			/*NodeList nl = doc.getElementsByTagName("object"), nl2, nl3;
 			Node n, n2, n3, n4;
 			String newOid;
