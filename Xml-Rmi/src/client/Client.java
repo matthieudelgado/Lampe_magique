@@ -26,6 +26,8 @@ import xmlrmi.XMLOutputStream;
  * 
  * @author marcgregoire
  * @author matthieudelgado
+ * Cette methode contruit puis envoi une requete au serveur attend la reponse et enfin traite la 
+ * reponse en modifiant l'etat des objets qu'il a envoyé.
  */
 public class Client {
 
@@ -34,83 +36,42 @@ public class Client {
 	public static void main(String[] args) {
 		Socket socket = null;
 		try {
-			//socket = new Socket("localhost", 5555);
-
-			// Matthieu
-			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
-			//			Document doc = TestEcritureXML.lireDocument(docBuilder, "data/testC.xml");
-			//Fin Matthieu
-
-			/* Marc */
-			//Document doc  =ObjectToXML.stringToDoc(ObjectToXML.fileToString("data/appelClient.xml")); 
-
-			Point p = new Point(1.0,2.0);
-			System.err.println("p avant : "+p.toString());
-
+			//Creation de la liste des parametres de la methode
 			ArrayList<Object> params = new ArrayList<Object>();
+			Point p = new Point(1.0,2.0);
 			params.add(p);
+			//Creation du document xml a envoyer
 			Document doc = ObjectToXML.createAppelClient("display", params);
-			//Fin Marc
 
+			//envoi du xml
 			socket = new Socket("localhost", 5555);
 			XMLOutputStream out = new XMLOutputStream(socket.getOutputStream());
 			StreamResult sr = new StreamResult(out);
 			DOMSource ds = new DOMSource(doc);
 			Transformer tf = TransformerFactory.newInstance().newTransformer();
 			tf.transform(ds, sr);
-
 			out.send();
 
+			//reception de la reponse du serveur
 			XMLInputStream in = new XMLInputStream(socket.getInputStream());
 			in.recive();
-
+			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc2 = docBuilder.parse(in);
+			//On affiche le document
 			TestEcritureXML.afficherDocument(doc2);
+			
+			//TODO recherche des objets d'apres leur oid dans le repertoire
+			//Mise a jour des objets envoyes par le serveur
 			Element e = (Element) doc2.getElementsByTagName("fields").item(0);
 			p.updateFromXML(e);
 			
 			System.err.println("p update : "+p.toString());
-			/*NodeList nl = doc.getElementsByTagName("object"), nl2, nl3;
-			Node n, n2, n3, n4;
-			String newOid;
-			NamedNodeMap nnm, nnm2;
-			XMLRMISerializable objet;
-			for(int i = 0; i< nl.getLength(); i++){
-				n = nl.item(i);
-				nnm = n.getAttributes();
-				n2 = nnm.getNamedItem("oid");
-				newOid = n2.getNodeValue();
-				System.out.println(newOid);
-				objet = Client.repertoire.get("newOid");
-				System.out.println(objet == null);
-				nl2 = n.getChildNodes();
-				for(int j = 0; j< nl2.getLength(); j++){
-					n3 = nl2.item(j);
-					if(n3.getNodeName().equals("fields")){
-						nl3 = n3.getChildNodes();
-						for(int k = 0; k< nl3.getLength(); k++){
-							n4 = nl3.item(k);
-							//ici on a le field
-							//il faut trouver son nom
-							//le retrouver dans objet
-							//le modifier
-						}
-					} 
-				}
 
-			}*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}/* finally {
-			try {
-				socket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}*/
-
+		}
 	}
 
 }

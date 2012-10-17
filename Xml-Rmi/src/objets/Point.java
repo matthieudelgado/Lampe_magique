@@ -19,6 +19,7 @@ import client.Client;
  * 
  * @author marcgregoire
  * @author matthieudelgado
+ * Cette classe decrit un point 2D, elle implement Stringable et XMLSerialisable
  */
 public class Point implements XMLRMISerializable, Stringable {
 
