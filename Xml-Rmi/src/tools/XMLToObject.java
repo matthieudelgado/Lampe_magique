@@ -64,6 +64,13 @@ public class XMLToObject {
 		return p1;
 	}
 
+	/**
+	 * 
+	 * @param node
+	 * @param parameterType
+	 * @return
+	 * @throws Exception
+	 */
 	public static Object createObjectFromNode(Node node, Class<?> parameterType) throws Exception{
 		System.err.println(node.getNodeName());
 		if(!node.getParentNode().getNodeName().equalsIgnoreCase("value")) 
@@ -147,6 +154,15 @@ public class XMLToObject {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @param n
+	 * @param name
+	 * @param clazz
+	 * @param value
+	 * @throws CannotCompileException
+	 * @throws NotFoundException
+	 */
 	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException {
 		if(n.getNodeName().equalsIgnoreCase("int")){
 			CtField f = new CtField(CtClass.intType,name,clazz);

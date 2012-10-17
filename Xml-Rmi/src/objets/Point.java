@@ -58,7 +58,7 @@ public class Point implements XMLRMISerializable, Stringable {
 	// recuperer de l'interface la classe pour avoir les m�thode a passer dans l'XML
 	@Override
 	public Element toXML(Class<?> inter,Document doc) {
-		//initOid();
+		initOid();
 		Client.repertoire.put(this.oid, this);
 		
 		String interString = inter.getName();
@@ -80,7 +80,7 @@ public class Point implements XMLRMISerializable, Stringable {
 	public void initOid() {
 		if(this.oid == "") return;
 		synchronized(compteur){
-			this.oid =""+this.getClass().getName()+"_"+compteur;
+			this.oid =""+this.getClass().getSimpleName()+"_"+compteur;
 			compteur++;
 		}
 	}
