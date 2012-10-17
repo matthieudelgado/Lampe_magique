@@ -61,10 +61,17 @@ public class Client {
 			//On affiche le document
 			TestEcritureXML.afficherDocument(doc2);
 			
-			//TODO recherche des objets d'apres leur oid dans le repertoire
-			//Mise a jour des objets envoyes par le serveur
-			Element e = (Element) doc2.getElementsByTagName("fields").item(0);
-			p.updateFromXML(e);
+			
+			//****Mise a jour des objets envoyes par le serveur*****
+			
+			//recupere tout les oid
+			ArrayList<String> listeOID=ObjectToXML.getOidFromXML(doc2);
+			//pour chaque oid, je recupere l'objet correpondant et j'update ses fields
+			for(int i =0;i<listeOID.size();i++){
+				XMLRMISerializable o = Client.repertoire.get(listeOID.get(i));
+				Element e = ObjectToXML.getFieldsByOID(doc2, listeOID.get(i));
+				o.updateFromXML(e);
+			}
 			
 			System.err.println("p update : "+p.toString());
 

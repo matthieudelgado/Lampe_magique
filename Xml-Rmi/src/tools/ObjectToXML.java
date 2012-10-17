@@ -223,14 +223,12 @@ public class ObjectToXML {
 	 */
 	public static Element appelClientToDocument(String oid,Object obj,ArrayList<String> methodes,Document doc){
 
-
 		Element value = doc.createElement("value");
 
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
 		value.appendChild(object);
 
-		// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)
 
 		Element fields =  doc.createElement("fields");
 		object.appendChild(fields);
@@ -318,8 +316,6 @@ public class ObjectToXML {
 		Document doc = docB.newDocument();
 		return doc;
 	}
-
-
 
 	/**
 	 * Crée un fichier "nomDeFichier" à partir de l'objet Document
@@ -436,12 +432,31 @@ public class ObjectToXML {
 		return p1;
 	}
 
-	public static String getOidFromXML(Document doc){
-		String oid="";
-		oid = doc.getElementsByTagName("object").item(0).getAttributes().item(0).getTextContent();
-		return oid;
+	/**
+	 * Recupere tout les oid de la reponse et les met dans une ArrayList<String>
+	 * @param doc
+	 * @return La liste des oid
+	 */
+	public static ArrayList<String> getOidFromXML(Document doc){
+		ArrayList<String> loid= new ArrayList<String>();
+		NodeList lobj = doc.getElementsByTagName("object");
+		for(int i=0;i<lobj.getLength();i++){
+			loid.add(lobj.item(i).getAttributes().item(0).getTextContent());
+		}
+		return loid;
 	}
 
+	
+	public static Element getFieldsByOID(Document doc, String oid){
+		Element e =null;
+		NodeList lobj = doc.getElementsByTagName("object");
+		for(int i=0;i<lobj.getLength();i++){
+			if(lobj.item(i).getAttributes().item(0).getTextContent().equals(oid)){
+				e = (Element) lobj.item(i).getFirstChild();
+			}
+		}
+		return e;
+	}
 
 
 
