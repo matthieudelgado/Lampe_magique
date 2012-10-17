@@ -29,7 +29,13 @@ import tools.TestEcritureXML;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
-
+/**
+ * 
+ * @author matthieudelgado
+ * @author marcgregoire
+ *
+ * Cette classe est le thread qui traite les connections au serveur.
+ */
 public class ThreadServer extends Thread implements IServer{
 	private Socket socket;
 	private XMLOutputStream out;
