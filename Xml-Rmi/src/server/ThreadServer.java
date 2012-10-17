@@ -73,12 +73,12 @@ public class ThreadServer extends Thread implements IServer{
 	
 	/**
 	 * Methode de traitement de le requete du client 
-	 * @param doc
+	 * @param doc le document xml envoyé par le client
 	 * @throws Exception
 	 */
 	private void doTreatement(Document doc) throws Exception {
 		TestEcritureXML.afficherDocument(doc);
-		//on commence par verifier l'integrite du doc par rapport a la grammaire
+		//TODO on commence par verifier l'integrite du doc par rapport a la grammaire
 
 		//on recherche la m√©thode appel√©e
 		String methodeName = getMethodName(doc);
@@ -104,11 +104,24 @@ public class ThreadServer extends Thread implements IServer{
 		sendResult(ret, args);
 
 	}
+	
+	/**
+	 * Cette methode permet d'obtenir le nom de la methode du serveur appelee par le client
+	 * @param doc le document xml envoyé par le client
+	 * @return le nom de la methode
+	 */
 	private String getMethodName(Document doc){
 		Node n = doc.getElementsByTagName("methodeName").item(0).getFirstChild();
 		System.out.println("nom de methode "+n.getTextContent());
 		return n.getTextContent();
 	}
+	
+	/**
+	 * Cette methode permet d'obtenir la liste des Node du document xml envoyé
+	 * par le client, qui contient les parametres de la methode appelee
+	 * @param doc le document xml envoyé par le client
+	 * @return la liste des Node correspondant aux parametre de la methode
+	 */
 	private ArrayList<Node> getParameters(Document doc){
 		ArrayList<Node> paramList = new ArrayList<Node>();
 		NodeList params = doc.getElementsByTagName("value"), childs;
@@ -127,6 +140,18 @@ public class ThreadServer extends Thread implements IServer{
 		}
 		return paramList;
 	}
+	
+	/**
+	 * Cette methode recherche la methode appelee dans l'interface du serveur.
+	 * Pour cela elle se sert du nom de la methode ainsi que de ces parametres.
+	 * De plus, la methode reconstruit les objets parametre d'apres la liste de Node paramList, 
+	 * et les ajoute à la liste args.
+	 * @param methodeName le nom de la methode appelee
+	 * @param args la liste des arguments 
+	 * @param paramList la liste des noeuds correspondants aux parametres dans le xml du client
+	 * @return la methode appelee si elle existe, null sinon
+	 * @throws Exception
+	 */
 	private Method findCalledMethodInServerInterface(String methodeName, ArrayList<Object> args, ArrayList<Node> paramList) throws Exception{
 		Class<IServer> itf = IServer.class;
 		Method[] methods = itf.getDeclaredMethods();
@@ -175,7 +200,12 @@ public class ThreadServer extends Thread implements IServer{
 	}
 
 
-
+	/**
+	 * Cette methode envoi la reponse du serveur au client.
+	 * @param ret la valeur de retour de la methode
+	 * @param args les arguments de la methode dans leur nouvel etat
+	 * @throws Exception
+	 */
 	private void sendResult(Object ret, ArrayList<Object> args) throws Exception {
 		DocumentBuilder docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document reponse = docB.newDocument();
@@ -211,19 +241,16 @@ public class ThreadServer extends Thread implements IServer{
 		out.send();		
 	}
 
-	private Object addInterface(Object o, Class<?> class1) throws Exception {
-		CtClass clazz = ClassPool.getDefault().get(o.getClass().getName());
-		clazz.defrost();
-		clazz.addInterface(ClassPool.getDefault().get(class1.getName()));
-		Object ret = clazz.toClass().newInstance();
-		for(Field f : ret.getClass().getDeclaredFields()){
-			ret.getClass().getField(f.getName()).set(ret, o.getClass().getField(f.getName()).get(o));
-		}
-		return ret;
-	}
 
-	private boolean implement(Object o, Class<?> class1) {
-		Method[] methods = class1.getDeclaredMethods();
+	/**
+	 * Cette methode verifie que l'objet o implement chaque methode 
+	 * de la classe itf. 
+	 * @param o l'objet a tester
+	 * @param itf l'interface
+	 * @return true si l'objet implement la methode, false sinon
+	 */
+	private boolean implement(Object o, Class<?> itf) {
+		Method[] methods = itf.getDeclaredMethods();
 		for(Method m : methods){
 			try {
 				if( o.getClass().getMethod(m.getName(), m.getParameterTypes()) == null){
@@ -242,5 +269,4 @@ public class ThreadServer extends Thread implements IServer{
 		System.out.println("Un point 2D : " + s.toString()) ;
 	}
 
-	// Construction de l'objet depuis un XML
 }
