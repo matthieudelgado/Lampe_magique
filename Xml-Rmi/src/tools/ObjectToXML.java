@@ -446,7 +446,7 @@ public class ObjectToXML {
 		return loid;
 	}
 
-	
+
 	public static Element getFieldsByOID(Document doc, String oid){
 		Element e =null;
 		NodeList lobj = doc.getElementsByTagName("object");
@@ -540,6 +540,7 @@ public class ObjectToXML {
 	 * @param methode
 	 * @param params
 	 * @return Document
+	 * TODO update do + mettre une liste d'interface ou alors aller chercher directement le type des args de la methode appelée 
 	 */
 	public static Document createAppelClient(Class<?> inter,String methode,ArrayList<Object> params){
 		Document doc = ObjectToXML.appelClient(methode);
@@ -566,10 +567,33 @@ public class ObjectToXML {
 
 	public static Element objectWithoutAnnotationsToElement(String oid,
 			Object obj, ArrayList<String> methodes, Document doc) {
-
+		System.err.println("objectWithoutAnnotationToElem : oid = "+oid);
 		Element value = doc.createElement("value");
 		//faire un switch sur le type de obj
-		if( ! (obj instanceof Object)){
+		if( obj == null){
+			value.setTextContent("void");
+			return value;
+		} else if(obj instanceof Integer){
+			Element val =  doc.createElement("int");
+			value.appendChild(val);
+			val.setTextContent(obj.toString());
+			return value;
+		} else if(obj instanceof Double){
+			Element val =  doc.createElement("double");
+			value.appendChild(val);
+			val.setTextContent(obj.toString());
+			return value;
+		} else if(obj instanceof Boolean){
+			Element val =  doc.createElement("bool");
+			value.appendChild(val);
+			val.setTextContent(obj.toString());
+			return value;
+		}  else if(obj instanceof String){
+			Element val =  doc.createElement("string");
+			value.appendChild(val);
+			val.setTextContent(obj.toString());
+			return value;
+		} else if( ! (obj instanceof Object)){//TODO gerer les autres types
 			System.err.println("objectWthoutAnnoatationToElement : pas un objet");
 			return value;
 		} else {
@@ -602,6 +626,7 @@ public class ObjectToXML {
 				Element valueField = doc.createElement("value");
 				field.appendChild(valueField);
 
+				System.out.println("test : " +fieldObj.getType().getSimpleName().toLowerCase());
 				//TODO faire un switch sur le type
 				Element type = doc.createElement(fieldObj.getType().getSimpleName().toLowerCase());
 				//type.setTextContent("Valeur a entrer");

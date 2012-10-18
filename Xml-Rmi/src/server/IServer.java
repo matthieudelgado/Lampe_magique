@@ -14,4 +14,7 @@ public interface IServer {
 	public void display(Stringable s);
 	
 	public void movex(Movable m,double dx);
+	
+	public int increment(int x);
+	public double increment(double d);
 }

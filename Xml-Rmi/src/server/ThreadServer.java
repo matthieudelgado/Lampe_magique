@@ -52,12 +52,11 @@ public class ThreadServer extends Thread implements IServer{
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc = null;
 
-			while(true) 
-			{
-				in.recive();
-				doc = docBuilder.parse(in);
-				doTreatement(doc);
-			}
+
+			in.recive();
+			doc = docBuilder.parse(in);
+			doTreatement(doc);
+
 		}
 		catch (Exception e){ e.printStackTrace();}
 		finally 
@@ -70,7 +69,7 @@ public class ThreadServer extends Thread implements IServer{
 			catch (IOException e){ }
 		}
 	}
-	
+
 	/**
 	 * Methode de traitement de le requete du client 
 	 * @param doc le document xml envoyé par le client
@@ -92,22 +91,22 @@ public class ThreadServer extends Thread implements IServer{
 		//que les parametre de paramList correspondent
 		ArrayList<Object> args = new ArrayList<Object>();
 		Method calledMethod = findCalledMethodInServerInterface(methodeName, args, paramList);
-		
+
 		Object ret;
 		if(calledMethod == null){//si on a pas trouvé la methode, message d'erreur
 			ret = "methode introuvable";
 			System.out.println("methode introuvable"); //TODO  il arrive pas a trouver la methode !!!!!
 		} else {//sinon on l'applique
-			
+
 			ret = calledMethod.invoke(this, args.toArray());
 			System.out.println("Methode invoke : "+ret.toString());
 		}
-		
+
 		//on envoi le resultat au client
 		sendResult(ret, args);
 
 	}
-	
+
 	/**
 	 * Cette methode permet d'obtenir le nom de la methode du serveur appelee par le client
 	 * @param doc le document xml envoyé par le client
@@ -118,7 +117,7 @@ public class ThreadServer extends Thread implements IServer{
 		System.out.println("nom de methode "+n.getTextContent());
 		return n.getTextContent();
 	}
-	
+
 	/**
 	 * Cette methode permet d'obtenir la liste des Node du document xml envoyé
 	 * par le client, qui contient les parametres de la methode appelee
@@ -143,7 +142,7 @@ public class ThreadServer extends Thread implements IServer{
 		}
 		return paramList;
 	}
-	
+
 	/**
 	 * Cette methode recherche la methode appelee dans l'interface du serveur.
 	 * Pour cela elle se sert du nom de la methode ainsi que de ces parametres.
@@ -183,6 +182,21 @@ public class ThreadServer extends Thread implements IServer{
 						trouve = false; 
 						break;
 					}
+				} else if(parameterTypes[i].equals(int.class) &&
+						(o instanceof Integer)){ 
+					args.add(o);
+					trouve = true;
+
+				} else if(parameterTypes[i].equals(double.class)&&
+						(o instanceof Double)){ 
+					args.add(o);
+					trouve = true;
+
+				} else if(parameterTypes[i].equals(boolean.class)&&
+						(o instanceof Boolean)){ 
+					args.add(o);
+					trouve = true;
+
 				} else if( ! parameterTypes[i].isInstance(o) ){ // du coup il passe ici car ce n'est pas une interface.. c'est un double
 					System.out.println("Erreur sur le param numero "+i); // il passe ici ...
 					trouve = false;
@@ -196,7 +210,6 @@ public class ThreadServer extends Thread implements IServer{
 				args.clear();
 				continue;
 			} else{
-				System.err.println("bla");
 				calledMethod = m;
 				break;
 			}
@@ -226,10 +239,12 @@ public class ThreadServer extends Thread implements IServer{
 		paramS.appendChild(retParam);
 
 		Element retValue = reponse.createElement("value");
+
+
+		//retValue.setTextContent("void");//TODO faire un filtre pour choiri la bonne valeur
+
+		retValue = ObjectToXML.objectWithoutAnnotationsToElement(ret.getClass().getSimpleName(), ret, new ArrayList<String>(), reponse);
 		retParam.appendChild(retValue);
-
-		retValue.setTextContent("void");//faire un filtre pour choiri la bonne valeur
-
 		for(Object o : args){
 			retParam = reponse.createElement("param");
 			paramS.appendChild(retParam);
@@ -278,6 +293,16 @@ public class ThreadServer extends Thread implements IServer{
 	@Override
 	public void movex(Movable m,double dx) {
 		m.move(dx);
+	}
+
+	@Override
+	public int increment(int x) {
+		return x+1;
+	}
+
+	@Override
+	public double increment(double d) {
+		return d + 1.0;
 	}
 
 }
