@@ -84,7 +84,7 @@ public class ThreadServer extends Thread implements IServer{
 		String methodeName = getMethodName(doc);
 
 		//on recupère les parametres de la methode dans le xml
-		ArrayList<Node> paramList = getParameters(doc);
+		ArrayList<Node> paramList = getParameters(doc); 
 
 		//Dans paramList ici on a les parametre de la methode display
 
@@ -155,6 +155,7 @@ public class ThreadServer extends Thread implements IServer{
 	 * @return la methode appelee si elle existe, null sinon
 	 * @throws Exception
 	 */
+	// ERREUR ICI !!!
 	private Method findCalledMethodInServerInterface(String methodeName, ArrayList<Object> args, ArrayList<Node> paramList) throws Exception{
 		Class<IServer> itf = IServer.class;
 		Method[] methods = itf.getDeclaredMethods();
@@ -168,21 +169,22 @@ public class ThreadServer extends Thread implements IServer{
 			parameterTypes = m.getParameterTypes();
 			//on compare le type des parametres avec le xml
 			for(int i = 0 ; i < parameterTypes.length; i++){
-				System.err.println(parameterTypes[i].getSimpleName());
+				System.err.println("Type des param :"+parameterTypes[i].getSimpleName());
 				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
-			//	System.err.println("affichage de o : "+o);
+				System.err.println("affichage de l'interface de o : "+o.getClass().getInterfaces()[0]);
 				//si le parametre attendu est une interface, il faut tester
 				//que l'objet implemente les methode de l'interface
-				if(parameterTypes[i].isInterface()){
+				if(parameterTypes[i].isInterface() ){ // ajouter : || parameterTypes[i].isPrimitive() pour les cas primitif?
 					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
 						//o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
 						args.add(o);
 						trouve = true;
 					} else {
-						trouve = false;
+						trouve = false; 
 						break;
 					}
-				} else if( ! parameterTypes[i].isInstance(o) ){
+				} else if( ! parameterTypes[i].isInstance(o) ){ // du coup il passe ici car ce n'est pas une interface.. c'est un double
+					System.out.println("Erreur sur le param numero "+i); // il passe ici ...
 					trouve = false;
 					break;
 				} else {
@@ -190,6 +192,7 @@ public class ThreadServer extends Thread implements IServer{
 				}
 			}
 			if(trouve == false){
+				System.out.println("Probleme ?"); // du coup pb car trouve = false
 				args.clear();
 				continue;
 			} else{
