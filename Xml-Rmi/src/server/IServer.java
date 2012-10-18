@@ -1,5 +1,6 @@
 package server;
 
+import objets.Movable;
 import objets.Stringable;
 /**
  * 
@@ -11,4 +12,6 @@ import objets.Stringable;
  */
 public interface IServer {
 	public void display(Stringable s);
+	
+	public void movex(Movable m,double dx);
 }

@@ -541,7 +541,7 @@ public class ObjectToXML {
 	 * @param params
 	 * @return Document
 	 */
-	public static Document createAppelClient(String methode,ArrayList<Object> params){
+	public static Document createAppelClient(Class<?> inter,String methode,ArrayList<Object> params){
 		Document doc = ObjectToXML.appelClient(methode);
 		boolean trouve = false;
 		for(int i=0;i<params.size();i++){  // verifier si le param implement l'interface XMLRMISerializable, dans ce cas c'est un type object
@@ -549,7 +549,7 @@ public class ObjectToXML {
 				if(params.get(i).getClass().getInterfaces()[j].equals(XMLRMISerializable.class)){ // ici c'est le cas de notre point
 					Element paramObject = doc.createElement("param");
 					Point p = new Point(1,2);
-					Element obje=p.toXML(Stringable.class,doc);
+					Element obje=p.toXML(inter,doc);
 					paramObject.appendChild(obje);
 					ObjectToXML.mergeDocs(doc, paramObject);
 					trouve=true;

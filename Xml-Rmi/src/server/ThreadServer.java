@@ -10,6 +10,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import objets.Movable;
 import objets.Stringable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -90,12 +92,15 @@ public class ThreadServer extends Thread implements IServer{
 		//que les parametre de paramList correspondent
 		ArrayList<Object> args = new ArrayList<Object>();
 		Method calledMethod = findCalledMethodInServerInterface(methodeName, args, paramList);
-
+		
 		Object ret;
 		if(calledMethod == null){//si on a pas trouvé la methode, message d'erreur
 			ret = "methode introuvable";
+			System.out.println("methode introuvable"); //TODO  il arrive pas a trouver la methode !!!!!
 		} else {//sinon on l'applique
+			
 			ret = calledMethod.invoke(this, args.toArray());
+			System.out.println("Methode invoke : "+ret.toString());
 		}
 		
 		//on envoi le resultat au client
@@ -165,7 +170,7 @@ public class ThreadServer extends Thread implements IServer{
 			for(int i = 0 ; i < parameterTypes.length; i++){
 				System.err.println(parameterTypes[i].getSimpleName());
 				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
-				System.err.println("affichage de o : "+o);
+			//	System.err.println("affichage de o : "+o);
 				//si le parametre attendu est une interface, il faut tester
 				//que l'objet implemente les methode de l'interface
 				if(parameterTypes[i].isInterface()){
@@ -265,6 +270,11 @@ public class ThreadServer extends Thread implements IServer{
 	@Override
 	public void display(Stringable s) {
 		System.out.println("Un point 2D : " + s.toString()) ;
+	}
+
+	@Override
+	public void movex(Movable m,double dx) {
+		m.move(dx);
 	}
 
 }

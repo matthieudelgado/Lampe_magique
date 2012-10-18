@@ -21,7 +21,7 @@ import client.Client;
  * @author matthieudelgado
  * Cette classe decrit un point 2D, elle implement Stringable et XMLSerialisable
  */
-public class Point implements XMLRMISerializable, Stringable {
+public class Point implements XMLRMISerializable, Stringable, Movable {
 
 	// attention construire une partie de l'XML en local pour les champs dans la metthode de contstruction XML
 
@@ -36,7 +36,7 @@ public class Point implements XMLRMISerializable, Stringable {
 	protected String marque="nom de la marque";
 
 	private String oid = "testC";
-	
+
 
 	private static Integer compteur = 0;
 
@@ -60,11 +60,16 @@ public class Point implements XMLRMISerializable, Stringable {
 	public Element toXML(Class<?> inter,Document doc) {
 		initOid();
 		Client.repertoire.put(this.oid, this);
-		
-		String interString = inter.getName();
-		String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}";
 		ArrayList<String> aString= new ArrayList<String>();
-		aString.add(tostring);
+		String interString = inter.getSimpleName();
+
+		if(interString.equals("Stringable")){
+			String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}";
+			aString.add(tostring);
+		}else{
+			String movex ="public void move(double mx){ this.x=this.x+mx;}";
+			aString.add(movex);
+		}
 		return ObjectToXML.appelClientToDocument(this.getOid(),this, aString,doc);
 	}
 
@@ -85,5 +90,11 @@ public class Point implements XMLRMISerializable, Stringable {
 		}
 	}
 
-	
+	@Override
+	public void move(double mx) {
+		// TODO Auto-generated method stub
+
+	}
+
+
 }

@@ -41,9 +41,9 @@ public class TestDom {
 		ArrayList<Object> params = new ArrayList<Object>();
 		//params.add(d);
 		params.add(p);
-		Document doc = ObjectToXML.createAppelClient(methodeAppelante, params);
+	//	Document doc = ObjectToXML.createAppelClient(methodeAppelante, params);
 		
-		ObjectToXML.afficherDocument(doc);
+		//ObjectToXML.afficherDocument(doc);
 		//ObjectToXML.docToFile(doc, "data/"+p.getOid()+".xml");
 	
 	}

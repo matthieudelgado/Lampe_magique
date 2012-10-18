@@ -11,7 +11,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import objets.Movable;
 import objets.Point;
+import objets.Stringable;
 import objets.XMLRMISerializable;
 
 import org.w3c.dom.Document;
@@ -40,8 +42,11 @@ public class Client {
 			ArrayList<Object> params = new ArrayList<Object>();
 			Point p = new Point(1.0,2.0);
 			params.add(p);
+			double pcinq = 5.0;
+			params.add(pcinq);
 			//Creation du document xml a envoyer
-			Document doc = ObjectToXML.createAppelClient("display", params);
+			Document doc = ObjectToXML.createAppelClient(Movable.class,"movex", params);
+			ObjectToXML.afficherDocument(doc);
 
 			//envoi du xml
 			socket = new Socket("localhost", 5555);
