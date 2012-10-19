@@ -59,7 +59,7 @@ public class Client {
 
 			//reception de la reponse du serveur
 			XMLInputStream in = new XMLInputStream(socket.getInputStream());
-			in.recive();
+			in.receive();
 			DocumentBuilderFactory docBuilderFact = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc2 = docBuilder.parse(in);

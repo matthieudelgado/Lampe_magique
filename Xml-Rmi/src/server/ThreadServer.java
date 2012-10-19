@@ -52,11 +52,9 @@ public class ThreadServer extends Thread implements IServer{
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc = null;
 
-
-			in.recive();
+			in.receive();
 			doc = docBuilder.parse(in);
 			doTreatement(doc);
-
 		}
 		catch (Exception e){ e.printStackTrace();}
 		finally 
@@ -171,6 +169,7 @@ public class ThreadServer extends Thread implements IServer{
 				System.err.println("Type des param :"+parameterTypes[i].getSimpleName());
 				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
 				System.err.println("affichage de l'interface de o : "+o.getClass().getInterfaces()[0]);
+				System.err.println("Type de paramList : "+o.getClass().getSimpleName());
 				//si le parametre attendu est une interface, il faut tester
 				//que l'objet implemente les methode de l'interface
 				if(parameterTypes[i].isInterface() ){ // ajouter : || parameterTypes[i].isPrimitive() pour les cas primitif?
@@ -194,6 +193,15 @@ public class ThreadServer extends Thread implements IServer{
 
 				} else if(parameterTypes[i].equals(boolean.class)&&
 						(o instanceof Boolean)){ 
+					args.add(o);
+					trouve = true;
+
+				} else if(parameterTypes[i].equals(String.class)&&
+						(o instanceof String)){ 
+					args.add(o);
+					trouve = true;
+
+				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){ 
 					args.add(o);
 					trouve = true;
 
@@ -303,6 +311,25 @@ public class ThreadServer extends Thread implements IServer{
 	@Override
 	public double increment(double d) {
 		return d + 1.0;
+	}
+
+	@Override
+	public boolean opposite(boolean b) {
+		return !b;
+	}
+
+	@Override
+	public String concatWorld(String hello) {
+		return hello+"World";
+	}
+
+	@Override
+	public int[] inverse(int[] tab) {
+		int[] t = new int[tab.length];
+		for(int i = 0;i<t.length;i++){
+			t[i] = tab[t.length - 1 - i];
+		}
+		return t;
 	}
 
 }

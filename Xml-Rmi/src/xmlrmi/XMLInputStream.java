@@ -21,7 +21,7 @@ public class XMLInputStream extends ByteArrayInputStream {
 	     this.inchannel = new DataInputStream(inchannel);
 	 }
 
-	 public void recive() throws IOException {
+	 public void receive() throws IOException {
 	     int i = inchannel.readInt(); 
 	     byte[] data = new byte[i];
 	     inchannel.read(data, 0, i); 

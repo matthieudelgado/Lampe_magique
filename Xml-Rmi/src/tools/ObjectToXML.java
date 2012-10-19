@@ -175,6 +175,24 @@ public class ObjectToXML {
 		}else if(type.equals("Double")){
 			ty = doc.createElement("double");
 			ty.setTextContent(p.toString());
+		}else if(type.equals("Boolean")){
+			ty = doc.createElement("boolean");
+			if(p.toString().equals("true"))
+				ty.setTextContent("1");
+			else ty.setTextContent("0");
+		} else if(type.equals("String")){
+			ty = doc.createElement("string");
+			ty.setTextContent(p.toString());
+		} else if(p.getClass().isArray()){
+			Object[] tab = (Object[]) p;
+			ty = doc.createElement("array");
+			for(Object o : tab){
+				Element e = (Element)getNodePrimitif(o, doc).getFirstChild();
+				ty.appendChild(e);
+			}
+		}
+		else {
+			System.err.println("type non pris en charge de getNodePrimitif");
 		}
 
 		value.appendChild(ty);
@@ -584,14 +602,47 @@ public class ObjectToXML {
 			val.setTextContent(obj.toString());
 			return value;
 		} else if(obj instanceof Boolean){
-			Element val =  doc.createElement("bool");
+			Element val =  doc.createElement("boolean");
 			value.appendChild(val);
-			val.setTextContent(obj.toString());
+			if(obj.toString().equals("false")){
+				val.setTextContent("0");
+			} else val.setTextContent("1");
 			return value;
 		}  else if(obj instanceof String){
 			Element val =  doc.createElement("string");
 			value.appendChild(val);
 			val.setTextContent(obj.toString());
+			return value;
+		} else if(obj.getClass().isArray()){
+			Element val =  doc.createElement("array");
+			value.appendChild(val);
+			if(obj.getClass().getComponentType().equals(int.class)){
+				int[] tab = (int[])obj;
+				for(int o : tab){
+					Element e = objectWithoutAnnotationsToElement("int", o, new ArrayList<String>(), doc);
+					val.appendChild(e);
+				}
+				return value;
+			} else if(obj.getClass().getComponentType().equals(double.class)){
+				double[] tab = (double[])obj;
+				for(double o : tab){
+					Element e = objectWithoutAnnotationsToElement("double", o, new ArrayList<String>(), doc);
+					val.appendChild(e);
+				}
+				return value;
+			} else if(obj.getClass().getComponentType().equals(boolean.class)){
+				boolean[] tab = (boolean[])obj;
+				for(Object o : tab){
+					Element e = objectWithoutAnnotationsToElement("boolean", o, new ArrayList<String>(), doc);
+					val.appendChild(e);
+				}
+				return value;
+			} 
+			Object[] tab = (Object[])obj;
+			for(Object o : tab){
+				Element e = objectWithoutAnnotationsToElement(o.getClass().getSimpleName(), o, new ArrayList<String>(), doc);
+				val.appendChild(e);
+			}
 			return value;
 		} else if( ! (obj instanceof Object)){//TODO gerer les autres types
 			System.err.println("objectWthoutAnnoatationToElement : pas un objet");

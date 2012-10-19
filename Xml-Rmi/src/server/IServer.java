@@ -17,4 +17,8 @@ public interface IServer {
 	
 	public int increment(int x);
 	public double increment(double d);
+	public boolean opposite(boolean b);
+	public String concatWorld(String hello);
+	public int[] inverse(int[] tab);
+	
 }

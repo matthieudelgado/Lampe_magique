@@ -1,5 +1,6 @@
 package tools;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -50,7 +51,7 @@ public class XMLToObject {
 		point.addField(f,x);
 		CtField f1  = new CtField(ClassPool.getDefault().get("java.lang.String"),"mark",point);
 		point.addField(f1,a);
-		
+
 		CtField f2  = new CtField(CtClass.doubleType,"y",point);
 		point.addField(f2,y);
 
@@ -59,20 +60,20 @@ public class XMLToObject {
 
 
 		Object p1 =point.toClass().newInstance();
-		
-		
+
+
 		return p1;
 	}
 
 	/**
 	 * 
+	 * @param <T>
 	 * @param node
 	 * @param parameterType
 	 * @return
 	 * @throws Exception
 	 */
-	public static Object createObjectFromNode(Node node, Class<?> parameterType) throws Exception{
-		System.err.println(node.getNodeName());
+	public static <T> Object createObjectFromNode(Node node, Class<?> parameterType) throws Exception{
 		if(!node.getParentNode().getNodeName().equalsIgnoreCase("value")) 
 			throw new Exception("le pere de l'objet n'est pas value"); 
 		if(node.getNodeName().equalsIgnoreCase("int")){
@@ -80,7 +81,8 @@ public class XMLToObject {
 		} else if(node.getNodeName().equalsIgnoreCase("double")){
 			return Double.parseDouble(((Text)node.getFirstChild()).getData());
 		} else if(node.getNodeName().equalsIgnoreCase("boolean")){
-			return Boolean.parseBoolean(((Text)node.getFirstChild()).getData());
+			if(((Text)node.getFirstChild()).getData().equals("0")) return Boolean.FALSE;
+			else return Boolean.TRUE;
 		} else if(node.getNodeName().equalsIgnoreCase("string")){
 			return new String(((Text)node.getFirstChild()).getData());
 		} else if(node.getNodeName().equalsIgnoreCase("dateTime")){
@@ -89,11 +91,24 @@ public class XMLToObject {
 			//TODO a completer
 		} else if(node.getNodeName().equalsIgnoreCase("array")){
 			ArrayList<Object> array = new ArrayList<Object>();
-			NodeList nl = node.getChildNodes();
+			NodeList nl = node.getChildNodes(), nl2 = null;
+			Node firstChild = null;
 			for(int i = 0; i < nl.getLength(); i++){
-				array.add(createObjectFromNode(nl.item(i), parameterType));
+				nl2 = nl.item(i).getChildNodes();
+				for(int j = 0; j < nl2.getLength(); j++){
+					if(nl2.item(j).getNodeType() !=3) {
+						firstChild = nl2.item(j);
+						break;
+					}
+				}
+				if( firstChild == null)continue;
+				array.add(createObjectFromNode(firstChild, parameterType.getComponentType()));
 			}
-			return array;
+			if(array.size() == 0) return array.toArray();
+
+			Class<?> arrayClass = array.get(0).getClass();
+			return toArray(array, arrayClass);
+
 		} else if(node.getNodeName().equalsIgnoreCase("struct")){
 			//TODO a completer
 		} else if(node.getNodeName().equalsIgnoreCase("object")){
@@ -143,8 +158,8 @@ public class XMLToObject {
 				}
 			}
 
-			
-			
+
+
 			//on initialise les champs de l'instance
 			Object o = clazz.toClass().newInstance();
 
@@ -152,6 +167,36 @@ public class XMLToObject {
 		} 
 
 		return null;
+	}
+
+	private static <T> Object toArray(ArrayList<Object> array, Class<?> arrayClass) {
+		if(arrayClass.equals(Integer.class)){
+			int[] tab = new int[array.size()];
+			for(int i = 0; i< array.size();i++){
+				tab[i] = ((Integer)array.get(i)).intValue();
+			}
+			return tab;
+		} else if(arrayClass.equals(Double.class)){
+			double[] tab = new double[array.size()];
+			for(int i = 0; i< array.size();i++){
+				tab[i] = ((Double)array.get(i)).doubleValue();
+			}
+			return tab;
+		} else if (arrayClass.equals(Boolean.class)){
+			boolean[] tab = new boolean[array.size()];
+			for(int i = 0; i< array.size();i++){
+				tab[i] = ((Boolean)array.get(i)).booleanValue();
+			}
+			return tab;
+		}
+		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
+	}
+
+	private static Class<?> getPrimitiveClass(Class<?> c) {
+		if(c.equals(Integer.class)) return int.class;
+		if(c.equals(Double.class)) return double.class;
+		if(c.equals(Boolean.class)) return boolean.class;
+		return c;
 	}
 
 	/**
