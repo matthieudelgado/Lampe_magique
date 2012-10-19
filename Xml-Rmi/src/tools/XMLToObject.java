@@ -189,6 +189,7 @@ public class XMLToObject {
 			}
 			return tab;
 		}
+		System.err.println("name de la class"+arrayClass.getSimpleName());
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
 	}
 

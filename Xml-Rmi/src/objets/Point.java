@@ -61,9 +61,8 @@ public class Point implements XMLRMISerializable,Stringable, Movable {
 		initOid();
 		Client.repertoire.put(this.oid, this);
 		ArrayList<String> aString= new ArrayList<String>();
-		String interString = inter.getSimpleName();
-
-		if(interString.equals("Stringable")){
+		System.err.println("toXML interface : "+inter.getSimpleName());
+		if(inter.equals(Stringable.class)){
 			String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}";
 			aString.add(tostring);
 		}else{

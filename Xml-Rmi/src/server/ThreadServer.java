@@ -332,4 +332,13 @@ public class ThreadServer extends Thread implements IServer{
 		return t;
 	}
 
+	@Override
+	public Stringable[] inverse(Stringable[] tab) {
+		Stringable[] t = new Stringable[tab.length];
+		for(int i = 0;i<t.length;i++){
+			t[i] = tab[t.length - 1 - i];
+		}
+		return t;
+	}
+
 }

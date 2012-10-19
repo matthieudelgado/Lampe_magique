@@ -3,18 +3,20 @@ package tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import objets.Movable;
+import objets.Point;
+import objets.Stringable;
+import objets.XMLRMISerializable;
 
 import org.junit.After;
 import org.junit.Before;
@@ -201,11 +203,10 @@ public class Test{
 	//test avec base64	
 	//test avec array de int
 	@org.junit.Test 
-	public void retArrayPArray(){
+	public void retArrayIntPArrayInt(){
 
 		ArrayList<Object> params = new ArrayList<Object>();
 		Integer[] list = new Integer[2];
-		System.err.println(list.getClass().isArray());
 		list[0] = 1; list[1] = 2;
 		params.add(list);
 		//Creation du document xml a envoyer
@@ -232,6 +233,39 @@ public class Test{
 		}
 	}
 	//test avec array d'objet
+	@org.junit.Test 
+	public void retArrayObjPArrayObj(){
+
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable[] list = new XMLRMISerializable[2];
+		list[0] = new Point(0, 5); list[1] = new Point(5, 0);
+		params.add(list);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(Stringable.class);
+		itfs.add(Stringable.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"inverse", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("array");
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), Stringable[].class);//la valeur de retour
+			Object o1 = XMLToObject.createObjectFromNode(nl.item(1), Stringable[].class);//le parametre
+			assertTrue(((int[])o)[0] == 2);
+			assertTrue(((int[])o)[1] == 1);
+			assertTrue(((int[])o1)[0] == 1);
+			assertTrue(((int[])o1)[1] == 2);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
 	//test avec struct
 	//test avec object avec champs primitifs sans modifier les champs
 	//test avec object avec champs primitifs en modifiant les champs

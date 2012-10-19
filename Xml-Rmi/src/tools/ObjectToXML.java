@@ -157,9 +157,11 @@ public class ObjectToXML {
 	 * A pour charge la partie des parametres non Object de l'appel client
 	 * @param p
 	 * @param doc
+	 * @param num_itf 
+	 * @param inters 
 	 * @return
 	 */
-	public static Element getNodePrimitif(Object p,Document doc){
+	public static Element getNodePrimitif(Object p,Document doc, ArrayList<Class<?>> inters, Integer num_itf){
 
 		Element param = doc.createElement("param");
 
@@ -184,11 +186,21 @@ public class ObjectToXML {
 			ty = doc.createElement("string");
 			ty.setTextContent(p.toString());
 		} else if(p.getClass().isArray()){
-			Object[] tab = (Object[]) p;
-			ty = doc.createElement("array");
-			for(Object o : tab){
-				Element e = (Element)getNodePrimitif(o, doc).getFirstChild();
-				ty.appendChild(e);
+			if(p.getClass().getComponentType().isInterface()){
+				XMLRMISerializable[] tab = (XMLRMISerializable[])p;
+				ty = doc.createElement("array");
+				for(XMLRMISerializable o : tab){
+					Element e = (Element) createElementParamObject(o, inters.get(num_itf), doc).getFirstChild();
+					num_itf++;
+					ty.appendChild(e);
+				}
+			} else {
+				Object[] tab = (Object[]) p;
+				ty = doc.createElement("array");
+				for(Object o : tab){
+					Element e = (Element)getNodePrimitif(o, doc, inters, num_itf).getFirstChild();
+					ty.appendChild(e);
+				}
 			}
 		}
 		else {
@@ -560,27 +572,38 @@ public class ObjectToXML {
 	 * @return Document
 	 * TODO update do + mettre une liste d'interface ou alors aller chercher directement le type des args de la methode appelée 
 	 */
-	public static Document createAppelClient(Class<?> inter,String methode,ArrayList<Object> params){
+	public static Document createAppelClient(ArrayList<Class<?>> inters,String methode,ArrayList<Object> params){
+		Integer num_itf = 0;
 		Document doc = ObjectToXML.appelClient(methode);
 		boolean trouve = false;
 		for(int i=0;i<params.size();i++){  // verifier si le param implement l'interface XMLRMISerializable, dans ce cas c'est un type object
 			for(int j = 0;j<params.get(i).getClass().getInterfaces().length;j++){
 				if(params.get(i).getClass().getInterfaces()[j].equals(XMLRMISerializable.class)){ // ici c'est le cas de notre point
-					Element paramObject = doc.createElement("param");
-					Point p = new Point(1,2);
-					Element obje=p.toXML(inter,doc);
-					paramObject.appendChild(obje);
+					System.err.println("ittf : "+inters.get(num_itf).getSimpleName());
+					Element paramObject = createElementParamObject(params.get(i), inters.get(num_itf), doc);
+					num_itf++;
 					ObjectToXML.mergeDocs(doc, paramObject);
 					trouve=true;
 				}
 			}
 			if(!trouve){
-				Element p2 = ObjectToXML.getNodePrimitif(params.get(i), doc);
+				Element p2 = ObjectToXML.getNodePrimitif(params.get(i), doc, inters, num_itf);
 				ObjectToXML.mergeDocs(doc, p2);
 			}
 			trouve=false;
 		}
 		return doc;
+	}
+
+	private static Element createElementParamObject(Object object,
+			Class<?> itf, Document doc) {
+		Element paramObject = doc.createElement("param");
+		XMLRMISerializable p = (XMLRMISerializable)object;//TODO lol c toujours un point??? jcrois pas non
+		System.out.println("itf = "+itf.getSimpleName());
+		Element obje=p.toXML(itf, doc);
+		
+		paramObject.appendChild(obje);
+		return paramObject;
 	}
 
 	public static Element objectWithoutAnnotationsToElement(String oid,

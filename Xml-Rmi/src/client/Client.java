@@ -44,8 +44,10 @@ public class Client {
 			params.add(p);
 			double pcinq = 5.0;
 			params.add(pcinq);
+			ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+			itfs.add(Movable.class);
 			//Creation du document xml a envoyer
-			Document doc = ObjectToXML.createAppelClient(Movable.class,"movex", params);
+			Document doc = ObjectToXML.createAppelClient(itfs,"movex", params);
 			ObjectToXML.afficherDocument(doc);
 
 			//envoi du xml
