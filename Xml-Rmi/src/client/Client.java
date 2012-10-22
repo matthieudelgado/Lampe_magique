@@ -66,6 +66,7 @@ public class Client {
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc2 = docBuilder.parse(in);
 			//On affiche le document
+			System.out.println("--------------------------------\n ----------------------------");
 			TestEcritureXML.afficherDocument(doc2);
 			
 			

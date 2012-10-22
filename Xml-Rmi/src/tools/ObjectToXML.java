@@ -470,6 +470,7 @@ public class ObjectToXML {
 	public static ArrayList<String> getOidFromXML(Document doc){
 		ArrayList<String> loid= new ArrayList<String>();
 		NodeList lobj = doc.getElementsByTagName("object");
+		System.out.println("nombre d'objet "+lobj.getLength());
 		for(int i=0;i<lobj.getLength();i++){
 			loid.add(lobj.item(i).getAttributes().item(0).getTextContent());
 		}

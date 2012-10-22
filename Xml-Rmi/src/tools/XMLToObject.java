@@ -188,6 +188,11 @@ public class XMLToObject {
 				tab[i] = ((Boolean)array.get(i)).booleanValue();
 			}
 			return tab;
+//		}else{ //a enlever?  on traite peut etre ici le cas de la liste d'objet
+//			Object[] tab = new Object[array.size()];
+//			for(int i = 0;i<array.size();i++){
+//				tab[i]= (Object)array.get(i);
+//			}
 		}
 		System.err.println("name de la class"+arrayClass.getSimpleName());
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	

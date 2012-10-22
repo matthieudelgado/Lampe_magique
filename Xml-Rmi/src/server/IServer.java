@@ -20,6 +20,8 @@ public interface IServer {
 	public boolean opposite(boolean b);
 	public String concatWorld(String hello);
 	public int[] inverse(int[] tab);
+	public double[] inverse(double[] tab);
+	public String[] inverse(String[] tab);
 	public Stringable[] inverse(Stringable[] tab);
 	
 }

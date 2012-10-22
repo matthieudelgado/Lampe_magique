@@ -95,9 +95,7 @@ public class ThreadServer extends Thread implements IServer{
 			ret = "methode introuvable";
 			System.out.println("methode introuvable"); //TODO  il arrive pas a trouver la methode !!!!!
 		} else {//sinon on l'applique
-
 			ret = calledMethod.invoke(this, args.toArray());
-			System.out.println("Methode invoke : "+ret.toString());
 		}
 
 		//on envoi le resultat au client
@@ -152,7 +150,6 @@ public class ThreadServer extends Thread implements IServer{
 	 * @return la methode appelee si elle existe, null sinon
 	 * @throws Exception
 	 */
-	// ERREUR ICI !!!
 	private Method findCalledMethodInServerInterface(String methodeName, ArrayList<Object> args, ArrayList<Node> paramList) throws Exception{
 		Class<IServer> itf = IServer.class;
 		Method[] methods = itf.getDeclaredMethods();
@@ -201,12 +198,12 @@ public class ThreadServer extends Thread implements IServer{
 					args.add(o);
 					trouve = true;
 
-				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){ 
-					args.add(o);
-					trouve = true;
-
-				} else if( ! parameterTypes[i].isInstance(o) ){ // du coup il passe ici car ce n'est pas une interface.. c'est un double
-					System.out.println("Erreur sur le param numero "+i); // il passe ici ...
+				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){  // faire un test du type a l'interieur de la liste
+					if(parameterTypes[i].getComponentType().equals(o.getClass().getComponentType())){
+						args.add(o);
+						trouve = true;
+					}
+				} else if( ! parameterTypes[i].isInstance(o) ){ 
 					trouve = false;
 					break;
 				} else {
@@ -214,7 +211,6 @@ public class ThreadServer extends Thread implements IServer{
 				}
 			}
 			if(trouve == false){
-				System.out.println("Probleme ?"); // du coup pb car trouve = false
 				args.clear();
 				continue;
 			} else{
@@ -250,6 +246,9 @@ public class ThreadServer extends Thread implements IServer{
 
 
 		//retValue.setTextContent("void");//TODO faire un filtre pour choiri la bonne valeur
+		if(ret == null){
+			ret = "void";
+		}
 
 		retValue = ObjectToXML.objectWithoutAnnotationsToElement(ret.getClass().getSimpleName(), ret, new ArrayList<String>(), reponse);
 		retParam.appendChild(retValue);
@@ -337,6 +336,24 @@ public class ThreadServer extends Thread implements IServer{
 		Stringable[] t = new Stringable[tab.length];
 		for(int i = 0;i<t.length;i++){
 			t[i] = tab[t.length - 1 - i];
+		}
+		return t;
+	}
+
+	@Override
+	public double[] inverse(double[] tab) {
+		double[] t = new double[tab.length];
+		for(int i = 0; i<t.length;i++){
+			t[i]= tab[t.length-1-i];
+		}
+		return t;
+	}
+
+	@Override
+	public String[] inverse(String[] tab) {
+		String[] t = new String[tab.length];
+		for(int i = 0; i<t.length;i++){
+			t[i]= tab[t.length-1-i];
 		}
 		return t;
 	}
