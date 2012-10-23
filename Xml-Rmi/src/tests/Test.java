@@ -282,8 +282,8 @@ public class Test{
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("array");
-			Object o = XMLToObject.createObjectFromNode(nl.item(0), double[].class);//la valeur de retour
-			Object o1 = XMLToObject.createObjectFromNode(nl.item(1), double[].class);//le parametre
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), String[].class);//la valeur de retour
+			Object o1 = XMLToObject.createObjectFromNode(nl.item(1), String[].class);//le parametre
 			assertTrue(((String[])o)[0].equals("2"));
 			assertTrue(((String[])o)[1].equals("1"));
 			assertTrue(((String[])o1)[0].equals("1"));
