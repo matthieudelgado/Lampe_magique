@@ -1,6 +1,7 @@
 package tools;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -15,6 +16,7 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -93,6 +95,8 @@ public class XMLToObject {
 			ArrayList<Object> array = new ArrayList<Object>();
 			NodeList nl = node.getChildNodes(), nl2 = null;
 			Node firstChild = null;
+			boolean isOb= false; //a changer?
+			if(nl.item(0).getFirstChild().getNodeName().equals("object")) isOb = true;//a changer
 			for(int i = 0; i < nl.getLength(); i++){
 				nl2 = nl.item(i).getChildNodes();
 				for(int j = 0; j < nl2.getLength(); j++){
@@ -105,8 +109,11 @@ public class XMLToObject {
 				array.add(createObjectFromNode(firstChild, parameterType.getComponentType()));
 			}
 			if(array.size() == 0) return array.toArray();
-
+			
 			Class<?> arrayClass = array.get(0).getClass();
+			if(isOb)return toArray(array,Object.class);
+			//ici on cast ?
+			
 			return toArray(array, arrayClass);
 
 		} else if(node.getNodeName().equalsIgnoreCase("struct")){
@@ -169,6 +176,63 @@ public class XMLToObject {
 		return null;
 	}
 
+	public static boolean typeChecker(Class<?> classe, Node noeud){
+		System.out.println(classe.getSimpleName()+ " "+noeud.getNodeName());
+		if(classe.equals(int.class))
+		{
+			return(noeud.getNodeName().equals("int"));
+		}
+		else if(classe.equals(double.class))
+		{
+			return(noeud.getNodeName().equals("double"));
+		}
+		else if(classe.equals(boolean.class))
+		{
+			return(noeud.getNodeName().equals("boolean"));
+		}
+		else if(classe.equals(String.class))
+		{
+			return(noeud.getNodeName().equals("string"));
+		}
+		else if(classe.isArray())
+		{
+			//typechek tout les element de la liste
+			ArrayList<Node> lnode = getGrandChildList(noeud);
+			boolean b = true;
+			for(Node n : lnode)
+			{
+			 b = b && typeChecker(classe.getComponentType(), n);	
+			}
+			return b;
+		}
+		else if(classe.isInterface())
+		{
+			String oid = noeud.getAttributes().getNamedItem("oid").getNodeValue();
+			// on teste si l'obj implement les methodes
+			ArrayList<String> methodNames = new ArrayList<String>();
+			NodeList nl = noeud.getOwnerDocument().getElementsByTagName("method");
+			CtClass bidon = ClassPool.getDefault().makeClass("bidon");
+			String tmpoid;
+			for(int i = 0; i<nl.getLength();i++)
+			{
+				tmpoid = nl.item(i).getParentNode().getParentNode().getAttributes().getNamedItem("oid").getNodeValue();
+				if(!oid.equals(tmpoid)) continue;
+				String methode = nl.item(i).getTextContent();
+				String methode_name = methode.split(" ")[2];
+				methode_name = methode_name.split("(")[0];
+				methodNames.add(methode_name);
+			}
+			bidon.detach();
+			for(Method m : classe.getDeclaredMethods())
+			{
+				if(!methodNames.contains(m.getName())) return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	
 	private static <T> Object toArray(ArrayList<Object> array, Class<?> arrayClass) {
 		if(arrayClass.equals(Integer.class)){
 			int[] tab = new int[array.size()];
@@ -245,10 +309,25 @@ public class XMLToObject {
 				return nl2.item(j);
 			}
 
-
 		}
-		System.err.println("hi!");
 		return null;
+	}
+	
+	private static ArrayList<Node> getGrandChildList(Node node)
+	{
+		NodeList nl = node.getChildNodes(), nl2;
+		ArrayList<Node> ret = new ArrayList<Node>();
+		for(int i = 0; i< nl.getLength(); i++)
+		{
+			if(nl.item(i).getNodeType() == 3) continue;
+			nl2 = nl.item(i).getChildNodes();
+			for(int j = 0; j<nl2.getLength();j++)
+			{
+				if(nl2.item(j).getNodeType() == 3)continue;
+				ret.add(nl2.item(j));
+			}
+		}
+		return ret;
 	}
 
 	public void updateFromXml(Document doc,ArrayList<Object> lo){

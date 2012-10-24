@@ -156,71 +156,109 @@ public class ThreadServer extends Thread implements IServer{
 		Method calledMethod = null;
 		Class<?>[] parameterTypes = null;
 		boolean trouve = false;
-		for(Method m : methods){
+		boolean broken = false;
+		for(Method m : methods)
+		{
 			//on commence par verifier si le nom correspond
 			if( !m.getName().equalsIgnoreCase(methodeName)) continue;
 			//on verifie ensuite les arguments
 			parameterTypes = m.getParameterTypes();
-			//on compare le type des parametres avec le xml
-			for(int i = 0 ; i < parameterTypes.length; i++){
-				System.err.println("Type des param :"+parameterTypes[i].getSimpleName());
-				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
-				System.err.println("affichage de l'interface de o : "+o.getClass().getInterfaces()[0]);
-				System.err.println("Type de paramList : "+o.getClass().getSimpleName());
-				//si le parametre attendu est une interface, il faut tester
-				//que l'objet implemente les methode de l'interface
-				if(parameterTypes[i].isInterface() ){ // ajouter : || parameterTypes[i].isPrimitive() pour les cas primitif?
-					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
-						//o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
-						args.add(o);
-						trouve = true;
-					} else {
-						trouve = false; 
-						break;
-					}
-				} else if(parameterTypes[i].equals(int.class) &&
-						(o instanceof Integer)){ 
-					args.add(o);
-					trouve = true;
-
-				} else if(parameterTypes[i].equals(double.class)&&
-						(o instanceof Double)){ 
-					args.add(o);
-					trouve = true;
-
-				} else if(parameterTypes[i].equals(boolean.class)&&
-						(o instanceof Boolean)){ 
-					args.add(o);
-					trouve = true;
-
-				} else if(parameterTypes[i].equals(String.class)&&
-						(o instanceof String)){ 
-					args.add(o);
-					trouve = true;
-
-				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){  // faire un test du type a l'interieur de la liste
-					if(parameterTypes[i].getComponentType().equals(o.getClass().getComponentType())){
-						args.add(o);
-						trouve = true;
-					}
-				} else if( ! parameterTypes[i].isInstance(o) ){ 
-					trouve = false;
+			if(parameterTypes.length != paramList.size()) continue;
+			for(int i = 0 ; i < parameterTypes.length; i++)
+			{
+				if(XMLToObject.typeChecker(parameterTypes[i], paramList.get(i)))
+				{
+					System.out.println("true");
+					continue;
+				} 
+				else
+				{
+					System.out.println("false");
+					broken = true;
 					break;
-				} else {
-					args.add(o);
 				}
 			}
-			if(trouve == false){
-				args.clear();
+			if(broken){
+				broken = !broken;
 				continue;
-			} else{
-				calledMethod = m;
-				break;
-			}
-
+			} 
+			calledMethod = m;
+			break;
+		}	
+		for(int i = 0; i< paramList.size();i++)
+		{
+			args.add(XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]));
 		}
+		
 		return calledMethod;
+//		
+//		for(Method m : methods){
+//			//on commence par verifier si le nom correspond
+//			if( !m.getName().equalsIgnoreCase(methodeName)) continue;
+//			//on verifie ensuite les arguments
+//			parameterTypes = m.getParameterTypes();
+//			//on compare le type des parametres avec le xml
+//			for(int i = 0 ; i < parameterTypes.length; i++){
+//				System.err.println("Type des param :"+parameterTypes[i].getSimpleName());
+//				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
+//				System.err.println("affichage de l'interface de o : "+o.getClass().getInterfaces()[0]);
+//				System.err.println("Type de paramList : "+o.getClass().getSimpleName());
+//				//si le parametre attendu est une interface, il faut tester
+//				//que l'objet implemente les methode de l'interface
+//				if(parameterTypes[i].isInterface() ){ // ajouter : || parameterTypes[i].isPrimitive() pour les cas primitif?
+//					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
+//						//o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
+//						args.add(o);
+//						trouve = true;
+//					} else {
+//						trouve = false; 
+//						break;
+//					}
+//				} else if(parameterTypes[i].equals(int.class) &&
+//						(o instanceof Integer)){ 
+//					args.add(o);
+//					trouve = true;
+//
+//				} else if(parameterTypes[i].equals(double.class)&&
+//						(o instanceof Double)){ 
+//					args.add(o);
+//					trouve = true;
+//
+//				} else if(parameterTypes[i].equals(boolean.class)&&
+//						(o instanceof Boolean)){ 
+//					args.add(o);
+//					trouve = true;
+//
+//				} else if(parameterTypes[i].equals(String.class)&&
+//						(o instanceof String)){ 
+//					args.add(o);
+//					trouve = true;
+//
+//				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){  // faire un test du type a l'interieur de la liste
+//					if(parameterTypes[i].getComponentType().equals(o.getClass().getComponentType())){
+//						args.add(o);
+//						trouve = true;
+//					}
+//				} else if( ! parameterTypes[i].isInstance(o) ){ 
+//					trouve = false;
+//					break;
+//				} else {
+//					args.add(o);
+//				}
+//			}
+//			if(trouve == false){
+//				args.clear();
+//				continue;
+//			} else{
+//				calledMethod = m;
+//				break;
+//			}
+//
+//		}
+//		return calledMethod;
 	}
+
+
 
 
 	/**

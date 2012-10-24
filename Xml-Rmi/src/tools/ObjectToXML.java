@@ -492,8 +492,8 @@ public class ObjectToXML {
 
 
 	/**
-	 * Permet de mettre a jour un objet a partir d'un doc
-	 * @param doc
+	 * Permet de mettre a jour un objet a partir d'un element
+	 * @param el
 	 * @param obj
 	 */
 	public static void updateObjectFromElement(Element el, Object obj){
