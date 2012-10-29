@@ -251,13 +251,15 @@ public class ObjectToXML {
 	 * @return
 	 * TODO rename cette methode passe un objet en xml
 	 */
-	public static Element appelClientToDocument(String oid,Object obj,ArrayList<String> methodes,Document doc){
+	public static Element appelClientToDocument(String oid,Class<?> itf, Object obj,ArrayList<String> methodes,Document doc){
 
 		Element value = doc.createElement("value");
 
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
+		object.setAttribute("type", itf.getSimpleName());
 		value.appendChild(object);
+		
 
 
 		Element fields =  doc.createElement("fields");
@@ -607,7 +609,7 @@ public class ObjectToXML {
 		return paramObject;
 	}
 
-	public static Element objectWithoutAnnotationsToElement(String oid,
+	public static Element objectWithoutAnnotationsToElement(String oid, Class<?> itf,
 			Object obj, ArrayList<String> methodes, Document doc) {
 		System.err.println("objectWithoutAnnotationToElem : oid = "+oid);
 		Element value = doc.createElement("value");
@@ -643,28 +645,28 @@ public class ObjectToXML {
 			if(obj.getClass().getComponentType().equals(int.class)){
 				int[] tab = (int[])obj;
 				for(int o : tab){
-					Element e = objectWithoutAnnotationsToElement("int", o, new ArrayList<String>(), doc);
+					Element e = objectWithoutAnnotationsToElement("int", int.class, o, new ArrayList<String>(), doc);
 					val.appendChild(e);
 				}
 				return value;
 			} else if(obj.getClass().getComponentType().equals(double.class)){
 				double[] tab = (double[])obj;
 				for(double o : tab){
-					Element e = objectWithoutAnnotationsToElement("double", o, new ArrayList<String>(), doc);
+					Element e = objectWithoutAnnotationsToElement("double", double.class, o, new ArrayList<String>(), doc);
 					val.appendChild(e);
 				}
 				return value;
 			} else if(obj.getClass().getComponentType().equals(boolean.class)){
 				boolean[] tab = (boolean[])obj;
 				for(Object o : tab){
-					Element e = objectWithoutAnnotationsToElement("boolean", o, new ArrayList<String>(), doc);
+					Element e = objectWithoutAnnotationsToElement("boolean", boolean.class, o, new ArrayList<String>(), doc);
 					val.appendChild(e);
 				}
 				return value;
 			} 
 			Object[] tab = (Object[])obj;
 			for(Object o : tab){
-				Element e = objectWithoutAnnotationsToElement(o.getClass().getSimpleName(), o, new ArrayList<String>(), doc);
+				Element e = objectWithoutAnnotationsToElement(o.getClass().getSimpleName(),itf.getComponentType(), o, new ArrayList<String>(), doc);
 				val.appendChild(e);
 			}
 			return value;
@@ -677,6 +679,7 @@ public class ObjectToXML {
 
 			Element object = doc.createElement("object");
 			object.setAttribute("oid", oid);
+			object.setAttribute("type", itf.getSimpleName());
 			value.appendChild(object);
 
 			// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)

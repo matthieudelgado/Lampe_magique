@@ -1,7 +1,7 @@
 package tools;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -9,14 +9,10 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtField.Initializer;
-import javassist.bytecode.Bytecode;
-import javassist.compiler.Javac;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -109,66 +105,103 @@ public class XMLToObject {
 				array.add(createObjectFromNode(firstChild, parameterType.getComponentType()));
 			}
 			if(array.size() == 0) return array.toArray();
-			
+
 			Class<?> arrayClass = array.get(0).getClass();
-			if(isOb)return toArray(array,Object.class);
+			if(isOb)return toArray(array,parameterType.getComponentType());
 			//ici on cast ?
-			
+
 			return toArray(array, arrayClass);
 
 		} else if(node.getNodeName().equalsIgnoreCase("struct")){
 			//TODO a completer
 		} else if(node.getNodeName().equalsIgnoreCase("object")){
-			System.err.println("hello");
 			//on creer une hashmap pour garder la valeur des champs
 			HashMap<String, Object> fieldMap = new HashMap<String, Object>();
 			//on creer une classe avec pour nom l'oid de l'objet
 			String oid = node.getAttributes().getNamedItem("oid").getNodeValue();
-			CtClass clazz = ClassPool.getDefault().makeClass(oid);
-			if(parameterType.isInterface())
-				clazz.addInterface(ClassPool.getDefault().get(parameterType.getName()));
-			clazz.stopPruning(true);
-
+			CtClass clazz ;
+			boolean classAlreadyExists = true;
+			if((clazz = ClassPool.getDefault().getOrNull(oid)) == null)
+			{
+				clazz = ClassPool.getDefault().makeClass(oid);
+				if(parameterType.isInterface())
+					clazz.addInterface(ClassPool.getDefault().get(parameterType.getName()));
+				clazz.stopPruning(true);
+				classAlreadyExists = false;
+			} 
+			Object o = null;
 			NodeList nl = node.getChildNodes(), nl2;
 			Node current, n, granChild;
 			String name;
-			for(int i = 0; i< nl.getLength(); i++){
-				current = nl.item(i);
-				//on parcours les fields et les method
-				if(current.getNodeName().equalsIgnoreCase("fields")){
-					nl2 = current.getChildNodes();
-					for(int j = 0; j< nl2.getLength(); j++){
-						n = nl2.item(j);
-						//on ajoute chaque field dans la classe et on stoque la valeur dans la hashmap
-						if(!n.getNodeName().equals("field")) continue;
-						name = n.getAttributes().getNamedItem("name").getNodeValue();
-						System.err.println("name = "+name);
-						granChild = getFirstGranChild(n);
-						Object value = createObjectFromNode(granChild, Object.class);
-						addCtFieldToCtClass(granChild, name, clazz, value);
-						//f= new CtField(CtClass.doubleType,name,clazz);
-						//clazz.addField(f,"2.0"); // TODO A CHANGER 
-						//fieldMap.put(name, );
-					}
-				} else if(current.getNodeName().equalsIgnoreCase("methods")){
-					//on ajoute la method a la classe
-					nl2 = current.getChildNodes();
-					for(int j = 0; j< nl2.getLength(); j++){
-						n = nl2.item(j);
-						if(!n.getNodeName().equals("method"))continue;
-						if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
-						System.err.println(n.getTextContent());
-						//String nm ="public String toString(){return \"x = \"+this.x+ \" y = \" + this.y;}";
-						CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
-						clazz.addMethod(m);
+			if(classAlreadyExists)
+			{
+				for(int i = 0; i< nl.getLength(); i++)
+				{
+					current = nl.item(i);
+					//on parcours les fields et les method
+					if(current.getNodeName().equalsIgnoreCase("fields"))
+					{
+						nl2 = current.getChildNodes();
+						for(int j = 0; j< nl2.getLength(); j++)
+						{
+							n = nl2.item(j);
+							//on ajoute chaque field dans la classe et on stoque la valeur dans la hashmap
+							if(!n.getNodeName().equals("field")) continue;
+							name = n.getAttributes().getNamedItem("name").getNodeValue();
+							granChild = getFirstGranChild(n);
+							Object value = createObjectFromNode(granChild, Object.class);
+							
+							clazz.defrost();
+							clazz.removeField(clazz.getField(name));
+							addCtFieldToCtClass(granChild, name, clazz, value);
+						}
 					}
 				}
+				clazz.setName(clazz.getName()+"_1");
+				clazz.detach();
+				clazz.freeze();
+				o = clazz.toClass().newInstance();
 			}
+			else
+			{
+
+				for(int i = 0; i< nl.getLength(); i++){
+					current = nl.item(i);
+					//on parcours les fields et les method
+					if(current.getNodeName().equalsIgnoreCase("fields")){
+						nl2 = current.getChildNodes();
+						for(int j = 0; j< nl2.getLength(); j++){
+							n = nl2.item(j);
+							//on ajoute chaque field dans la classe et on stoque la valeur dans la hashmap
+							if(!n.getNodeName().equals("field")) continue;
+							name = n.getAttributes().getNamedItem("name").getNodeValue();
+							granChild = getFirstGranChild(n);
+							Object value = createObjectFromNode(granChild, Object.class);
+							addCtFieldToCtClass(granChild, name, clazz, value);
+							//f= new CtField(CtClass.doubleType,name,clazz);
+							//clazz.addField(f,"2.0"); // TODO A CHANGER 
+							//fieldMap.put(name, );
+						}
+					} else if(current.getNodeName().equalsIgnoreCase("methods")){
+						//on ajoute la method a la classe
+						nl2 = current.getChildNodes();
+						for(int j = 0; j< nl2.getLength(); j++){
+							n = nl2.item(j);
+							if(!n.getNodeName().equals("method"))continue;
+							if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
+							System.err.println(n.getTextContent());
+							//String nm ="public String toString(){return \"x = \"+this.x+ \" y = \" + this.y;}";
+							CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
+							clazz.addMethod(m);
+						}
+					}
+				}
 
 
 
-			//on initialise les champs de l'instance
-			Object o = clazz.toClass().newInstance();
+				//on initialise les champs de l'instance
+				o = clazz.toClass().newInstance();
+			}
 
 			return o;
 		} 
@@ -201,38 +234,19 @@ public class XMLToObject {
 			boolean b = true;
 			for(Node n : lnode)
 			{
-			 b = b && typeChecker(classe.getComponentType(), n);	
+				b = b && typeChecker(classe.getComponentType(), n);	
 			}
 			return b;
 		}
 		else if(classe.isInterface())
 		{
-			String oid = noeud.getAttributes().getNamedItem("oid").getNodeValue();
-			// on teste si l'obj implement les methodes
-			ArrayList<String> methodNames = new ArrayList<String>();
-			NodeList nl = noeud.getOwnerDocument().getElementsByTagName("method");
-			CtClass bidon = ClassPool.getDefault().makeClass("bidon");
-			String tmpoid;
-			for(int i = 0; i<nl.getLength();i++)
-			{
-				tmpoid = nl.item(i).getParentNode().getParentNode().getAttributes().getNamedItem("oid").getNodeValue();
-				if(!oid.equals(tmpoid)) continue;
-				String methode = nl.item(i).getTextContent();
-				String methode_name = methode.split(" ")[2];
-				methode_name = methode_name.split("(")[0];
-				methodNames.add(methode_name);
-			}
-			bidon.detach();
-			for(Method m : classe.getDeclaredMethods())
-			{
-				if(!methodNames.contains(m.getName())) return false;
-			}
-			return true;
+			String type = noeud.getAttributes().getNamedItem("type").getNodeValue();
+			return type.equals(classe.getSimpleName());
 		}
 		return false;
 	}
-	
-	
+
+
 	private static <T> Object toArray(ArrayList<Object> array, Class<?> arrayClass) {
 		if(arrayClass.equals(Integer.class)){
 			int[] tab = new int[array.size()];
@@ -252,11 +266,11 @@ public class XMLToObject {
 				tab[i] = ((Boolean)array.get(i)).booleanValue();
 			}
 			return tab;
-//		}else{ //a enlever?  on traite peut etre ici le cas de la liste d'objet
-//			Object[] tab = new Object[array.size()];
-//			for(int i = 0;i<array.size();i++){
-//				tab[i]= (Object)array.get(i);
-//			}
+			//		}else{ //a enlever?  on traite peut etre ici le cas de la liste d'objet
+			//			Object[] tab = new Object[array.size()];
+			//			for(int i = 0;i<array.size();i++){
+			//				tab[i]= (Object)array.get(i);
+			//			}
 		}
 		System.err.println("name de la class"+arrayClass.getSimpleName());
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
@@ -312,7 +326,7 @@ public class XMLToObject {
 		}
 		return null;
 	}
-	
+
 	private static ArrayList<Node> getGrandChildList(Node node)
 	{
 		NodeList nl = node.getChildNodes(), nl2;

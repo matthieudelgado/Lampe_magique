@@ -99,7 +99,7 @@ public class ThreadServer extends Thread implements IServer{
 		}
 
 		//on envoi le resultat au client
-		sendResult(ret, args);
+		sendResult(ret, calledMethod.getReturnType(), calledMethod.getParameterTypes(), args);
 
 	}
 
@@ -264,10 +264,11 @@ public class ThreadServer extends Thread implements IServer{
 	/**
 	 * Cette methode envoi la reponse du serveur au client.
 	 * @param ret la valeur de retour de la methode
+	 * @param paramType 
 	 * @param args les arguments de la methode dans leur nouvel etat
 	 * @throws Exception
 	 */
-	private void sendResult(Object ret, ArrayList<Object> args) throws Exception {
+	private void sendResult(Object ret, Class<?> retType, Class<?>[] paramType, ArrayList<Object> args) throws Exception {
 		DocumentBuilder docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document reponse = docB.newDocument();
 
@@ -288,14 +289,16 @@ public class ThreadServer extends Thread implements IServer{
 			ret = "void";
 		}
 
-		retValue = ObjectToXML.objectWithoutAnnotationsToElement(ret.getClass().getSimpleName(), ret, new ArrayList<String>(), reponse);
+		retValue = ObjectToXML.objectWithoutAnnotationsToElement(ret.getClass().getSimpleName(), retType, ret, new ArrayList<String>(), reponse);
 		retParam.appendChild(retValue);
+		int i = 0;
 		for(Object o : args){
 			retParam = reponse.createElement("param");
 			paramS.appendChild(retParam);
 
-			retValue = ObjectToXML.objectWithoutAnnotationsToElement(o.getClass().getSimpleName(), o, new ArrayList<String>(), reponse);
+			retValue = ObjectToXML.objectWithoutAnnotationsToElement(o.getClass().getSimpleName(), paramType[i], o, new ArrayList<String>(), reponse);
 			retParam.appendChild(retValue);
+			i++;
 
 		}
 

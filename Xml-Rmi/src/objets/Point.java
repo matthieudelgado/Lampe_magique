@@ -69,7 +69,7 @@ public class Point implements XMLRMISerializable,Stringable, Movable {
 			String movex ="public void move(double mx){ this.x=this.x+mx;}";
 			aString.add(movex);
 		}
-		return ObjectToXML.appelClientToDocument(this.getOid(),this, aString,doc);
+		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
 	}
 
 	@Override
