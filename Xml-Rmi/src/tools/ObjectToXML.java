@@ -259,7 +259,7 @@ public class ObjectToXML {
 		object.setAttribute("oid", oid);
 		object.setAttribute("type", itf.getSimpleName());
 		value.appendChild(object);
-
+		
 
 
 		Element fields =  doc.createElement("fields");
@@ -283,37 +283,25 @@ public class ObjectToXML {
 
 					fields.appendChild(field);
 
+					Element valueField = doc.createElement("value");
+					field.appendChild(valueField);
 
+					Element type = doc.createElement(myAnnotation.serializationType());
+					//type.setTextContent("Valeur a entrer");
 					try {
-						if(!Class.forName(myAnnotation.serializationType()).isInterface())
-						{
-							Element valueField = doc.createElement("value");
-							field.appendChild(valueField);
-							Element type = doc.createElement(myAnnotation.serializationType());
-							//type.setTextContent("Valeur a entrer");
-							try {
-								type.setTextContent(fieldObj.get(obj).toString());
-							} catch (DOMException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IllegalArgumentException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (IllegalAccessException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							valueField.appendChild(type);
-						}
-						else 
-						{
-							//TODO
-						}
+						type.setTextContent(fieldObj.get(obj).toString());
 					} catch (DOMException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
+					} catch (IllegalArgumentException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IllegalAccessException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+					valueField.appendChild(type);
+
 				}
 			}
 			fieldObj.setAccessible(false);
@@ -616,7 +604,7 @@ public class ObjectToXML {
 		XMLRMISerializable p = (XMLRMISerializable)object;//TODO lol c toujours un point??? jcrois pas non
 		System.out.println("itf = "+itf.getSimpleName());
 		Element obje=p.toXML(itf, doc);
-
+		
 		paramObject.appendChild(obje);
 		return paramObject;
 	}
