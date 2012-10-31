@@ -3,6 +3,7 @@ package tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -13,9 +14,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import objets.Movable;
 import objets.Point;
+import objets.PointContainer;
+import objets.ReversibleXY;
 import objets.Stringable;
+import objets.StringableContainer;
 import objets.XMLRMISerializable;
 
 import org.junit.After;
@@ -319,11 +322,22 @@ public class Test{
 			NodeList nl = doc2.getElementsByTagName("array");
 			Object o = XMLToObject.createObjectFromNode(nl.item(0), Stringable[].class);//la valeur de retour
 			Object o1 = XMLToObject.createObjectFromNode(nl.item(1), Stringable[].class);//le parametre
-			assertTrue(true);
-			//			assertTrue(((int[])o)[0] == 2); //WTF???
-			//			assertTrue(((int[])o)[1] == 1);
-			//			assertTrue(((int[])o1)[0] == 1);
-			//			assertTrue(((int[])o1)[1] == 2);
+
+			//on recupère les objets des tableaux
+			Stringable obj1 = ((Stringable[])o)[0];
+			Stringable obj2 = ((Stringable[])o)[1];
+			Stringable obj3 = ((Stringable[])o1)[0];
+			Stringable obj4 = ((Stringable[])o1)[1];
+			
+			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
+			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
+			assertTrue(obj2.getClass().getDeclaredField("x").getDouble(obj2) == 0); 
+			assertTrue(obj2.getClass().getDeclaredField("y").getDouble(obj2) == 5); 
+			
+			assertTrue(obj3.getClass().getDeclaredField("x").getDouble(obj3) == 0); 
+			assertTrue(obj3.getClass().getDeclaredField("y").getDouble(obj3) == 5); 
+			assertTrue(obj4.getClass().getDeclaredField("x").getDouble(obj4) == 5); 
+			assertTrue(obj4.getClass().getDeclaredField("y").getDouble(obj4) == 0); 
 
 		}catch(Exception e){
 			e.printStackTrace();
@@ -331,9 +345,114 @@ public class Test{
 		}
 	}
 	//test avec struct
+	
 	//test avec object avec champs primitifs sans modifier les champs
+	@org.junit.Test 
+	public void retObjPObjChPrimSsModif(){
+
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable param = new Point(5, 0);
+		params.add(param);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(Stringable.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"display", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("object");
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), Stringable.class);//la valeur de retour
+
+			//on recupère les objets des tableaux
+			Stringable obj1 = (Stringable)o;
+
+			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
+			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+	
 	//test avec object avec champs primitifs en modifiant les champs
-	//test avec object avec champs objet en modifiant les champs
+	@org.junit.Test 
+	public void retObjPObjChPrimAvModif(){
+
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable param = new Point(5, 0);
+		params.add(param);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(ReversibleXY.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"reverseXY", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("object");
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), ReversibleXY.class);//la valeur de retour
+			Object o1 = XMLToObject.createObjectFromNode(nl.item(1), ReversibleXY.class);//le parametre
+
+			//on recupère les objets des tableaux
+			ReversibleXY obj1 = (ReversibleXY)o;
+			ReversibleXY obj2 = (ReversibleXY)o1;
+
+			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 0); 
+			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 5); 
+			assertTrue(obj2.getClass().getDeclaredField("x").getDouble(obj2) == 0); 
+			assertTrue(obj2.getClass().getDeclaredField("y").getDouble(obj2) == 5); 
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+	//test avec object avec champs objet sans modifier les champs
+	@org.junit.Test 
+	public void retObjPObjChObjSsModif(){
+
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable param = new PointContainer(5, 0);
+		params.add(param);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(StringableContainer.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"displayField", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("object");
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), Stringable.class);//la valeur de retour
+
+			//on recupère les objets des tableaux
+			Stringable obj1 = (Stringable)o;
+
+			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
+			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
 	//test avec object avec champs objet en modifiant les champs
 
 	//sans retour
@@ -348,6 +467,7 @@ public class Test{
 	//objet et objet	
 
 	//test malformation
+	//test mauvais nom de methode, le serveur ne doit pas planter
 
 
 }

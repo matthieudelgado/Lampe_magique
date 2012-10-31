@@ -21,7 +21,7 @@ import client.Client;
  * @author matthieudelgado
  * Cette classe decrit un point 2D, elle implement Stringable et XMLSerialisable
  */
-public class Point implements XMLRMISerializable,Stringable, Movable {
+public class Point implements XMLRMISerializable,Stringable, Movable, ReversibleXY {
 
 	// attention construire une partie de l'XML en local pour les champs dans la metthode de contstruction XML
 
@@ -62,11 +62,19 @@ public class Point implements XMLRMISerializable,Stringable, Movable {
 		Client.repertoire.put(this.oid, this);
 		ArrayList<String> aString= new ArrayList<String>();
 		System.err.println("toXML interface : "+inter.getSimpleName());
-		if(inter.equals(Stringable.class)){
+		if(inter.equals(Stringable.class))
+		{
 			String tostring = "public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}";
 			aString.add(tostring);
-		}else{
+		}
+		else if(inter.equals(Movable.class))
+		{
 			String movex ="public void move(double mx){ this.x=this.x+mx;}";
+			aString.add(movex);
+		}
+		else if(inter.equals(ReversibleXY.class))
+		{
+			String movex ="	public void reverse() {double tmp = x;x = y;y = tmp;}";
 			aString.add(movex);
 		}
 		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
@@ -93,6 +101,23 @@ public class Point implements XMLRMISerializable,Stringable, Movable {
 	public void move(double mx) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public double getX()
+	{
+		return a;
+	}
+	
+	public double getY()
+	{
+		return b;
+	}
+
+	@Override
+	public void reverse() {
+		double tmp = a;
+		a = b;
+		b = tmp;
 	}
 
 

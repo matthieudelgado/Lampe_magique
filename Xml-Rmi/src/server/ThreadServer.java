@@ -12,6 +12,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import objets.Movable;
+import objets.PointContainer;
+import objets.ReversibleXY;
 import objets.Stringable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -191,71 +193,6 @@ public class ThreadServer extends Thread implements IServer{
 		}
 		
 		return calledMethod;
-//		
-//		for(Method m : methods){
-//			//on commence par verifier si le nom correspond
-//			if( !m.getName().equalsIgnoreCase(methodeName)) continue;
-//			//on verifie ensuite les arguments
-//			parameterTypes = m.getParameterTypes();
-//			//on compare le type des parametres avec le xml
-//			for(int i = 0 ; i < parameterTypes.length; i++){
-//				System.err.println("Type des param :"+parameterTypes[i].getSimpleName());
-//				Object o = XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]);
-//				System.err.println("affichage de l'interface de o : "+o.getClass().getInterfaces()[0]);
-//				System.err.println("Type de paramList : "+o.getClass().getSimpleName());
-//				//si le parametre attendu est une interface, il faut tester
-//				//que l'objet implemente les methode de l'interface
-//				if(parameterTypes[i].isInterface() ){ // ajouter : || parameterTypes[i].isPrimitive() pour les cas primitif?
-//					if(implement(o, parameterTypes[i])){//on regarde si o implemente l'itf
-//						//o = addInterface(o, parameterTypes[i]);//on ajoute l'itf a la classe de o
-//						args.add(o);
-//						trouve = true;
-//					} else {
-//						trouve = false; 
-//						break;
-//					}
-//				} else if(parameterTypes[i].equals(int.class) &&
-//						(o instanceof Integer)){ 
-//					args.add(o);
-//					trouve = true;
-//
-//				} else if(parameterTypes[i].equals(double.class)&&
-//						(o instanceof Double)){ 
-//					args.add(o);
-//					trouve = true;
-//
-//				} else if(parameterTypes[i].equals(boolean.class)&&
-//						(o instanceof Boolean)){ 
-//					args.add(o);
-//					trouve = true;
-//
-//				} else if(parameterTypes[i].equals(String.class)&&
-//						(o instanceof String)){ 
-//					args.add(o);
-//					trouve = true;
-//
-//				} else if(parameterTypes[i].isArray() && o.getClass().isArray()){  // faire un test du type a l'interieur de la liste
-//					if(parameterTypes[i].getComponentType().equals(o.getClass().getComponentType())){
-//						args.add(o);
-//						trouve = true;
-//					}
-//				} else if( ! parameterTypes[i].isInstance(o) ){ 
-//					trouve = false;
-//					break;
-//				} else {
-//					args.add(o);
-//				}
-//			}
-//			if(trouve == false){
-//				args.clear();
-//				continue;
-//			} else{
-//				calledMethod = m;
-//				break;
-//			}
-//
-//		}
-//		return calledMethod;
 	}
 
 
@@ -397,6 +334,17 @@ public class ThreadServer extends Thread implements IServer{
 			t[i]= tab[t.length-1-i];
 		}
 		return t;
+	}
+
+	@Override
+	public ReversibleXY reverseXY(ReversibleXY r) {
+		r.reverse();
+		return r;
+	}
+
+	@Override
+	public void displayField(PointContainer c) {
+		System.out.println("Un point 2D dans un container: " + c.toString()) ;
 	}
 
 }

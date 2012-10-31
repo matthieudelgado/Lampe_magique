@@ -1,6 +1,8 @@
 package server;
 
 import objets.Movable;
+import objets.PointContainer;
+import objets.ReversibleXY;
 import objets.Stringable;
 /**
  * 
@@ -12,6 +14,8 @@ import objets.Stringable;
  */
 public interface IServer {
 	public void display(Stringable s);
+	public void displayField(PointContainer c);
+	public ReversibleXY reverseXY(ReversibleXY r);
 	
 	public void movex(Movable m,double dx);
 	
