@@ -5,14 +5,12 @@ import java.util.ArrayList;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import client.Client;
-
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
+import client.Client;
 
-public class PointContainer implements XMLRMISerializable, StringableContainer{
-	
-	@XMLRMIField(serializationName = "point", serializationType = "objets.Stringable")
+public class ReversibleXYContainerImpl implements XMLRMISerializable, ReversibleXYContainer {
+	@XMLRMIField(serializationName = "point", serializationType = "objets.ReversibleXY")
 	Point p; 
 
 
@@ -21,7 +19,7 @@ public class PointContainer implements XMLRMISerializable, StringableContainer{
 	private static Integer compteur = 0;
 
 	
-	public PointContainer(double a, double b){
+	public ReversibleXYContainerImpl(double a, double b){
 		p = new Point(a,b);
 	}
 	
@@ -35,9 +33,9 @@ public class PointContainer implements XMLRMISerializable, StringableContainer{
 		Client.repertoire.put(this.oid, this);
 		ArrayList<String> aString= new ArrayList<String>();
 		System.err.println("toXML interface : "+inter.getSimpleName());
-		if(inter.equals(StringableContainer.class))
+		if(inter.equals(ReversibleXYContainer.class))
 		{
-			String tostring = "public String toString(){return point.toString();}";
+			String tostring = "	public void reverse() {point.reverse();}";
 			aString.add(tostring);
 		}
 		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
@@ -56,12 +54,10 @@ public class PointContainer implements XMLRMISerializable, StringableContainer{
 			compteur++;
 		}
 	}
-	
 	@Override
-	public String toString(){
-		return p.toString();
+	public void reverse() {
+		p.reverse();
+
 	}
-
-
 
 }

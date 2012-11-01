@@ -3,6 +3,7 @@ package tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,13 +18,17 @@ import javax.xml.transform.stream.StreamResult;
 import objets.Point;
 import objets.PointContainer;
 import objets.ReversibleXY;
+import objets.ReversibleXYContainer;
+import objets.ReversibleXYContainerImpl;
 import objets.Stringable;
 import objets.StringableContainer;
 import objets.XMLRMISerializable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
@@ -31,6 +36,7 @@ import tools.TestEcritureXML;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
+import xmlrmi.XMLRMIField;
 
 /**
  * 
@@ -204,6 +210,7 @@ public class Test{
 	//test avec datetime
 
 	//test avec base64	
+	
 	//test avec array de int
 	@org.junit.Test 
 	public void retArrayIntPArrayInt(){
@@ -439,10 +446,10 @@ public class Test{
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
-			Object o = XMLToObject.createObjectFromNode(nl.item(0), Stringable.class);//la valeur de retour
+			Object o = XMLToObject.createObjectFromNode(nl.item(1), StringableContainer.class);//la valeur de retour
 
 			//on recupère les objets des tableaux
-			Stringable obj1 = (Stringable)o;
+			StringableContainer obj1 = (StringableContainer)o;
 
 			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
 			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
@@ -454,7 +461,40 @@ public class Test{
 		}
 	}
 	//test avec object avec champs objet en modifiant les champs
+	@org.junit.Test 
+	public void retObjPObjChObjAvcModif(){
 
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable param = new ReversibleXYContainerImpl(5, 0);
+		params.add(param);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(ReversibleXYContainer.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"reverseXYField", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("object");
+			Object o = XMLToObject.createObjectFromNode(nl.item(1), ReversibleXYContainer.class);//la valeur de retour
+
+			//on recupère les objets des tableaux
+			ReversibleXYContainer obj1 = (ReversibleXYContainer)o;
+
+			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 0); 
+			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 5); 
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+	
 	//sans retour
 	//test avec un int
 	//test avec un objet
@@ -468,6 +508,5 @@ public class Test{
 
 	//test malformation
 	//test mauvais nom de methode, le serveur ne doit pas planter
-
 
 }

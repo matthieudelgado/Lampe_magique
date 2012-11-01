@@ -257,9 +257,9 @@ public class ObjectToXML {
 
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
-		object.setAttribute("type", itf.getSimpleName());
+		object.setAttribute("type", itf.getName());
 		value.appendChild(object);
-		
+
 
 
 		Element fields =  doc.createElement("fields");
@@ -282,25 +282,38 @@ public class ObjectToXML {
 					field.setAttribute("name", myAnnotation.serializationName());
 
 					fields.appendChild(field);
+					Element valueField = null;
+					if(XMLRMISerializable.class.isAssignableFrom(fieldObj.getType()))
+					{
+						try {
+							System.out.println("|"+myAnnotation.serializationType()+"|");
+							valueField = ((XMLRMISerializable)fieldObj.get(obj)).
+									toXML(Class.forName(myAnnotation.serializationType()), doc);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} 
+					else
+					{
+						valueField = doc.createElement("value");
 
-					Element valueField = doc.createElement("value");
-					field.appendChild(valueField);
-
-					Element type = doc.createElement(myAnnotation.serializationType());
-					//type.setTextContent("Valeur a entrer");
-					try {
-						type.setTextContent(fieldObj.get(obj).toString());
-					} catch (DOMException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalArgumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Element type = doc.createElement(myAnnotation.serializationType());
+						//type.setTextContent("Valeur a entrer");
+						try {
+							type.setTextContent(fieldObj.get(obj).toString());
+						} catch (DOMException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						valueField.appendChild(type);
 					}
-					valueField.appendChild(type);
+					field.appendChild(valueField);
 
 				}
 			}
@@ -604,7 +617,7 @@ public class ObjectToXML {
 		XMLRMISerializable p = (XMLRMISerializable)object;//TODO lol c toujours un point??? jcrois pas non
 		System.out.println("itf = "+itf.getSimpleName());
 		Element obje=p.toXML(itf, doc);
-		
+
 		paramObject.appendChild(obje);
 		return paramObject;
 	}
@@ -679,7 +692,7 @@ public class ObjectToXML {
 
 			Element object = doc.createElement("object");
 			object.setAttribute("oid", oid);
-			object.setAttribute("type", itf.getSimpleName());
+			object.setAttribute("type", itf.getName());
 			value.appendChild(object);
 
 			// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)
@@ -701,29 +714,34 @@ public class ObjectToXML {
 
 				fields.appendChild(field);
 
-				Element valueField = doc.createElement("value");
-				field.appendChild(valueField);
 
-				System.out.println("test : " +fieldObj.getType().getSimpleName().toLowerCase());
-				//TODO faire un switch sur le type
-				Element type = doc.createElement(fieldObj.getType().getSimpleName().toLowerCase());
-				//type.setTextContent("Valeur a entrer");
-				try {
-					type.setTextContent(fieldObj.get(obj).toString());
-				} catch (DOMException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				Element valueField = null; 
+				Element type = null;
+				if(fieldObj.getType().isInterface())
+				{
+					//objectWithoutAnnotationsToElement(String oid, Class<?> itf,
+				//	Object obj, ArrayList<String> methodes, Document doc) 
+					try {
+						Object recObj = fieldObj.get(obj);
+						valueField = objectWithoutAnnotationsToElement(recObj.getClass().getSimpleName(),
+								fieldObj.getType(), recObj, methodes, doc);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				} 
+				else
+				{
+					valueField = doc.createElement("value");
+					type = doc.createElement(fieldObj.getType().getSimpleName().toLowerCase());
+					valueField.appendChild(type);
+					try {
+						type.setTextContent(fieldObj.get(obj).toString());
+					} catch (Exception e) {
+						e.printStackTrace();
+					} 
 				}
-				valueField.appendChild(type);
-
-
-
+				field.appendChild(valueField);
 				fieldObj.setAccessible(false);
 			}
 

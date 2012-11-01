@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
@@ -12,13 +13,16 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import objets.Movable;
-import objets.PointContainer;
 import objets.ReversibleXY;
+import objets.ReversibleXYContainer;
 import objets.Stringable;
+import objets.StringableContainer;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import tools.ObjectToXML;
 import tools.TestEcritureXML;
 import tools.XMLToObject;
@@ -170,18 +174,18 @@ public class ThreadServer extends Thread implements IServer{
 			{
 				if(XMLToObject.typeChecker(parameterTypes[i], paramList.get(i)))
 				{
-					System.out.println("true");
+//					System.out.println("le type "+parameterTypes[i].getSimpleName()+" corresp™nd a "+paramList.get(i).getNodeName());
 					continue;
 				} 
 				else
 				{
-					System.out.println("false");
 					broken = true;
 					break;
 				}
 			}
 			if(broken){
 				broken = !broken;
+				parameterTypes = null;
 				continue;
 			} 
 			calledMethod = m;
@@ -189,6 +193,7 @@ public class ThreadServer extends Thread implements IServer{
 		}	
 		for(int i = 0; i< paramList.size();i++)
 		{
+			System.out.println("parameterType i : "+parameterTypes[i].getSimpleName());
 			args.add(XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]));
 		}
 		
@@ -343,8 +348,14 @@ public class ThreadServer extends Thread implements IServer{
 	}
 
 	@Override
-	public void displayField(PointContainer c) {
+	public void displayField(StringableContainer c) {
 		System.out.println("Un point 2D dans un container: " + c.toString()) ;
+	}
+
+	@Override
+	public ReversibleXYContainer reverseXYField(ReversibleXYContainer r) {
+		r.reverse();
+		return r;
 	}
 
 }

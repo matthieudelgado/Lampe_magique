@@ -10,6 +10,7 @@ import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
+import javassist.CtField.Initializer;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
@@ -108,7 +109,8 @@ public class XMLToObject {
 			if(array.size() == 0) return array.toArray();
 
 			Class<?> arrayClass = array.get(0).getClass();
-			if(isOb)return toArray(array,parameterType.getComponentType());
+			if(isOb)
+				return toArray(array,parameterType.getComponentType());
 			//ici on cast ?
 
 			return toArray(array, arrayClass);
@@ -150,11 +152,23 @@ public class XMLToObject {
 							if(!n.getNodeName().equals("field")) continue;
 							name = n.getAttributes().getNamedItem("name").getNodeValue();
 							granChild = getFirstGranChild(n);
-							Object value = createObjectFromNode(granChild, Object.class);
-							
+							Object value = null;
+							if(granChild.getNodeName().equals("object"))
+							{
+								value = createObjectFromNode(granChild, 
+										Class.forName(granChild.getAttributes().getNamedItem("type").getTextContent()));
+								fieldMap.put(name, value);
+							} 
+							else
+							{
+								value = createObjectFromNode(granChild, Object.class);
+
+							}
 							clazz.defrost();
 							clazz.removeField(clazz.getField(name));
 							addCtFieldToCtClass(granChild, name, clazz, value);
+
+
 						}
 					}
 				}
@@ -165,27 +179,43 @@ public class XMLToObject {
 			}
 			else
 			{
-
 				for(int i = 0; i< nl.getLength(); i++){
 					current = nl.item(i);
 					//on parcours les fields et les method
-					if(current.getNodeName().equalsIgnoreCase("fields")){
+					if(current.getNodeName().equalsIgnoreCase("fields"))
+					{
 						nl2 = current.getChildNodes();
-						for(int j = 0; j< nl2.getLength(); j++){
+						for(int j = 0; j< nl2.getLength(); j++)
+						{
 							n = nl2.item(j);
 							//on ajoute chaque field dans la classe et on stoque la valeur dans la hashmap
 							if(!n.getNodeName().equals("field")) continue;
 							name = n.getAttributes().getNamedItem("name").getNodeValue();
 							granChild = getFirstGranChild(n);
-							Object value = createObjectFromNode(granChild, Object.class);
+							Object value = null;
+							if(granChild.getNodeName().equals("object"))
+							{
+								System.out.println("avant objet");
+								value = createObjectFromNode(granChild, 
+										Class.forName(granChild.getAttributes().getNamedItem("type").getTextContent()));
+								System.out.println("apres objet");
+								fieldMap.put(name, value);
+							} 
+							else
+							{
+								System.out.println("name : "+name+", type : "+granChild.getNodeName());
+								value = createObjectFromNode(granChild, Object.class);
+							}	
 							addCtFieldToCtClass(granChild, name, clazz, value);
-							
 
 						}
-					} else if(current.getNodeName().equalsIgnoreCase("methods")){
+					} 
+					else if(current.getNodeName().equalsIgnoreCase("methods"))
+					{
 						//on ajoute la method a la classe
 						nl2 = current.getChildNodes();
-						for(int j = 0; j< nl2.getLength(); j++){
+						for(int j = 0; j< nl2.getLength(); j++)
+						{
 							n = nl2.item(j);
 							if(!n.getNodeName().equals("method"))continue;
 							if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
@@ -198,16 +228,25 @@ public class XMLToObject {
 
 				//on initialise les champs de l'instance
 				o = clazz.toClass().newInstance();
-				
-//				System.out.println("contenu de la class "+o.getClass().getSimpleName());
-//				for(Field f : o.getClass().getDeclaredFields()){
-//					System.out.println(f.getName());
-//				}
-//				System.out.println("contenu de la CTclass "+clazz.getName());
-//				for(CtField f : clazz.getFields()) 
-//					System.out.println(f.getName());
-//
-//				System.out.println();
+				Field f = null;
+				for(String key : fieldMap.keySet())
+				{
+					f = o.getClass().getField(key);
+					f.setAccessible(true);
+					f.set(o,fieldMap.get(key) );
+					f.setAccessible(false);
+				}
+
+
+				System.out.println("contenu de la class "+o.getClass().getSimpleName());
+				for(Field f1 : o.getClass().getDeclaredFields()){
+					System.out.println(f1.getName());
+				}
+				System.out.println("contenu de la CTclass "+clazz.getName());
+				for(CtField f1 : clazz.getFields()) 
+					System.out.println(f1.getName());
+
+				System.out.println();
 			}
 
 			return o;
@@ -217,7 +256,7 @@ public class XMLToObject {
 	}
 
 	public static boolean typeChecker(Class<?> classe, Node noeud){
-		System.out.println(classe.getSimpleName()+ " "+noeud.getNodeName());
+		//System.out.println("typechecker : "+classe.getSimpleName()+ " "+noeud.getNodeName());
 		if(classe.equals(int.class))
 		{
 			return(noeud.getNodeName().equals("int"));
@@ -243,15 +282,19 @@ public class XMLToObject {
 			{
 				b = b && typeChecker(classe.getComponentType(), n);	
 			}
+			//System.out.println("retour de typeChecker pour le tableau : "+b);
 			return b;
 		}
 		else if(classe.isInterface())
 		{
 			if(noeud.getAttributes().getNamedItem("type") == null)return false;
 			String type = noeud.getAttributes().getNamedItem("type").getNodeValue();
-			return type.equals(classe.getSimpleName());
+			return type.equals(classe.getName());
 		}
-		return false;
+		else {
+			System.err.println("type checker : cas non traité");
+			return false;
+		}
 	}
 
 
@@ -274,12 +317,8 @@ public class XMLToObject {
 				tab[i] = ((Boolean)array.get(i)).booleanValue();
 			}
 			return tab;
-			//		}else{ //a enlever?  on traite peut etre ici le cas de la liste d'objet
-			//			Object[] tab = new Object[array.size()];
-			//			for(int i = 0;i<array.size();i++){
-			//				tab[i]= (Object)array.get(i);
-			//			}
 		}
+		System.err.println("class a caster : "+arrayClass.getName());
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
 	}
 
@@ -300,23 +339,37 @@ public class XMLToObject {
 	 * @throws NotFoundException
 	 */
 	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException {
-		if(n.getNodeName().equalsIgnoreCase("int")){
+		if(n.getNodeName().equalsIgnoreCase("int"))
+		{
 			CtField f = new CtField(CtClass.intType,name,clazz);
 			f.setModifiers(Modifier.PUBLIC);
 			clazz.addField(f, value.toString());
-		} else if(n.getNodeName().equalsIgnoreCase("double")){
+		} 
+		else if(n.getNodeName().equalsIgnoreCase("double"))
+		{
 			CtField f = new CtField(CtClass.doubleType,name,clazz);
 			f.setModifiers(Modifier.PUBLIC);
 			clazz.addField(f, value.toString());
-		} else if(n.getNodeName().equalsIgnoreCase("boolean")){
+		} 
+		else if(n.getNodeName().equalsIgnoreCase("boolean"))
+		{
 			CtField f = new CtField(CtClass.booleanType,name,clazz);
 			f.setModifiers(Modifier.PUBLIC);
 			clazz.addField(f, value.toString());
-		} else if(n.getNodeName().equalsIgnoreCase("string")){
+		} 
+		else if(n.getNodeName().equalsIgnoreCase("string"))
+		{
 			CtField f = new CtField(ClassPool.getDefault().get("java.lang.String"),name,clazz);
 			f.setModifiers(Modifier.PUBLIC);
 			clazz.addField(f, "\""+value.toString()+"\"");
-		} else {
+		} 
+		else if(n.getNodeName().equalsIgnoreCase("object"))
+		{
+			CtField f = new CtField(ClassPool.getDefault().get(n.getAttributes().getNamedItem("type").getTextContent()),name,clazz);
+			f.setModifiers(Modifier.PUBLIC);
+			clazz.addField(f);
+		}
+		else {
 			System.out.println("type non traité dans addCtFieldToCtClass");
 		}
 
