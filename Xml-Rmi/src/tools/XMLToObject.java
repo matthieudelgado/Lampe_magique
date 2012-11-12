@@ -3,14 +3,16 @@ package tools;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtField;
-import javassist.CtField.Initializer;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
@@ -85,8 +87,11 @@ public class XMLToObject {
 			else return Boolean.TRUE;
 		} else if(node.getNodeName().equalsIgnoreCase("string")){
 			return new String(((Text)node.getFirstChild()).getData());
-		} else if(node.getNodeName().equalsIgnoreCase("dateTime")){
+		} else if(node.getNodeName().equalsIgnoreCase("datetime")){
 			//TODO a completer
+			SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			String date = ((Text)node.getFirstChild()).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
+			return ISO8601DATEFORMAT.parse(date);
 		} else if(node.getNodeName().equalsIgnoreCase("base64")){
 			//TODO a completer
 		} else if(node.getNodeName().equalsIgnoreCase("array")){
@@ -272,6 +277,10 @@ public class XMLToObject {
 		else if(classe.equals(String.class))
 		{
 			return(noeud.getNodeName().equals("string"));
+		}
+		else if(classe.equals(Date.class))
+		{
+			return(noeud.getNodeName().equals("datetime"));
 		}
 		else if(classe.isArray())
 		{

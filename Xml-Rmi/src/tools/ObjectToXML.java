@@ -13,7 +13,10 @@ import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -182,9 +185,12 @@ public class ObjectToXML {
 			if(p.toString().equals("true"))
 				ty.setTextContent("1");
 			else ty.setTextContent("0");
-		} else if(type.equals("String")){
+		} else if(type.equals("String")){ // tester ici c'est une dateTime
 			ty = doc.createElement("string");
 			ty.setTextContent(p.toString());
+		}else if(type.equals("Date")){
+			ty = doc.createElement("datetime");
+			ty.setTextContent(dateToDateTime((Date)p));
 		} else if(p.getClass().isArray()){
 			if(p.getClass().getComponentType().isInterface()){
 				XMLRMISerializable[] tab = (XMLRMISerializable[])p;
@@ -210,10 +216,16 @@ public class ObjectToXML {
 		value.appendChild(ty);
 
 
-
 		return param;
 	}
 
+	public static String dateToDateTime(Date d){
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		String dateString = df.format(d);
+		return dateString;
+	}
+	
+	
 	/**
 	 * Creer le document de l'appel Client ainsi que son entete a partir d'un nom de methode
 	 * @param methode
@@ -652,9 +664,15 @@ public class ObjectToXML {
 			value.appendChild(val);
 			val.setTextContent(obj.toString());
 			return value;
+		}else if(obj instanceof Date){
+			Element val = doc.createElement("datetime");
+			val.setTextContent(dateToDateTime((Date)obj));
+			value.appendChild(val);
+			return value;
 		} else if(obj.getClass().isArray()){
 			Element val =  doc.createElement("array");
 			value.appendChild(val);
+			
 			if(obj.getClass().getComponentType().equals(int.class)){
 				int[] tab = (int[])obj;
 				for(int o : tab){

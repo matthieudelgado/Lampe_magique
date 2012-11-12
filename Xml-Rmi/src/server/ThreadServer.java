@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,6 +18,7 @@ import objets.ReversibleXY;
 import objets.ReversibleXYContainer;
 import objets.Stringable;
 import objets.StringableContainer;
+import objets.StringableContainerType;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -356,6 +358,16 @@ public class ThreadServer extends Thread implements IServer{
 	public ReversibleXYContainer reverseXYField(ReversibleXYContainer r) {
 		r.reverse();
 		return r;
+	}
+
+	@Override
+	public boolean isD1BeforeD2(Date d1, Date d2) {
+		return d1.before(d2);
+	}
+
+	@Override
+	public void displayField(StringableContainerType c) {
+		System.out.println("Une liste dans c : "+c.toString());
 	}
 
 }

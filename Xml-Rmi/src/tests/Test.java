@@ -3,10 +3,9 @@ package tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,18 +16,18 @@ import javax.xml.transform.stream.StreamResult;
 
 import objets.Point;
 import objets.PointContainer;
+import objets.PointContainerType;
 import objets.ReversibleXY;
 import objets.ReversibleXYContainer;
 import objets.ReversibleXYContainerImpl;
 import objets.Stringable;
 import objets.StringableContainer;
+import objets.StringableContainerType;
 import objets.XMLRMISerializable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
@@ -36,7 +35,6 @@ import tools.TestEcritureXML;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
-import xmlrmi.XMLRMIField;
 
 /**
  * 
@@ -208,9 +206,38 @@ public class Test{
 		}
 	}
 	//test avec datetime
+	@org.junit.Test 
+	public void retBooleanPDate(){
 
+		ArrayList<Object> params = new ArrayList<Object>();
+
+		Date d1 = new Date();
+		Date d2 = new Date();
+		d2.setTime(0);
+		params.add(d1);
+		params.add(d2);
+		//Creation du document xml a envoyer
+		Document doc = ObjectToXML.createAppelClient(null,"isD1BeforeD2", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("boolean");
+			Object o = XMLToObject.createObjectFromNode(nl.item(0), boolean.class);
+			assertTrue(Boolean.parseBoolean(o.toString()) == false);
+
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
 	//test avec base64	
-	
+
 	//test avec array de int
 	@org.junit.Test 
 	public void retArrayIntPArrayInt(){
@@ -335,12 +362,12 @@ public class Test{
 			Stringable obj2 = ((Stringable[])o)[1];
 			Stringable obj3 = ((Stringable[])o1)[0];
 			Stringable obj4 = ((Stringable[])o1)[1];
-			
+
 			assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
 			assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
 			assertTrue(obj2.getClass().getDeclaredField("x").getDouble(obj2) == 0); 
 			assertTrue(obj2.getClass().getDeclaredField("y").getDouble(obj2) == 5); 
-			
+
 			assertTrue(obj3.getClass().getDeclaredField("x").getDouble(obj3) == 0); 
 			assertTrue(obj3.getClass().getDeclaredField("y").getDouble(obj3) == 5); 
 			assertTrue(obj4.getClass().getDeclaredField("x").getDouble(obj4) == 5); 
@@ -352,7 +379,7 @@ public class Test{
 		}
 	}
 	//test avec struct
-	
+
 	//test avec object avec champs primitifs sans modifier les champs
 	@org.junit.Test 
 	public void retObjPObjChPrimSsModif(){
@@ -387,7 +414,7 @@ public class Test{
 			assertTrue(false);
 		}
 	}
-	
+
 	//test avec object avec champs primitifs en modifiant les champs
 	@org.junit.Test 
 	public void retObjPObjChPrimAvModif(){
@@ -495,6 +522,45 @@ public class Test{
 		}
 	}
 	
+	//test avec object avec champs ArrayList<Object> sans update des champs
+	@org.junit.Test 
+	public void retObjPObjChListObjSsModif(){
+
+		ArrayList<Object> params = new ArrayList<Object>();
+		XMLRMISerializable[] lpoint = new XMLRMISerializable[1];
+		
+		Point p1 = new Point(1,1);
+		lpoint[0]=p1;
+		XMLRMISerializable param = new PointContainerType(lpoint);
+		params.add(param);
+		//Creation du document xml a envoyer
+		ArrayList<Class<?>> itfs = new ArrayList<Class<?>>();
+		itfs.add(StringableContainerType.class);
+		Document doc = ObjectToXML.createAppelClient(itfs,"displayField", params);
+
+		try{
+			Document doc2 = sendAndReceive(doc, out, socket);
+
+			//On affiche le document
+			TestEcritureXML.afficherDocument(doc2);
+
+			//test du xml retourné
+			NodeList nl = doc2.getElementsByTagName("object");
+			Object o = XMLToObject.createObjectFromNode(nl.item(1), StringableContainerType.class);//la valeur de retour
+
+			//on recupère les objets des tableaux
+			StringableContainerType obj1 = (StringableContainerType)o;
+
+			//assertTrue(obj1.getClass().getDeclaredField("x").getDouble(obj1) == 5); 
+			//assertTrue(obj1.getClass().getDeclaredField("y").getDouble(obj1) == 0); 
+			assertTrue(true);
+
+		}catch(Exception e){
+			e.printStackTrace();
+			assertTrue(false);
+		}
+	}
+
 	//sans retour
 	//test avec un int
 	//test avec un objet
