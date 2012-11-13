@@ -213,9 +213,13 @@ public class ObjectToXML {
 				System.out.println("getContenuNodePrimitif je ne suis pas un tableau XMLSerializable");
 				Object[] tab = (Object[]) p;
 				ty = doc.createElement("array");
+				Element val;
+				Element e ;
 				for(Object o : tab){
-					Element e = (Element)getContenuNodePrimitif(o, doc, inters, num_itf).getFirstChild();
-					ty.appendChild(e);
+					val = doc.createElement("value");
+					e = (Element)getContenuNodePrimitif(o, doc, inters, num_itf).getFirstChild();
+					val.appendChild(e);
+					ty.appendChild(val);
 				}
 			}
 		}

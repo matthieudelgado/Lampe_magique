@@ -103,6 +103,12 @@ public class ThreadServer extends Thread implements IServer{
 			ret = "methode introuvable";
 			System.out.println("methode introuvable"); //TODO  il arrive pas a trouver la methode !!!!!
 		} else {//sinon on l'applique
+			System.out.print("do Treatement : le serveur applique "+calledMethod.getName()+"(");
+			for(Class<?> c : calledMethod.getParameterTypes())
+			{
+				System.out.print(c.getSimpleName()+",");
+			}
+			System.out.println(")");
 			ret = calledMethod.invoke(this, args.toArray());
 		}
 
@@ -195,7 +201,6 @@ public class ThreadServer extends Thread implements IServer{
 		}	
 		for(int i = 0; i< paramList.size();i++)
 		{
-			System.out.println("parameterType i : "+parameterTypes[i].getSimpleName());
 			args.add(XMLToObject.createObjectFromNode(paramList.get(i), parameterTypes[i]));
 		}
 		
