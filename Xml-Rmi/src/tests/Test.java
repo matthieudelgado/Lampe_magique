@@ -527,7 +527,7 @@ public class Test{
 	public void retObjPObjChListObjSsModif(){
 
 		ArrayList<Object> params = new ArrayList<Object>();
-		XMLRMISerializable[] lpoint = new XMLRMISerializable[1];
+		Stringable[] lpoint = new Stringable[1];
 		
 		Point p1 = new Point(1,1);
 		lpoint[0]=p1;

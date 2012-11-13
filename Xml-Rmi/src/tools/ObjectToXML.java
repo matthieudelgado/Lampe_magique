@@ -224,8 +224,8 @@ public class ObjectToXML {
 		String dateString = df.format(d);
 		return dateString;
 	}
-	
-	
+
+
 	/**
 	 * Creer le document de l'appel Client ainsi que son entete a partir d'un nom de methode
 	 * @param methode
@@ -305,6 +305,15 @@ public class ObjectToXML {
 							e.printStackTrace();
 						}
 					} 
+					else if (myAnnotation.serializationType().equals("array"))	
+					{
+						ArrayList <Class<?>> liter = new ArrayList<Class<?>>();
+						liter.add(fieldObj.getClass().getComponentType());
+						ObjectToXML.getNodePrimitif(fieldObj, doc, liter, 0);
+						
+					}
+
+
 					else
 					{
 						valueField = doc.createElement("value");
@@ -672,7 +681,7 @@ public class ObjectToXML {
 		} else if(obj.getClass().isArray()){
 			Element val =  doc.createElement("array");
 			value.appendChild(val);
-			
+
 			if(obj.getClass().getComponentType().equals(int.class)){
 				int[] tab = (int[])obj;
 				for(int o : tab){
@@ -739,7 +748,7 @@ public class ObjectToXML {
 				if(fieldObj.getType().isInterface())
 				{
 					//objectWithoutAnnotationsToElement(String oid, Class<?> itf,
-				//	Object obj, ArrayList<String> methodes, Document doc) 
+					//	Object obj, ArrayList<String> methodes, Document doc) 
 					try {
 						Object recObj = fieldObj.get(obj);
 						valueField = objectWithoutAnnotationsToElement(recObj.getClass().getSimpleName(),

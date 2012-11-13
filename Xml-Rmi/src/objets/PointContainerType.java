@@ -14,13 +14,13 @@ import xmlrmi.XMLRMIField;
 public class PointContainerType implements XMLRMISerializable, StringableContainerType{
 
 	@XMLRMIField(serializationName="lpoint",serializationType="array")
-	XMLRMISerializable[] listePoint ;
+	Stringable[] listePoint ;
 
 	private String oid = "PointContainerType";
 
 	private static Integer compteur = 0;
 
-	public PointContainerType(XMLRMISerializable[] listePoint){
+	public PointContainerType(Stringable[] listePoint){
 		this.listePoint=listePoint;
 	}
 	
