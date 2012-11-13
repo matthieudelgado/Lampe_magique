@@ -168,11 +168,18 @@ public class ObjectToXML {
 
 		Element param = doc.createElement("param");
 
-		Element value = doc.createElement("value");
+		Element value =getContenuNodePrimitif(p, doc, inters, num_itf);
 		param.appendChild(value);
 
-
+		return param;
+	}
+	
+	public static Element getContenuNodePrimitif(Object p,Document doc, ArrayList<Class<?>> inters, Integer num_itf)
+	{
+	Element value = doc.createElement("value");
+		
 		String type = p.getClass().getSimpleName();
+		System.out.println("getContenuNodePrimitif je traite un objet de type "+type);
 		Element ty=null;
 		if(type.equals("Integer")){
 			ty = doc.createElement("int");
@@ -192,31 +199,32 @@ public class ObjectToXML {
 			ty = doc.createElement("datetime");
 			ty.setTextContent(dateToDateTime((Date)p));
 		} else if(p.getClass().isArray()){
-			if(p.getClass().getComponentType().isInterface()){
+			if(XMLRMISerializable.class.isAssignableFrom(p.getClass().getComponentType())){
+				System.out.println("getContenuNodePrimitif je suis un tableau XMLSerializable");
 				XMLRMISerializable[] tab = (XMLRMISerializable[])p;
 				ty = doc.createElement("array");
 				for(XMLRMISerializable o : tab){
-					Element e = (Element) createElementParamObject(o, inters.get(num_itf), doc).getFirstChild();
+					Element e = (Element) createElementObject(o, inters.get(num_itf), doc);
+					System.out.println("Interface de la liste dans un objet "+inters.get(num_itf).getSimpleName());
 					num_itf++;
 					ty.appendChild(e);
 				}
 			} else {
+				System.out.println("getContenuNodePrimitif je ne suis pas un tableau XMLSerializable");
 				Object[] tab = (Object[]) p;
 				ty = doc.createElement("array");
 				for(Object o : tab){
-					Element e = (Element)getNodePrimitif(o, doc, inters, num_itf).getFirstChild();
+					Element e = (Element)getContenuNodePrimitif(o, doc, inters, num_itf).getFirstChild();
 					ty.appendChild(e);
 				}
 			}
 		}
 		else {
-			System.err.println("type non pris en charge de getNodePrimitif");
+			System.err.println("type non pris en charge de getContenuNodePrimitif");
 		}
 
 		value.appendChild(ty);
-
-
-		return param;
+		return value;
 	}
 
 	public static String dateToDateTime(Date d){
@@ -246,7 +254,6 @@ public class ObjectToXML {
 
 
 
-
 		return doc;
 	}
 
@@ -263,7 +270,7 @@ public class ObjectToXML {
 	 * @return
 	 * TODO rename cette methode passe un objet en xml
 	 */
-	public static Element appelClientToDocument(String oid,Class<?> itf, Object obj,ArrayList<String> methodes,Document doc){
+	public static Element objectToElement(String oid,Class<?> itf,Class<?> itfArray, Object obj,ArrayList<String> methodes,Document doc){
 
 		Element value = doc.createElement("value");
 
@@ -272,11 +279,8 @@ public class ObjectToXML {
 		object.setAttribute("type", itf.getName());
 		value.appendChild(object);
 
-
-
 		Element fields =  doc.createElement("fields");
 		object.appendChild(fields);
-
 
 		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
 
@@ -308,8 +312,16 @@ public class ObjectToXML {
 					else if (myAnnotation.serializationType().equals("array"))	
 					{
 						ArrayList <Class<?>> liter = new ArrayList<Class<?>>();
-						liter.add(fieldObj.getClass().getComponentType());
-						ObjectToXML.getNodePrimitif(fieldObj, doc, liter, 0);
+						liter.add(itfArray);
+						try {
+							valueField=ObjectToXML.getContenuNodePrimitif(fieldObj.get(obj), doc, liter, 0);
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
 					}
 
@@ -635,16 +647,21 @@ public class ObjectToXML {
 	private static Element createElementParamObject(Object object,
 			Class<?> itf, Document doc) {
 		Element paramObject = doc.createElement("param");
-		XMLRMISerializable p = (XMLRMISerializable)object;//TODO lol c toujours un point??? jcrois pas non
-		System.out.println("itf = "+itf.getSimpleName());
+
+		paramObject.appendChild(createElementObject(object, itf, doc));
+		return paramObject;
+	}
+	
+	private static Element createElementObject(Object object,
+			Class<?> itf, Document doc) {
+		XMLRMISerializable p = (XMLRMISerializable)object;
 		Element obje=p.toXML(itf, doc);
 
-		paramObject.appendChild(obje);
-		return paramObject;
+		return obje;
 	}
 
 	public static Element objectWithoutAnnotationsToElement(String oid, Class<?> itf,
-			Object obj, ArrayList<String> methodes, Document doc) {
+			Object obj, ArrayList<String> methodes, Document doc) throws IllegalArgumentException, IllegalAccessException {
 		System.err.println("objectWithoutAnnotationToElem : oid = "+oid);
 		Element value = doc.createElement("value");
 		//faire un switch sur le type de obj
@@ -757,6 +774,17 @@ public class ObjectToXML {
 						e.printStackTrace();
 					}
 				} 
+				else if(fieldObj.getType().isArray())
+				{
+					Object[] recObj = (Object[]) fieldObj.get(obj);
+					valueField = doc.createElement("value");
+					Element arrayField = doc.createElement("array");
+					for(int i =0; i<recObj.length;i++){
+						Element valueArray  = objectWithoutAnnotationsToElement(recObj[i].getClass().getSimpleName(), fieldObj.getType().getComponentType(), recObj[i], methodes, doc);
+						arrayField.appendChild(valueArray);
+					}
+					valueField.appendChild(arrayField);
+				}
 				else
 				{
 					valueField = doc.createElement("value");

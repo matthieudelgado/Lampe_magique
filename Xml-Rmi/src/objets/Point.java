@@ -77,7 +77,7 @@ public class Point implements XMLRMISerializable,Stringable, Movable, Reversible
 			String movex ="	public void reverse() {double tmp = x;x = y;y = tmp;}";
 			aString.add(movex);
 		}
-		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
+		return ObjectToXML.objectToElement(this.getOid(), inter,null, this, aString,doc);
 	}
 
 	@Override

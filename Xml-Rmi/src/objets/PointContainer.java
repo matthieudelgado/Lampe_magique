@@ -40,7 +40,7 @@ public class PointContainer implements XMLRMISerializable, StringableContainer{
 			String tostring = "public String toString(){return point.toString();}";
 			aString.add(tostring);
 		}
-		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
+		return ObjectToXML.objectToElement(this.getOid(), inter,null, this, aString,doc);
 	}
 
 	@Override

@@ -14,13 +14,13 @@ import xmlrmi.XMLRMIField;
 public class PointContainerType implements XMLRMISerializable, StringableContainerType{
 
 	@XMLRMIField(serializationName="lpoint",serializationType="array")
-	Stringable[] listePoint ;
+	Point[] listePoint ;
 
 	private String oid = "PointContainerType";
 
 	private static Integer compteur = 0;
 
-	public PointContainerType(Stringable[] listePoint){
+	public PointContainerType(Point[] listePoint){
 		this.listePoint=listePoint;
 	}
 	
@@ -35,10 +35,10 @@ public class PointContainerType implements XMLRMISerializable, StringableContain
 		ArrayList<String> aString= new ArrayList<String>();
 		if(inter.equals(StringableContainerType.class))
 		{
-			String tostring = "public String toString(){return listePoint.toString();}";
+			String tostring = "public String toString(){return lpoint.toString();}";
 			aString.add(tostring);
 		}
-		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
+		return ObjectToXML.objectToElement(this.getOid(), inter,Stringable.class, this, aString,doc);
 	}
 
 	@Override

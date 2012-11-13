@@ -38,7 +38,7 @@ public class ReversibleXYContainerImpl implements XMLRMISerializable, Reversible
 			String tostring = "	public void reverse() {point.reverse();}";
 			aString.add(tostring);
 		}
-		return ObjectToXML.appelClientToDocument(this.getOid(), inter, this, aString,doc);
+		return ObjectToXML.objectToElement(this.getOid(), inter,null, this, aString,doc);
 	}
 
 	@Override

@@ -527,7 +527,7 @@ public class Test{
 	public void retObjPObjChListObjSsModif(){
 
 		ArrayList<Object> params = new ArrayList<Object>();
-		Stringable[] lpoint = new Stringable[1];
+		Point[] lpoint = new Point[1];
 		
 		Point p1 = new Point(1,1);
 		lpoint[0]=p1;

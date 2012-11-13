@@ -17,7 +17,9 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -163,7 +165,11 @@ public class XMLToObject {
 								value = createObjectFromNode(granChild, 
 										Class.forName(granChild.getAttributes().getNamedItem("type").getTextContent()));
 								fieldMap.put(name, value);
-							} 
+							} else if(granChild.getNodeName().equals("array")){
+								Class<?> typeArray = Array.newInstance(Class.forName(getFirstGranChild(granChild).getAttributes().getNamedItem("type").getTextContent()), 0).getClass();
+								value = createObjectFromNode(granChild, typeArray);
+								fieldMap.put(name, value);
+							}
 							else
 							{
 								value = createObjectFromNode(granChild, Object.class);
@@ -200,12 +206,16 @@ public class XMLToObject {
 							Object value = null;
 							if(granChild.getNodeName().equals("object"))
 							{
-								System.out.println("avant objet");
 								value = createObjectFromNode(granChild, 
 										Class.forName(granChild.getAttributes().getNamedItem("type").getTextContent()));
-								System.out.println("apres objet");
 								fieldMap.put(name, value);
-							} 
+							}
+							else if(granChild.getNodeName().equals("array")){
+								Class<?> typeArray = Array.newInstance(Class.forName(getFirstGranChild(granChild).getAttributes().getNamedItem("type").getTextContent()), 0).getClass();
+								value = createObjectFromNode(granChild, typeArray);
+								System.out.println("nom de la liste en parametre = "+name.toString());
+								fieldMap.put(name, value);
+							}
 							else
 							{
 								System.out.println("name : "+name+", type : "+granChild.getNodeName());
@@ -218,6 +228,8 @@ public class XMLToObject {
 					else if(current.getNodeName().equalsIgnoreCase("methods"))
 					{
 						//on ajoute la method a la classe
+						
+						// faire un cas pour les array
 						nl2 = current.getChildNodes();
 						for(int j = 0; j< nl2.getLength(); j++)
 						{
@@ -225,6 +237,7 @@ public class XMLToObject {
 							if(!n.getNodeName().equals("method"))continue;
 							if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
 							//String nm ="public String toString(){return \"x = \"+this.x+ \" y = \" + this.y;}";
+							System.out.println("affichage de clazz "+clazz.getName());
 							CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
 							clazz.addMethod(m);
 						}
@@ -346,8 +359,11 @@ public class XMLToObject {
 	 * @param value
 	 * @throws CannotCompileException
 	 * @throws NotFoundException
+	 * @throws ClassNotFoundException 
+	 * @throws DOMException 
+	 * @throws NegativeArraySizeException 
 	 */
-	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException {
+	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException, NegativeArraySizeException, DOMException, ClassNotFoundException {
 		if(n.getNodeName().equalsIgnoreCase("int"))
 		{
 			CtField f = new CtField(CtClass.intType,name,clazz);
@@ -377,6 +393,14 @@ public class XMLToObject {
 			CtField f = new CtField(ClassPool.getDefault().get(n.getAttributes().getNamedItem("type").getTextContent()),name,clazz);
 			f.setModifiers(Modifier.PUBLIC);
 			clazz.addField(f);
+		}
+		else if(n.getNodeName().equalsIgnoreCase("array")){
+			
+			Class<?> typeArray = Array.newInstance(Class.forName(getFirstGranChild(n).getAttributes().getNamedItem("type").getTextContent()), 0).getClass();
+			CtField f =  new CtField(ClassPool.getDefault().get(typeArray.getName()),name,clazz);
+			f.setModifiers(Modifier.PUBLIC);
+			clazz.addField(f);
+			
 		}
 		else {
 			System.out.println("type non traité dans addCtFieldToCtClass");
