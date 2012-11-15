@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import objets.Point;
+import objets.Stringable;
 import objets.XMLRMISerializable;
 
 import org.junit.Before;
@@ -160,7 +161,158 @@ public class TestObjectToXML {
 //	}
 	
 	//test  dateToDateTime
+	@org.junit.Test
+	public void testDateToDateTime()
+	{
+		Date d = new Date();
+		d.setTime(0);
+		String date = ObjectToXML.dateToDateTime(d);
+		assertTrue(date.equals("1970-01-01T01:00:00"));
+	}
 
-
+	@org.junit.Test
+	public void testAppelClient(){
+		Document doc = ObjectToXML.appelClient("test");
+		String retour= ObjectToXML.docToString(doc);
+		String expected ="<methodCall >" +
+							"<methodeName >test</methodeName>" +
+							"<params ></params>" +
+						"</methodCall>";
+		assertTrue(retour.equals(expected));
+	}
+	
+	@org.junit.Test
+	public void testObjectToElement(){
+		Stringable p = new Point(1,2);
+		String meth ="public void toString (){return \"hello\";";
+		ArrayList<String>listeMethode = new ArrayList<String>();
+		listeMethode.add(meth);
+		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
+		doc.appendChild(e);
+		String expected = "<value >"+
+							"<object oid=\"1\" type=\"objets.Stringable\" >"+
+								"<fields >"+
+									"<field name=\"x\" >"+
+										"<value >"+
+											"<double >1.0</double>"+
+										"</value>"+
+									"</field>"+
+									"<field name=\"y\" >"+
+										"<value >"+
+											"<double >2.0</double>"+
+										"</value>"+
+									"</field>"+
+									"<field name=\"mark\" >"+
+										"<value >"+
+											"<string >nom de la marque</string>"+
+										"</value>"+
+									"</field>"+
+								"</fields>"+
+								"<methods >"+
+									"<method language=\"Java\" >"+
+										"public void toString (){return \"hello\";</method>"+
+								"</methods>"+
+							"</object>"+
+						"</value>";
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+	}
+	
+	public void testGetOidFromXML()
+	{
+		Stringable p = new Point(1,2);
+		String meth ="public void toString (){return \"hello\";";
+		ArrayList<String>listeMethode = new ArrayList<String>();
+		listeMethode.add(meth);
+		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
+		doc.appendChild(e);
+		String oidTest = ObjectToXML.getOidFromXML(doc).get(0);
+		assertTrue(oidTest.equals("1"));
+	}
+	
+	//TODO
+	public void testGetFieldsByOID()
+	{
+		Stringable p = new Point(1,2);
+		String meth ="public void toString (){return \"hello\";";
+		ArrayList<String>listeMethode = new ArrayList<String>();
+		listeMethode.add(meth);
+		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
+		doc.appendChild(e);
+		String expected = "<object oid=\"1\" type=\"objets.Stringable\" >"+
+				"<fields >"+
+				"<field name=\"x\" >"+
+					"<value >"+
+						"<double >1.0</double>"+
+					"</value>"+
+				"</field>"+
+				"<field name=\"y\" >"+
+					"<value >"+
+						"<double >2.0</double>"+
+					"</value>"+
+				"</field>"+
+				"<field name=\"mark\" >"+
+					"<value >"+
+						"<string >nom de la marque</string>"+
+					"</value>"+
+				"</field>"+
+			"</fields>"+
+			"<methods >"+
+				"<method language=\"Java\" >"+
+					"public void toString (){return \"hello\";</method>"+
+			"</methods>"+
+		"</object>";
+		assertTrue(ObjectToXML.docToString(doc).equals(expected));
+	}
+	
+	public void testUpdateObjectFromElement()
+	{
+		Point p = new Point(0,0);
+		String stringDoc = "<object oid=\"1\" type=\"objets.Stringable\" >"+
+				"<fields >"+
+				"<field name=\"x\" >"+
+					"<value >"+
+						"<double >1.0</double>"+
+					"</value>"+
+				"</field>"+
+				"<field name=\"y\" >"+
+					"<value >"+
+						"<double >2.0</double>"+
+					"</value>"+
+				"</field>"+
+				"<field name=\"mark\" >"+
+					"<value >"+
+						"<string >nom de la marque</string>"+
+					"</value>"+
+				"</field>"+
+			"</fields>"+
+			"<methods >"+
+				"<method language=\"Java\" >"+
+					"public void toString (){return \"hello\";</method>"+
+			"</methods>"+
+		"</object>";
+		
+		Document d = ObjectToXML.stringToDoc(stringDoc);
+		ObjectToXML.updateObjectFromElement((Element)d.getFirstChild(),p);
+		assertTrue(p.getX()==1.0);
+		assertTrue(p.getY()==2.0);
+		
+	}
+	
+	//TODO  updateFieldByTypeDouble
+	public void testUpdateFieldByTypeDouble(){
+		String type = "double";
+		Point p = new Point(0,0);
+		
+		assertTrue(true);
+	}
+	
+	public void testCreateAppelClient()
+	{
+		int a =2 ;
+		Stringable p = new Point (1,3);
+		ArrayList<Class<?>>inters =new ArrayList<Class<?>>();
+		ArrayList<Object> params = new ArrayList<Object>();
+		
+	}
 
 }
