@@ -28,7 +28,7 @@ import xmlrmi.XMLOutputStream;
  * 
  * @author marcgregoire
  * @author matthieudelgado
- * Cette methode contruit puis envoi une requete au serveur attend la reponse et enfin traite la 
+ * Cette Class contruit puis envoi une requete au serveur attend la reponse et enfin traite la 
  * reponse en modifiant l'etat des objets qu'il a envoyé.
  */
 public class Client {
@@ -66,7 +66,6 @@ public class Client {
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc2 = docBuilder.parse(in);
 			//On affiche le document
-			System.out.println("--------------------------------\n ----------------------------");
 			TestEcritureXML.afficherDocument(doc2);
 			
 			

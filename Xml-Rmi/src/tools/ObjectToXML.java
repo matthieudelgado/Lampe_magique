@@ -70,6 +70,11 @@ import xmlrmi.XMLRMIField;
  */
 public class ObjectToXML {
 
+	/**
+	 * Cette methode permet de recuperer un fichier xml sous forme de string
+	 * @param nomFichier le chemin du fichier xml
+	 * @return le fichier xml sous forme de string
+	 */
 	public static String fileToString(String nomFichier){
 		String chaine="";
 		try{
@@ -89,133 +94,140 @@ public class ObjectToXML {
 	}
 
 	/**
-	 * 
-	 * @param chaine
-	 * @return
+	 * transforme un string en document xml
+	 * @param chaine la chaine correspondant au document
+	 * @return un document xml
 	 */
 	public static Document stringToDoc(String chaine){
-		//DocumentBuilder docBuilder = this.getDocBuilder();	
 		DocumentBuilder docB = null;
+		Document doc = null;
 		try {
 			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch(ParserConfigurationException e) {
-
-		}
-
-		Document doc=null;
-		try {
 			doc = docB.parse(new InputSource(new StringReader(chaine)));
+		} catch(ParserConfigurationException e) {
+			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return doc;
 	}
 
-
 	/**
 	 * Prend en argument un nom de fichier et renvoie un objet Document
-	 * @param nomDeFichier
+	 * @param nomDeFichier le chemin du fichier xml
 	 * @return un objet Document correspondant à la structure du fichier XML
 	 */
 	public static Document fileToDoc(String nomDeFichier){
 		DocumentBuilder docB = null;
 		try {
 			docB = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch(ParserConfigurationException e) {
-
-		}
-		try {
 			return docB.parse(new File(nomDeFichier));
+		} catch(ParserConfigurationException e) {
+			e.printStackTrace();
 		} catch(SAXException e) {
-
+			e.printStackTrace();
 		} catch (IOException e) {
-
+			e.printStackTrace();
 		}
-
 		return null;
 	}
 
 
 	/**
-	 * Ajoute dans l'appel client, param comme un fils de la balise params
-	 * @param doc
-	 * @param param
-	 * @return
+	 * Ajoute dans le document doc param comme un fils de la balise params
+	 * @param doc le document
+	 * @param param l'element a ajouter
+	 * @return doc
 	 */
 	public static Document mergeDocs(Document doc, Element param) {
 		Node racine= doc.getElementsByTagName("params").item(0);
 		Element racine2=  param;
-
 		racine.appendChild(racine2);
-
 		return doc;
 	}
 
 
 	/**
-	 * A pour charge la partie des parametres non Object de l'appel client
-	 * @param p
-	 * @param doc
-	 * @param num_itf 
-	 * @param inters 
+	 * Cette methode creer un element correspondant à l'objet p et le wrap dans un element param.( p ne doit correspondre à un type primitif ou à un tableau.) Et
+	 * l'ajoute comme paramètre du document doc. Si p est un tableau d'objet, l'element num_itf de la liste interface.
+	 * @param p l'objet
+	 * @param doc le document
+	 * @param num_itf le numero d'interface dans la liste
+	 * @param inters la liste d'interface
 	 * @return
 	 */
-	public static Element getNodePrimitif(Object p,Document doc, ArrayList<Class<?>> inters, Integer num_itf){
-
+	public static Element getNodePrimitif(Object p,Document doc, ArrayList<Class<?>> inters, Integer num_itf)
+	{
 		Element param = doc.createElement("param");
-
 		Element value =getContenuNodePrimitif(p, doc, inters, num_itf);
 		param.appendChild(value);
-
 		return param;
 	}
-	
+
+	/**
+	 * Cette methode creer un element correspondant à l'objet p.( p ne doit correspondre à un type primitif ou à un tableau.) Et
+	 * l'ajoute comme paramètre du document doc. Si p est un tableau d'objet, l'element num_itf de la liste interface.
+	 * @param p l'objet
+	 * @param doc le document
+	 * @param num_itf le numero d'interface dans la liste
+	 * @param inters la liste d'interface
+	 * @return
+	 */
 	public static Element getContenuNodePrimitif(Object p,Document doc, ArrayList<Class<?>> inters, Integer num_itf)
 	{
-	Element value = doc.createElement("value");
-		
+		Element value = doc.createElement("value");
+
 		String type = p.getClass().getSimpleName();
-		System.out.println("getContenuNodePrimitif je traite un objet de type "+type);
 		Element ty=null;
-		if(type.equals("Integer")){
+		if(type.equals("Integer"))
+		{
 			ty = doc.createElement("int");
 			ty.setTextContent(p.toString());
-		}else if(type.equals("Double")){
+		}
+		else if(type.equals("Double"))
+		{
 			ty = doc.createElement("double");
 			ty.setTextContent(p.toString());
-		}else if(type.equals("Boolean")){
+		}
+		else if(type.equals("Boolean"))
+		{
 			ty = doc.createElement("boolean");
 			if(p.toString().equals("true"))
 				ty.setTextContent("1");
 			else ty.setTextContent("0");
-		} else if(type.equals("String")){ // tester ici c'est une dateTime
+		} 
+		else if(type.equals("String"))
+		{
 			ty = doc.createElement("string");
 			ty.setTextContent(p.toString());
-		}else if(type.equals("Date")){
+		}
+		else if(type.equals("Date"))
+		{
 			ty = doc.createElement("datetime");
 			ty.setTextContent(dateToDateTime((Date)p));
-		} else if(p.getClass().isArray()){
+		} 
+		else if(p.getClass().isArray())
+		{
 			if(XMLRMISerializable.class.isAssignableFrom(p.getClass().getComponentType())){
-				System.out.println("getContenuNodePrimitif je suis un tableau XMLSerializable");
 				XMLRMISerializable[] tab = (XMLRMISerializable[])p;
 				ty = doc.createElement("array");
-				for(XMLRMISerializable o : tab){
+				for(XMLRMISerializable o : tab)
+				{
 					Element e = (Element) createElementObject(o, inters.get(num_itf), doc);
-					System.out.println("Interface de la liste dans un objet "+inters.get(num_itf).getSimpleName());
 					num_itf++;
 					ty.appendChild(e);
 				}
-			} else {
-				System.out.println("getContenuNodePrimitif je ne suis pas un tableau XMLSerializable");
+			} 
+			else 
+			{
 				Object[] tab = (Object[]) p;
 				ty = doc.createElement("array");
 				Element val;
 				Element e ;
-				for(Object o : tab){
+				for(Object o : tab)
+				{
 					val = doc.createElement("value");
 					e = (Element)getContenuNodePrimitif(o, doc, inters, num_itf).getFirstChild();
 					val.appendChild(e);
@@ -223,7 +235,8 @@ public class ObjectToXML {
 				}
 			}
 		}
-		else {
+		else 
+		{
 			System.err.println("type non pris en charge de getContenuNodePrimitif");
 		}
 
@@ -231,7 +244,13 @@ public class ObjectToXML {
 		return value;
 	}
 
-	public static String dateToDateTime(Date d){
+	/**
+	 * Cette methode transforme une Date en string dans le format dateTime 
+	 * @param d la date
+	 * @return la date sous forme de dateTime
+	 */
+	public static String dateToDateTime(Date d)
+	{
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		String dateString = df.format(d);
 		return dateString;
@@ -240,73 +259,56 @@ public class ObjectToXML {
 
 	/**
 	 * Creer le document de l'appel Client ainsi que son entete a partir d'un nom de methode
-	 * @param methode
-	 * @return
+	 * @param methode le nom de methode
+	 * @return le document
 	 */
-	public static Document appelClient(String methode){
+	public static Document appelClient(String methode)
+	{
 		Document doc = ObjectToXML.creerDocument();
-
 		Element racine=doc.createElement("methodCall");
 		doc.appendChild(racine);
-
 		Element methodeName = doc.createElement("methodeName");
 		methodeName.setTextContent(methode);
 		racine.appendChild(methodeName);
-
 		Element params = doc.createElement("params");
 		racine.appendChild(params);
-
-
-
 		return doc;
 	}
 
-
-	// TODO attention aux types des attributs
-	//Construction de l'appel client
-	// GÔøΩnÔøΩre un doc appel client ÔøΩ partir d'un objet
 	/**
-	 * 
-	 * @param oid
-	 * @param obj
-	 * @param methode_serveur
-	 * @param methodes
+	 * Cette methode transforme un objet en element.
+	 * @param oid l'oid de l'objet
+	 * @param itf l'interface de l'objet
+	 * @param itfArray 
+	 * @param obj l'objet à transformer
+	 * @param methodes les methodes a ajouter dans l'objet
+	 * @param doc le document 
 	 * @return
-	 * TODO rename cette methode passe un objet en xml
 	 */
-	public static Element objectToElement(String oid,Class<?> itf,Class<?> itfArray, Object obj,ArrayList<String> methodes,Document doc){
-
+	public static Element objectToElement(String oid,Class<?> itf,Class<?> itfArray, Object obj,ArrayList<String> methodes,Document doc)
+	{
 		Element value = doc.createElement("value");
-
 		Element object = doc.createElement("object");
 		object.setAttribute("oid", oid);
 		object.setAttribute("type", itf.getName());
 		value.appendChild(object);
-
 		Element fields =  doc.createElement("fields");
 		object.appendChild(fields);
-
 		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
-
 			Field fieldObj = obj.getClass().getDeclaredFields()[j];
-
 			fieldObj.setAccessible(true);
-
 			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
 			for(Annotation annotation : annotations){
-
 				if(annotation instanceof XMLRMIField){
-					// Balise Field
 					XMLRMIField myAnnotation = (XMLRMIField) annotation;
 					Element field = doc.createElement("field");
 					field.setAttribute("name", myAnnotation.serializationName());
-
 					fields.appendChild(field);
 					Element valueField = null;
 					if(XMLRMISerializable.class.isAssignableFrom(fieldObj.getType()))
 					{
-						try {
-							System.out.println("|"+myAnnotation.serializationType()+"|");
+						try 
+						{
 							valueField = ((XMLRMISerializable)fieldObj.get(obj)).
 									toXML(Class.forName(myAnnotation.serializationType()), doc);
 						} catch (Exception e) {
@@ -319,33 +321,17 @@ public class ObjectToXML {
 						liter.add(itfArray);
 						try {
 							valueField=ObjectToXML.getContenuNodePrimitif(fieldObj.get(obj), doc, liter, 0);
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							// TODO Auto-generated catch block
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						
 					}
-
-
 					else
 					{
 						valueField = doc.createElement("value");
-
 						Element type = doc.createElement(myAnnotation.serializationType());
-						//type.setTextContent("Valeur a entrer");
 						try {
 							type.setTextContent(fieldObj.get(obj).toString());
-						} catch (DOMException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IllegalArgumentException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							// TODO Auto-generated catch block
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 						valueField.appendChild(type);
@@ -356,7 +342,6 @@ public class ObjectToXML {
 			}
 			fieldObj.setAccessible(false);
 		}
-
 		Element methods = doc.createElement("methods");
 		object.appendChild(methods);
 
@@ -374,8 +359,8 @@ public class ObjectToXML {
 
 	/**
 	 * Permet la copie d'un fichier XML
-	 * @param fichierACopier
-	 * @param destination
+	 * @param fichierACopier le fichier
+	 * @param destination la destination de la copie
 	 */
 	public static void copyPasteXml(String fichierACopier, String destination){
 		ObjectToXML.docToFile(ObjectToXML.fileToDoc(fichierACopier), destination);
@@ -405,13 +390,8 @@ public class ObjectToXML {
 	 * @param nomDeFichier
 	 */
 	public static void docToFile(Document doc, String nomDeFichier){
-
 		Source source = new DOMSource(doc);
-
-
 		Result resultat = new StreamResult(new File(nomDeFichier));
-
-
 		Transformer transfo = null;
 		try {
 			transfo = TransformerFactory.newInstance().newTransformer();
@@ -419,15 +399,10 @@ public class ObjectToXML {
 			System.err.println("Impossible de creer un transformateur XML.");
 			System.exit(1);
 		}
-
 		transfo.setOutputProperty(OutputKeys.METHOD, "xml");
-
 		transfo.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-
 		transfo.setOutputProperty(OutputKeys.ENCODING, "utf-8");
-
 		transfo.setOutputProperty(OutputKeys.INDENT, "yes");
-
 		try {
 			transfo.transform(source, resultat);
 		} catch(TransformerException e) {
@@ -438,33 +413,66 @@ public class ObjectToXML {
 
 
 	/**
-	 * Affiche ÔøΩ l'ÔøΩcran un document XML fourni sous forme d'un objet DOM
+	 * Affiche à l'ecran un document XML fourni sous forme d'un objet DOM
 	 * Document.
-	 * 
 	 * @param doc le document
 	 */
 	public static void afficherDocument(Document doc) {
 		Element e = doc.getDocumentElement();
 		ObjectToXML.afficherElement(e);
 	}
+	
+	private static String docToString(Element e)
+	{
+		String s = "";
+		s+="<" + e.getNodeName() + " ";
+		NamedNodeMap attr = e.getAttributes();
+		for(int i=0; i<attr.getLength(); i++) 
+		{
+			Attr a = (Attr)attr.item(i);
+			s+= a.getName() + "=\"" + a.getNodeValue() + "\" ";
+		}
+		s+=">";
+
+		for(Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) 
+		{
+			switch(n.getNodeType()) {
+			case Node.ELEMENT_NODE:
+				s+=docToString((Element)n);
+				break;
+			case Node.TEXT_NODE:
+				String data = ((Text)n).getData();
+				s+=data;
+				break;
+			}
+		}
+		return s+"</" + e.getNodeName() + ">";
+	}
+	
+	public static String docToString(Document doc)
+	{
+		Element e = doc.getDocumentElement();
+		return docToString(e);
+	}
+		
 
 	/**
-	 * Affiche ÔøΩ l'ÔøΩcran un ÔøΩlÔøΩment XML, ainsi que ses attributs, ses noeuds
-	 * de texte, et ses sous-ÔøΩlÔøΩments.
-	 * 
-	 * @param e l'ÔøΩlÔøΩment ÔøΩ afficher
+	 * Affiche à l'ecran un document XML, ainsi que ses attributs, ses noeuds
+	 * de texte, et ses sous-elements.
+	 * @param e l'element à afficher
 	 */
 	public static void afficherElement(Element e) {
 		System.out.print("<" + e.getNodeName() + " ");
-
 		NamedNodeMap attr = e.getAttributes();
-		for(int i=0; i<attr.getLength(); i++) {
+		for(int i=0; i<attr.getLength(); i++) 
+		{
 			Attr a = (Attr)attr.item(i);
 			System.out.print(a.getName() + "=\"" + a.getNodeValue() + "\" ");
 		}
 		System.out.println(">");
 
-		for(Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) {
+		for(Node n = e.getFirstChild(); n != null; n = n.getNextSibling()) 
+		{
 			switch(n.getNodeType()) {
 			case Node.ELEMENT_NODE:
 				afficherElement((Element)n);
@@ -478,45 +486,10 @@ public class ObjectToXML {
 		System.out.println("</" + e.getNodeName() + ">");
 	}
 
-	/**
-	 * Crée un objet Object à partir d'un objet Document contenant les attribut et les méthodes\n
-	 * necessaires à la construction de l'Object.
-	 * @param doc
-	 * @return
-	 * @throws CannotCompileException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 */
-	//TODO A modifier
-	public static Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException{
-
-		// on recupere le contenu de la balise method
-		String corpsMethode= doc.getElementsByTagName("method").item(0).getTextContent();
-		//String corpsMethode = "public String toString(){return \"r\";}";
-		String x = doc.getElementsByTagName("double").item(0).getTextContent();
-		String y = doc.getElementsByTagName("double").item(1).getTextContent();
-
-		System.out.println(corpsMethode);
-
-		CtClass point = ClassPool.getDefault().makeClass("Point"); //TODO A CHANGER 
-
-		CtField f  = new CtField(CtClass.doubleType,"x",point);
-		point.addField(f,x);
-		CtField f1  = new CtField(CtClass.charType,"mark",point);
-		point.addField(f1);
-		CtField f2  = new CtField(CtClass.doubleType,"y",point);
-		point.addField(f2,y);
-
-		CtMethod m = CtNewMethod.make(corpsMethode, point);
-		point.addMethod(m);
-
-		Object p1 =point.toClass().newInstance();
-		return p1;
-	}
 
 	/**
 	 * Recupere tout les oid de la reponse et les met dans une ArrayList<String>
-	 * @param doc
+	 * @param doc 
 	 * @return La liste des oid
 	 */
 	public static ArrayList<String> getOidFromXML(Document doc){
@@ -529,14 +502,20 @@ public class ObjectToXML {
 		return loid;
 	}
 
-
-	public static Element getFieldsByOID(Document doc, String oid){
+	/**
+	 * Recupere dans le document doc l'objet d'oid oid
+	 * @param doc le document
+	 * @param oid l'oid
+	 * @return l'element de l'objet
+	 */
+	public static Element getFieldsByOID(Document doc, String oid)
+	{
 		Element e =null;
 		NodeList lobj = doc.getElementsByTagName("object");
-		for(int i=0;i<lobj.getLength();i++){
-			if(lobj.item(i).getAttributes().item(0).getTextContent().equals(oid)){
+		for(int i=0;i<lobj.getLength();i++)
+		{
+			if(lobj.item(i).getAttributes().item(0).getTextContent().equals(oid))
 				e = (Element) lobj.item(i).getFirstChild();
-			}
 		}
 		return e;
 	}
@@ -545,31 +524,38 @@ public class ObjectToXML {
 
 	/**
 	 * Permet de mettre a jour un objet a partir d'un element
-	 * @param el
-	 * @param obj
+	 * @param el l'element 
+	 * @param obj l'objet
 	 */
-	public static void updateObjectFromElement(Element el, Object obj){
-		// pour chaque annotation correspondant au name de <field> dans le xml, il faut modifier la valeur de l'attribut sous l'annotation
+	public static void updateObjectFromElement(Element el, Object obj)
+	{
+		// pour chaque annotation correspondant au name de <field> dans le xml, 
+		//il faut modifier la valeur de l'attribut sous l'annotation
 		NodeList fields = el.getChildNodes();
 		int nbField = fields.getLength();
 		String name=""; // Contiendra la valeur de name pour chaque field traité
 
 		//recupere la liste des attributs annotés
 		// et les stocke dans fieldAnnote
-		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
+		for(int j =0; j<obj.getClass().getDeclaredFields().length;j++)
+		{
 			Field fieldObj = obj.getClass().getDeclaredFields()[j];
 			fieldObj.setAccessible(true);
 			Annotation[] annotations=fieldObj.getDeclaredAnnotations();
 
-			for(Annotation annotation : annotations){
-				if(annotation instanceof XMLRMIField){
+			for(Annotation annotation : annotations)
+			{
+				if(annotation instanceof XMLRMIField)
+				{
 					//on regarde parmi toutes les balise field, laquelle correspond a l'annotation de ce field
 					//des qu'on l'a trouve on update le fiedl associe a cette annotation
 					XMLRMIField myAnnotation = (XMLRMIField) annotation;
 
-					for(int i=0;i<nbField;i++){ // attention pour chaque element de field, il faut le caster en Element
+					for(int i=0;i<nbField;i++)// attention pour chaque element de field, il faut le caster en Element
+					{ 
 						name=fields.item(i).getAttributes().item(0).getTextContent();
-						if(name.equals(myAnnotation.serializationName())){ // si l'annotation correspond a la bonne balise <field> du XML
+						if(name.equals(myAnnotation.serializationName()))// si l'annotation correspond a la bonne balise <field> du XML
+						{ 
 							//alors il faut update le champ correspond a l'annotation en l'occurence fieldObj
 							String type =fields.item(i).getFirstChild().getFirstChild().getNodeName();
 							ObjectToXML.updateFieldByType(type, obj, fieldObj, fields.item(i).getFirstChild().getFirstChild());
@@ -632,7 +618,7 @@ public class ObjectToXML {
 		for(int i=0;i<params.size();i++){  // verifier si le param implement l'interface XMLRMISerializable, dans ce cas c'est un type object
 			for(int j = 0;j<params.get(i).getClass().getInterfaces().length;j++){
 				if(params.get(i).getClass().getInterfaces()[j].equals(XMLRMISerializable.class)){ // ici c'est le cas de notre point
-					System.err.println("ittf : "+inters.get(num_itf).getSimpleName());
+					//System.err.println("ittf : "+inters.get(num_itf).getSimpleName());
 					Element paramObject = createElementParamObject(params.get(i), inters.get(num_itf), doc);
 					num_itf++;
 					ObjectToXML.mergeDocs(doc, paramObject);
@@ -655,7 +641,7 @@ public class ObjectToXML {
 		paramObject.appendChild(createElementObject(object, itf, doc));
 		return paramObject;
 	}
-	
+
 	private static Element createElementObject(Object object,
 			Class<?> itf, Document doc) {
 		XMLRMISerializable p = (XMLRMISerializable)object;
@@ -806,8 +792,6 @@ public class ObjectToXML {
 
 			Element methods = doc.createElement("methods");
 			object.appendChild(methods);
-
-
 			for(int i = 0;i<methodes.size();i++){
 				Element method = doc.createElement("method");
 				method.setAttribute("language", "Java");
