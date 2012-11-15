@@ -28,17 +28,11 @@ public class XMLToObject {
 
 
 	/**
-	 * TODO a redefinir en static
-	 * TODO a renomer
-	 * @param doc
+	 * Cette methode recupere un objet dans un document 
+	 * @param doc le doucment
 	 * @return
-	 * @throws CannotCompileException
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws NotFoundException
 	 */
 	public Object createObject(Document doc) throws CannotCompileException, InstantiationException, IllegalAccessException, NotFoundException{
-
 		// on recupere le contenu de la balise method
 		String corpsMethode= doc.getElementsByTagName("method").item(0).getTextContent();
 		//String corpsMethode = "public String toString(){return \"r\";}";
@@ -70,11 +64,11 @@ public class XMLToObject {
 	}
 
 	/**
-	 * 
-	 * @param <T>
-	 * @param node
-	 * @param parameterType
-	 * @return
+	 * Cette methode permet de creer un objet a partir d'un noeud
+	 * @param <T> le type du tableau si le neoud decrit un tableau
+	 * @param node le noeud
+	 * @param parameterType le type de l'objet
+	 * @return l'objet
 	 * @throws Exception
 	 */
 	public static <T> Object createObjectFromNode(Node node, Class<?> parameterType) throws Exception{
@@ -273,6 +267,12 @@ public class XMLToObject {
 		return null;
 	}
 
+	/**
+	 * Cette methode verfie que l'objet decrit par le noeud noeud est de type classe
+	 * @param classe la classe
+	 * @param noeud le noeud
+	 * @return vrai si oui faux sinon
+	 */
 	public static boolean typeChecker(Class<?> classe, Node noeud){
 		//System.out.println("typechecker : "+classe.getSimpleName()+ " "+noeud.getNodeName());
 		if(classe.equals(int.class))
@@ -320,6 +320,12 @@ public class XMLToObject {
 	}
 
 
+	/**
+	 * Cette methode transforme la liste d'object de type arrayClass en tableau de type arrayClass
+	 * @param array le tableau d'object
+	 * @param arrayClass le type du tableau
+	 * @return l'objet
+	 */
 	private static <T> Object toArray(ArrayList<Object> array, Class<?> arrayClass) {
 		if(arrayClass.equals(Integer.class)){
 			int[] tab = new int[array.size()];
@@ -344,24 +350,18 @@ public class XMLToObject {
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
 	}
 
-	private static Class<?> getPrimitiveClass(Class<?> c) {
-		if(c.equals(Integer.class)) return int.class;
-		if(c.equals(Double.class)) return double.class;
-		if(c.equals(Boolean.class)) return boolean.class;
-		return c;
-	}
 
 	/**
-	 * 
-	 * @param n
-	 * @param name
-	 * @param clazz
-	 * @param value
+	 * Cette methode permet d'ajouter a la classe le champs de nom name et de value value et de type n.getNodename() 
+	 * @param n le noeud
+	 * @param name le nom du field
+	 * @param clazz la ctClass
+	 * @param value la valeur
 	 * @throws CannotCompileException
 	 * @throws NotFoundException
-	 * @throws ClassNotFoundException 
-	 * @throws DOMException 
-	 * @throws NegativeArraySizeException 
+	 * @throws NegativeArraySizeException
+	 * @throws DOMException
+	 * @throws ClassNotFoundException
 	 */
 	private static void addCtFieldToCtClass(Node n, String name, CtClass clazz, Object value) throws CannotCompileException, NotFoundException, NegativeArraySizeException, DOMException, ClassNotFoundException {
 		if(n.getNodeName().equalsIgnoreCase("int"))
@@ -408,6 +408,11 @@ public class XMLToObject {
 
 	}
 
+	/**
+	 * Cette methode permet de recuperer le premier petit fils du noeud
+	 * @param node le noeud grand pere
+	 * @return le petit fils
+	 */
 	private static Node getFirstGranChild(Node node){
 		NodeList nl = node.getChildNodes(), nl2;
 		for(int i = 0; i< nl.getLength(); i++){
@@ -424,6 +429,11 @@ public class XMLToObject {
 		return null;
 	}
 
+	/**
+	 * Cette methode permet de recuperer la liste des petits fils du noeud node
+	 * @param node le noeud
+	 * @return 
+	 */
 	private static ArrayList<Node> getGrandChildList(Node node)
 	{
 		NodeList nl = node.getChildNodes(), nl2;
@@ -441,12 +451,5 @@ public class XMLToObject {
 		return ret;
 	}
 
-	public void updateFromXml(Document doc,ArrayList<Object> lo){
-		String oid=doc.getElementsByTagName("object").item(0).getAttributes().getNamedItem("oid").getTextContent();
-		System.out.println(oid);
-		Object objToUpdate;
 
-		// pour tout les objets, recupere la valeur de l'oid dans l'annotation
-
-	}
 }
