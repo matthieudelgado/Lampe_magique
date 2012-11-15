@@ -422,6 +422,11 @@ public class ObjectToXML {
 		ObjectToXML.afficherElement(e);
 	}
 	
+	/**
+	 * transforme un element en String
+	 * @param e
+	 * @return
+	 */
 	private static String docToString(Element e)
 	{
 		String s = "";
@@ -449,6 +454,12 @@ public class ObjectToXML {
 		return s+"</" + e.getNodeName() + ">";
 	}
 	
+	
+	/**
+	 * transforme un document en String
+	 * @param doc
+	 * @return
+	 */
 	public static String docToString(Document doc)
 	{
 		Element e = doc.getDocumentElement();
@@ -609,7 +620,6 @@ public class ObjectToXML {
 	 * @param methode
 	 * @param params
 	 * @return Document
-	 * TODO update do + mettre une liste d'interface ou alors aller chercher directement le type des args de la methode appelée 
 	 */
 	public static Document createAppelClient(ArrayList<Class<?>> inters,String methode,ArrayList<Object> params){
 		Integer num_itf = 0;
@@ -634,6 +644,13 @@ public class ObjectToXML {
 		return doc;
 	}
 
+	/**
+	 * Creer un element parametre pour l'objet objet
+	 * @param object l'objet
+	 * @param itf l'interface de l'objet
+	 * @param doc le document
+	 * @return l'element
+	 */
 	private static Element createElementParamObject(Object object,
 			Class<?> itf, Document doc) {
 		Element paramObject = doc.createElement("param");
@@ -642,6 +659,13 @@ public class ObjectToXML {
 		return paramObject;
 	}
 
+	/**
+	 * Creer un element objet pour l'objet objet
+	 * @param object l'objet
+	 * @param itf l'interface de l'objet
+	 * @param doc le document
+	 * @return
+	 */
 	private static Element createElementObject(Object object,
 			Class<?> itf, Document doc) {
 		XMLRMISerializable p = (XMLRMISerializable)object;
@@ -650,9 +674,17 @@ public class ObjectToXML {
 		return obje;
 	}
 
+	/**
+	 * Cette methode prend un objet et retourne l'element objet corrspondant
+	 * @param oid l'oid de l'objet
+	 * @param itf l'interface
+	 * @param obj l'objet
+	 * @param methodes les methodes de l'objet
+	 * @param doc le document
+	 * @return l'element.
+	 */
 	public static Element objectWithoutAnnotationsToElement(String oid, Class<?> itf,
 			Object obj, ArrayList<String> methodes, Document doc) throws IllegalArgumentException, IllegalAccessException {
-		System.err.println("objectWithoutAnnotationToElem : oid = "+oid);
 		Element value = doc.createElement("value");
 		//faire un switch sur le type de obj
 		if( obj == null){
@@ -717,39 +749,23 @@ public class ObjectToXML {
 				val.appendChild(e);
 			}
 			return value;
-		} else if( ! (obj instanceof Object)){//TODO gerer les autres types
-			System.err.println("objectWthoutAnnoatationToElement : pas un objet");
+		} else if( ! (obj instanceof Object)){
+			System.err.println("objectWthoutAnnoatationToElement : incohérence");
 			return value;
 		} else {
-
-
-
 			Element object = doc.createElement("object");
 			object.setAttribute("oid", oid);
 			object.setAttribute("type", itf.getName());
 			value.appendChild(object);
-
-			// TODO: Systeme d'annotation pour catcher ce que l'on veut (what?)
-
 			Element fields =  doc.createElement("fields");
 			object.appendChild(fields);
-
-
 			for(int j =0; j<obj.getClass().getDeclaredFields().length;j++){
-
 				Field fieldObj = obj.getClass().getDeclaredFields()[j];
-
 				fieldObj.setAccessible(true);
-
-
 				// Balise Field
 				Element field = doc.createElement("field");
 				field.setAttribute("name", fieldObj.getName());
-
 				fields.appendChild(field);
-
-
-
 				Element valueField = null; 
 				Element type = null;
 				if(fieldObj.getType().isInterface())
