@@ -53,6 +53,10 @@ public class ThreadServer extends Thread implements IServer{
 		}
 	}
 
+	/**
+	 * Cette methode execute le corps du thread
+	 * Le thread lit l'appel,  le traite et renvoi la reponse
+	 */
 	public void run(){
 		System.out.println("Un client s'est connecte");
 		try { 

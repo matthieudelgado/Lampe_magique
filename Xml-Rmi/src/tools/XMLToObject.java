@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -16,17 +14,19 @@ import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
-
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
-
+/**
+ * 
+ * @author matthieudelgado
+ * @author marcgregoire
+ * Cette classe permet d'effectuer les transformation de xml vers des objets
+ *
+ */
 public class XMLToObject {
-
-
 	/**
 	 * Cette methode recupere un objet dans un document 
 	 * @param doc le doucment
