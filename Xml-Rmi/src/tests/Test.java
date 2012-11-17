@@ -239,6 +239,7 @@ public class Test{
 			e.printStackTrace();
 			assertTrue(false);
 		}
+		
 	}
 	//test avec base64	
 

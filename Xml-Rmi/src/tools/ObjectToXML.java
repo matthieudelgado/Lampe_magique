@@ -184,7 +184,7 @@ public class ObjectToXML {
 		}
 		else if(type.equals("Date"))
 		{
-			ty = doc.createElement("datetime");
+			ty = doc.createElement("dateTime.iso8601");
 			ty.setTextContent(dateToDateTime((Date)p));
 		} 
 		else if(p.getClass().isArray())
@@ -224,9 +224,9 @@ public class ObjectToXML {
 	}
 
 	/**
-	 * Cette methode transforme une Date en string dans le format dateTime 
+	 * Cette methode transforme une Date en string dans le format dateTime.iso8601 
 	 * @param d la date
-	 * @return la date sous forme de dateTime
+	 * @return la date sous forme de dateTime.iso8601
 	 */
 	public static String dateToDateTime(Date d)
 	{
@@ -578,7 +578,7 @@ public class ObjectToXML {
 			}else if(type.equals("boolean")){
 				boolean value = Boolean.parseBoolean(valueElement.getTextContent());
 				fieldObj.setBoolean(obj, value);
-			}else if(type.equals("datetime")){
+			}else if(type.equals("dateTime.iso8601")){
 				//TODO
 			}else if(type.equals("base64")){
 				//TODO
@@ -692,7 +692,7 @@ public class ObjectToXML {
 			val.setTextContent(obj.toString());
 			return value;
 		}else if(obj instanceof Date){
-			Element val = doc.createElement("datetime");
+			Element val = doc.createElement("dateTime.iso8601");
 			val.setTextContent(dateToDateTime((Date)obj));
 			value.appendChild(val);
 			return value;

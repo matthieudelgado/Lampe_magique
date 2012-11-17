@@ -27,6 +27,7 @@ import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
 import tools.TestEcritureXML;
+import tools.Validateur;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
@@ -66,6 +67,7 @@ public class ThreadServer extends Thread implements IServer{
 
 			in.receive();
 			doc = docBuilder.parse(in);
+			Validateur.validateXmlAgainstRnc(ObjectToXML.docToString(doc), "schemas/xml-rmi.rnc");
 			
 			doTreatement(doc);
 		}

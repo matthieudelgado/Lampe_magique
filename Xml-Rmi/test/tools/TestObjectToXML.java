@@ -80,7 +80,7 @@ public class TestObjectToXML {
 		Date a = new Date();
 		a.setTime(0);
 		Element e = ObjectToXML.getContenuNodePrimitif(a, doc, null, null);
-		assertTrue(e.getFirstChild().getNodeName().equals("datetime"));
+		assertTrue(e.getFirstChild().getNodeName().equals("dateTime.iso8601"));
 		assertTrue(e.getFirstChild().getTextContent().equals("1970-01-01T01:00:00"));
 	}
 
@@ -146,7 +146,7 @@ public class TestObjectToXML {
 		Element e = ObjectToXML.getContenuNodePrimitif(la, doc, null, null);
 		assertTrue(e.getFirstChild().getNodeName().equals("array"));
 		assertTrue(e.getFirstChild().getFirstChild().getNodeName().equals("value"));
-		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getNodeName().equals("datetime"));
+		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getNodeName().equals("dateTime.iso8601"));
 		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getTextContent().equals("1970-01-01T01:00:00"));
 	}
 
@@ -186,7 +186,7 @@ public class TestObjectToXML {
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
 	}
 	
-	//test  dateToDateTime
+	//test  dateTodateTime.iso8601
 	@org.junit.Test
 	public void testDateToDateTime()
 	{
@@ -505,7 +505,7 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<datetime >1970-01-01T01:00:00</datetime>" +
+								"<dateTime.iso8601 >1970-01-01T01:00:00</dateTime.iso8601>" +
 						  "</value>";
 		
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));

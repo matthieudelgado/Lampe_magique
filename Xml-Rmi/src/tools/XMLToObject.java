@@ -83,7 +83,7 @@ public class XMLToObject {
 			else return Boolean.TRUE;
 		} else if(node.getNodeName().equalsIgnoreCase("string")){
 			return new String(((Text)node.getFirstChild()).getData());
-		} else if(node.getNodeName().equalsIgnoreCase("datetime")){
+		} else if(node.getNodeName().equalsIgnoreCase("dateTime.iso8601")){
 			//TODO a completer
 			SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			String date = ((Text)node.getFirstChild()).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
@@ -293,7 +293,7 @@ public class XMLToObject {
 		}
 		else if(classe.equals(Date.class))
 		{
-			return(noeud.getNodeName().equals("datetime"));
+			return(noeud.getNodeName().equals("dateTime.iso8601"));
 		}
 		else if(classe.isArray())
 		{
