@@ -28,7 +28,7 @@ datetime    = element dateTime.iso8601 {
         "[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"}
 }
 base64      = element base64     { xsd:base64Binary }
-array       = element array      { element data { value+ } }
+array       = element array      {  value+  }
 struct      = element struct     { namedmember+ }
 namedmember = element member     { membername & value }
 membername  = element name       { xsd:NMTOKEN }
