@@ -26,7 +26,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
-import tools.TestEcritureXML;
 import tools.Validateur;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
@@ -89,7 +88,7 @@ public class ThreadServer extends Thread implements IServer{
 	 * @throws Exception
 	 */
 	private void doTreatement(Document doc) throws Exception {
-		TestEcritureXML.afficherDocument(doc);
+		ObjectToXML.afficherDocument(doc);
 		//TODO on commence par verifier l'integrite du doc par rapport a la grammaire
 
 		//on recherche la méthode appelée

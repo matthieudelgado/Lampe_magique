@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import tools.ObjectToXML;
-import tools.TestEcritureXML;
+
 import tools.Validateur;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
@@ -110,7 +110,7 @@ public class Test{
 
 			Document doc2 = sendAndReceive(doc, out, socket);
 
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("int");
@@ -138,7 +138,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("double");
@@ -167,7 +167,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("boolean");
@@ -195,7 +195,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("string");
@@ -227,7 +227,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("boolean");
@@ -257,7 +257,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("array");
@@ -288,7 +288,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("array");
@@ -319,7 +319,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("array");
@@ -354,7 +354,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("array");
@@ -400,7 +400,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
@@ -435,7 +435,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
@@ -473,7 +473,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
@@ -507,7 +507,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
@@ -546,7 +546,7 @@ public class Test{
 			Document doc2 = sendAndReceive(doc, out, socket);
 
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 
 			//test du xml retourné
 			NodeList nl = doc2.getElementsByTagName("object");
