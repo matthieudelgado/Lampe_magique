@@ -10,6 +10,7 @@ import objets.Point;
 import objets.Stringable;
 import objets.XMLRMISerializable;
 
+import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -22,6 +23,11 @@ public class TestObjectToXML {
 	@Before
 	public void beforeTest(){
 		doc = ObjectToXML.creerDocument();
+	}
+
+	@After
+	public void afterTest(){
+		doc= null;
 	}
 
 	@org.junit.Test
@@ -163,29 +169,29 @@ public class TestObjectToXML {
 		String expected = "<value ><array ><value >"+
 				"<object oid=\"Point_0\" type=\"objets.XMLRMISerializable\" >"+
 				"<fields >"+
-					"<field name=\"x\" >"+
-						"<value >"+
-							"<double >1.0</double>"+
-						"</value>"+
-					"</field>"+
-					"<field name=\"y\" >"+
-						"<value >"+
-							"<double >1.0</double>"+
-						"</value>"+
-					"</field>"+
-					"<field name=\"mark\" >"+
-						"<value >"+
-							"<string >nom de la marque</string>"+
-						"</value>"+
-					"</field>"+
+				"<field name=\"x\" >"+
+				"<value >"+
+				"<double >1.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"y\" >"+
+				"<value >"+
+				"<double >1.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"mark\" >"+
+				"<value >"+
+				"<string >nom de la marque</string>"+
+				"</value>"+
+				"</field>"+
 				"</fields>"+
 				"<methods >"+
 				"</methods>"+
-			"</object>"+
-		"</value></array></value>";
+				"</object>"+
+				"</value></array></value>";
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
 	}
-	
+
 	//test  dateTodateTime.iso8601
 	@org.junit.Test
 	public void testDateToDateTime()
@@ -201,12 +207,12 @@ public class TestObjectToXML {
 		Document doc = ObjectToXML.appelClient("test");
 		String retour= ObjectToXML.docToString(doc);
 		String expected ="<methodCall >" +
-							"<methodName >test</methodName>" +
-							"<params ></params>" +
-						"</methodCall>";
+				"<methodName >test</methodName>" +
+				"<params ></params>" +
+				"</methodCall>";
 		assertTrue(retour.equals(expected));
 	}
-	
+
 	@org.junit.Test
 	public void testObjectToElement(){
 		Stringable p = new Point(1,2);
@@ -216,33 +222,33 @@ public class TestObjectToXML {
 		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
 		doc.appendChild(e);
 		String expected = "<value >"+
-							"<object oid=\"1\" type=\"objets.Stringable\" >"+
-								"<fields >"+
-									"<field name=\"x\" >"+
-										"<value >"+
-											"<double >1.0</double>"+
-										"</value>"+
-									"</field>"+
-									"<field name=\"y\" >"+
-										"<value >"+
-											"<double >2.0</double>"+
-										"</value>"+
-									"</field>"+
-									"<field name=\"mark\" >"+
-										"<value >"+
-											"<string >nom de la marque</string>"+
-										"</value>"+
-									"</field>"+
-								"</fields>"+
-								"<methods >"+
-									"<method language=\"Java\" >"+
-										"public void toString (){return \"hello\";</method>"+
-								"</methods>"+
-							"</object>"+
-						"</value>";
+				"<object oid=\"1\" type=\"objets.Stringable\" >"+
+				"<fields >"+
+				"<field name=\"x\" >"+
+				"<value >"+
+				"<double >1.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"y\" >"+
+				"<value >"+
+				"<double >2.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"mark\" >"+
+				"<value >"+
+				"<string >nom de la marque</string>"+
+				"</value>"+
+				"</field>"+
+				"</fields>"+
+				"<methods >"+
+				"<method language=\"Java\" >"+
+				"public void toString (){return \"hello\";</method>"+
+				"</methods>"+
+				"</object>"+
+				"</value>";
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
 	}
-	
+
 	@org.junit.Test
 	public void testGetOidFromXML()
 	{
@@ -255,8 +261,8 @@ public class TestObjectToXML {
 		String oidTest = ObjectToXML.getOidFromXML(doc).get(0);
 		assertTrue(oidTest.equals("1"));
 	}
-	
-	 
+
+
 	@org.junit.Test
 	public void testGetFieldsByOID()
 	{
@@ -266,31 +272,31 @@ public class TestObjectToXML {
 		listeMethode.add(meth);
 		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
 		doc.appendChild(e);
-		
+
 		Element o = ObjectToXML.getFieldsByOID(doc, "1");
-		
+
 		String expected = 
 				"<fields >"+
-				"<field name=\"x\" >"+
-					"<value >"+
+						"<field name=\"x\" >"+
+						"<value >"+
 						"<double >1.0</double>"+
-					"</value>"+
-				"</field>"+
-				"<field name=\"y\" >"+
-					"<value >"+
+						"</value>"+
+						"</field>"+
+						"<field name=\"y\" >"+
+						"<value >"+
 						"<double >2.0</double>"+
-					"</value>"+
-				"</field>"+
-				"<field name=\"mark\" >"+
-					"<value >"+
+						"</value>"+
+						"</field>"+
+						"<field name=\"mark\" >"+
+						"<value >"+
 						"<string >nom de la marque</string>"+
-					"</value>"+
-				"</field>"+
-			"</fields>";
+						"</value>"+
+						"</field>"+
+						"</fields>";
 		assertTrue(ObjectToXML.docToString(o).equals(expected));
 	}
-	
-	
+
+
 	@org.junit.Test
 	public void testUpdateObjectFromElement()
 	{
@@ -298,45 +304,45 @@ public class TestObjectToXML {
 		String stringDoc = "<object oid=\"1\" type=\"objets.Stringable\" >"+
 				"<fields >"+
 				"<field name=\"x\" >"+
-					"<value >"+
-						"<double >1.0</double>"+
-					"</value>"+
+				"<value >"+
+				"<double >1.0</double>"+
+				"</value>"+
 				"</field>"+
 				"<field name=\"y\" >"+
-					"<value >"+
-						"<double >2.0</double>"+
-					"</value>"+
+				"<value >"+
+				"<double >2.0</double>"+
+				"</value>"+
 				"</field>"+
 				"<field name=\"mark\" >"+
-					"<value >"+
-						"<string >nom de la marque</string>"+
-					"</value>"+
+				"<value >"+
+				"<string >nom de la marque</string>"+
+				"</value>"+
 				"</field>"+
-			"</fields>"+
-			"<methods >"+
+				"</fields>"+
+				"<methods >"+
 				"<method language=\"Java\" >"+
-					"public void toString (){return \"hello\";</method>"+
-			"</methods>"+
-		"</object>";
-		
+				"public void toString (){return \"hello\";</method>"+
+				"</methods>"+
+				"</object>";
+
 		Document d = ObjectToXML.stringToDoc(stringDoc);
-		
-		
+
+
 		ObjectToXML.updateObjectFromElement((Element)d.getFirstChild().getFirstChild(),p);
 		assertTrue(p.getX()==1.0);
 		assertTrue(p.getY()==2.0);
-		
+
 	}
-	
+
 	//TODO  updateFieldByTypeDouble
 	@org.junit.Test
 	public void testUpdateFieldByTypeDouble(){
 		String type = "double";
 		Point p = new Point(0,0);
-		
+
 		assertTrue(true);
 	}
-	
+
 	@org.junit.Test
 	public void testCreateAppelClient()
 	{
@@ -347,55 +353,55 @@ public class TestObjectToXML {
 		ArrayList<Object> params = new ArrayList<Object>();
 		params.add(a);
 		params.add(p);
-		Document d = ObjectToXML.createAppelClient(inters, "display", params);
+		doc = ObjectToXML.createAppelClient(inters, "display", params);
 		String ex ="<methodCall >"+
-							"<methodName >display</methodName>"+
-							"<params >"+
-								"<param >"+
-									"<value >"+
-										"<int >2</int>"+
-									"</value>"+
-								"</param>"+
-								"<param >"+
-									"<value >"+
-										"<object oid=\"Point_0\" type=\"objets.Stringable\" >"+
-											"<fields >"+
-												"<field name=\"x\" >"+
-													"<value >"+
-														"<double >1.0</double>"+
-													"</value>"+
-												"</field>"+
-												"<field name=\"y\" >"+
-													"<value >"+
-														"<double >3.0</double>"+
-													"</value>"+
-												"</field>"+
-												"<field name=\"mark\" >"+
-													"<value >"+
-														"<string >nom de la marque</string>"+
-													"</value>"+
-												"</field>"+
-											"</fields>"+
-											"<methods >"+
-												"<method language=\"Java\" >"+
-													"public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}</method>"+
-											"</methods>"+
-										"</object>"+
-									"</value>"+
-								"</param>"+
-							"</params>"+
-						"</methodCall>";
-		
-		String rendu = ObjectToXML.docToString(d);
+				"<methodName >display</methodName>"+
+				"<params >"+
+				"<param >"+
+				"<value >"+
+				"<int >2</int>"+
+				"</value>"+
+				"</param>"+
+				"<param >"+
+				"<value >"+
+				"<object oid=\"Point_0\" type=\"objets.Stringable\" >"+
+				"<fields >"+
+				"<field name=\"x\" >"+
+				"<value >"+
+				"<double >1.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"y\" >"+
+				"<value >"+
+				"<double >3.0</double>"+
+				"</value>"+
+				"</field>"+
+				"<field name=\"mark\" >"+
+				"<value >"+
+				"<string >nom de la marque</string>"+
+				"</value>"+
+				"</field>"+
+				"</fields>"+
+				"<methods >"+
+				"<method language=\"Java\" >"+
+				"public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}</method>"+
+				"</methods>"+
+				"</object>"+
+				"</value>"+
+				"</param>"+
+				"</params>"+
+				"</methodCall>";
+
+		String rend = ObjectToXML.docToString(doc);
 		try {
-			Validateur.validateXmlAgainstRnc(rendu, "schemas/xml-rmi.rnc");
+			Validateur.validateXmlAgainstRnc(rend, "schemas/xml-rmi.rnc");
 		} catch (SAXException e) {
 			assertTrue(false);
 			return ;
 		} catch (IOException e) {
 			System.out.println("File non trouve");
 		}
-		assertTrue(ex.equals(rendu));
+		assertTrue(ex.equals(rend));
 	}
 
 	@org.junit.Test
@@ -410,13 +416,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<int >2</int>" +
-						  "</value>";
-		
+				"<int >2</int>" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementDouble(){
 		double a  = 2.0;
@@ -429,13 +435,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<double >2.0</double>" +
-						  "</value>";
-		
+				"<double >2.0</double>" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementVoid(){
 		try {
@@ -447,13 +453,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"void" +
-						  "</value>";
-		
+				"void" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementBoolean(){
 		boolean a = true;
@@ -466,13 +472,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<boolean >1</boolean>" +
-						  "</value>";
-		
+				"<boolean >1</boolean>" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementString(){
 		String  a = "Hello" ;
@@ -485,13 +491,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<string >Hello</string>" +
-						  "</value>";
-		
+				"<string >Hello</string>" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementDate(){
 		Date a = new Date();
@@ -505,13 +511,13 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<dateTime.iso8601 >1970-01-01T01:00:00</dateTime.iso8601>" +
-						  "</value>";
-		
+				"<dateTime.iso8601 >1970-01-01T01:00:00</dateTime.iso8601>" +
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementArrayInt(){
 		int a = 1;
@@ -528,20 +534,20 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<array >" +
-									"<value >"+
-										"<int >1</int>" +
-									"</value>"+
-									"<value >"+
-										"<int >2</int>" +
-									"</value>"+
-								"</array>"+
-						  "</value>";
-		
+				"<array >" +
+				"<value >"+
+				"<int >1</int>" +
+				"</value>"+
+				"<value >"+
+				"<int >2</int>" +
+				"</value>"+
+				"</array>"+
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementArrayDouble(){
 		double a = 1.0;
@@ -558,20 +564,20 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<array >" +
-									"<value >"+
-										"<double >1.0</double>" +
-									"</value>"+
-									"<value >"+
-										"<double >2.0</double>" +
-									"</value>"+
-								"</array>"+
-						  "</value>";
-		
+				"<array >" +
+				"<value >"+
+				"<double >1.0</double>" +
+				"</value>"+
+				"<value >"+
+				"<double >2.0</double>" +
+				"</value>"+
+				"</array>"+
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
+
 	@org.junit.Test
 	public void TestObjectWithoutAnnotationsToElementArrayBoolean(){
 		boolean a = true;
@@ -588,20 +594,20 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-								"<array >" +
-									"<value >"+
-										"<boolean >1</boolean>" +
-									"</value>"+
-									"<value >"+
-										"<boolean >0</boolean>" +
-									"</value>"+
-								"</array>"+
-						  "</value>";
-		
+				"<array >" +
+				"<value >"+
+				"<boolean >1</boolean>" +
+				"</value>"+
+				"<value >"+
+				"<boolean >0</boolean>" +
+				"</value>"+
+				"</array>"+
+				"</value>";
+
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
-		
+
 	}
-	
-	
-	
+
+
+
 }
