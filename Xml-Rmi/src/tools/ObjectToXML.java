@@ -427,7 +427,7 @@ public class ObjectToXML {
 	 * @param e
 	 * @return
 	 */
-	private static String docToString(Element e)
+	public static String docToString(Element e)
 	{
 		String s = "";
 		s+="<" + e.getNodeName() + " ";

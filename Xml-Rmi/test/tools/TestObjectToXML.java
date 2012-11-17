@@ -217,6 +217,7 @@ public class TestObjectToXML {
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
 	}
 	
+	@org.junit.Test
 	public void testGetOidFromXML()
 	{
 		Stringable p = new Point(1,2);
@@ -229,16 +230,20 @@ public class TestObjectToXML {
 		assertTrue(oidTest.equals("1"));
 	}
 	
-	//TODO
+	 
+	@org.junit.Test
 	public void testGetFieldsByOID()
 	{
-		Stringable p = new Point(1,2);
+		Stringable p = new Point(1.0,2.0);
 		String meth ="public void toString (){return \"hello\";";
 		ArrayList<String>listeMethode = new ArrayList<String>();
 		listeMethode.add(meth);
 		Element e = ObjectToXML.objectToElement("1", Stringable.class, null, p, listeMethode, doc);
 		doc.appendChild(e);
-		String expected = "<object oid=\"1\" type=\"objets.Stringable\" >"+
+		
+		Element o = ObjectToXML.getFieldsByOID(doc, "1");
+		
+		String expected = 
 				"<fields >"+
 				"<field name=\"x\" >"+
 					"<value >"+
@@ -255,15 +260,12 @@ public class TestObjectToXML {
 						"<string >nom de la marque</string>"+
 					"</value>"+
 				"</field>"+
-			"</fields>"+
-			"<methods >"+
-				"<method language=\"Java\" >"+
-					"public void toString (){return \"hello\";</method>"+
-			"</methods>"+
-		"</object>";
-		assertTrue(ObjectToXML.docToString(doc).equals(expected));
+			"</fields>";
+		assertTrue(ObjectToXML.docToString(o).equals(expected));
 	}
 	
+	//TODO
+	//@org.junit.Test
 	public void testUpdateObjectFromElement()
 	{
 		Point p = new Point(0,0);
@@ -299,6 +301,7 @@ public class TestObjectToXML {
 	}
 	
 	//TODO  updateFieldByTypeDouble
+	@org.junit.Test
 	public void testUpdateFieldByTypeDouble(){
 		String type = "double";
 		Point p = new Point(0,0);
@@ -306,13 +309,280 @@ public class TestObjectToXML {
 		assertTrue(true);
 	}
 	
+	@org.junit.Test
 	public void testCreateAppelClient()
 	{
 		int a =2 ;
-		Stringable p = new Point (1,3);
+		Stringable p = new Point (1.0,3.0);
 		ArrayList<Class<?>>inters =new ArrayList<Class<?>>();
+		inters.add(Stringable.class);
 		ArrayList<Object> params = new ArrayList<Object>();
+		params.add(a);
+		params.add(p);
+		Document d = ObjectToXML.createAppelClient(inters, "display", params);
+		String ex ="<methodCall >"+
+							"<methodeName >display</methodeName>"+
+							"<params >"+
+								"<param >"+
+									"<value >"+
+										"<int >2</int>"+
+									"</value>"+
+								"</param>"+
+								"<param >"+
+									"<value >"+
+										"<object oid=\"Point_0\" type=\"objets.Stringable\" >"+
+											"<fields >"+
+												"<field name=\"x\" >"+
+													"<value >"+
+														"<double >1.0</double>"+
+													"</value>"+
+												"</field>"+
+												"<field name=\"y\" >"+
+													"<value >"+
+														"<double >3.0</double>"+
+													"</value>"+
+												"</field>"+
+												"<field name=\"mark\" >"+
+													"<value >"+
+														"<string >nom de la marque</string>"+
+													"</value>"+
+												"</field>"+
+											"</fields>"+
+											"<methods >"+
+												"<method language=\"Java\" >"+
+													"public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}</method>"+
+											"</methods>"+
+										"</object>"+
+									"</value>"+
+								"</param>"+
+							"</params>"+
+						"</methodCall>";
 		
+		assertTrue(ex.equals(ObjectToXML.docToString(d)));
 	}
 
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementInt(){
+		int a  = 2;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<int >2</int>" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementDouble(){
+		double a  = 2.0;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<double >2.0</double>" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementVoid(){
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, null, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"void" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementBoolean(){
+		boolean a = true;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<boolean >1</boolean>" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementString(){
+		String  a = "Hello" ;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<string >Hello</string>" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementDate(){
+		Date a = new Date();
+		a.setTime(0);
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<datetime >1970-01-01T01:00:00</datetime>" +
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementArrayInt(){
+		int a = 1;
+		int b = 2;
+		int[] liste = new int[2];
+		liste[0]=a;
+		liste[1]=b;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<array >" +
+									"<value >"+
+										"<int >1</int>" +
+									"</value>"+
+									"<value >"+
+										"<int >2</int>" +
+									"</value>"+
+								"</array>"+
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementArrayDouble(){
+		double a = 1.0;
+		double b = 2.0;
+		double[] liste = new double[2];
+		liste[0]=a;
+		liste[1]=b;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<array >" +
+									"<value >"+
+										"<double >1.0</double>" +
+									"</value>"+
+									"<value >"+
+										"<double >2.0</double>" +
+									"</value>"+
+								"</array>"+
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	@org.junit.Test
+	public void TestObjectWithoutAnnotationsToElementArrayBoolean(){
+		boolean a = true;
+		boolean b = false;
+		boolean[] liste = new boolean[2];
+		liste[0]=a;
+		liste[1]=b;
+		try {
+			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
+			doc.appendChild(e);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String expected = "<value >"+
+								"<array >" +
+									"<value >"+
+										"<boolean >1</boolean>" +
+									"</value>"+
+									"<value >"+
+										"<boolean >0</boolean>" +
+									"</value>"+
+								"</array>"+
+						  "</value>";
+		
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+		
+	}
+	
+	
+	
 }
