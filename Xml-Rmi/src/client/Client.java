@@ -20,7 +20,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import tools.ObjectToXML;
-import tools.TestEcritureXML;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
 
@@ -66,7 +65,7 @@ public class Client {
 			DocumentBuilder docBuilder = docBuilderFact.newDocumentBuilder();
 			Document doc2 = docBuilder.parse(in);
 			//On affiche le document
-			TestEcritureXML.afficherDocument(doc2);
+			ObjectToXML.afficherDocument(doc2);
 			
 			
 			//****Mise a jour des objets envoyes par le serveur*****

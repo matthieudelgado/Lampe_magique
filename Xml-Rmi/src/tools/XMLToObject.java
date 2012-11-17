@@ -27,8 +27,12 @@ import org.w3c.dom.Text;
  *
  */
 public class XMLToObject {
+	
+	
 	/**
+	 * Cette methode n'est qu'un TEST ! Elle n'est pas utilisee dans le projet
 	 * Cette methode recupere un objet dans un document 
+	 * 
 	 * @param doc le doucment
 	 * @return
 	 */
@@ -84,7 +88,6 @@ public class XMLToObject {
 		} else if(node.getNodeName().equalsIgnoreCase("string")){
 			return new String(((Text)node.getFirstChild()).getData());
 		} else if(node.getNodeName().equalsIgnoreCase("dateTime.iso8601")){
-			//TODO a completer
 			SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 			String date = ((Text)node.getFirstChild()).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
 			return ISO8601DATEFORMAT.parse(date);
