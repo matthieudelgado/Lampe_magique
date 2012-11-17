@@ -29,9 +29,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import tools.ObjectToXML;
 import tools.TestEcritureXML;
+import tools.Validateur;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;
 import xmlrmi.XMLOutputStream;
@@ -51,6 +53,8 @@ public class Test{
 
 	public static Document sendAndReceive(Document doc, XMLOutputStream out, Socket socket) throws Exception{
 		StreamResult sr = new StreamResult(out);
+		
+		
 		DOMSource ds = new DOMSource(doc);
 		Transformer tf = TransformerFactory.newInstance().newTransformer();
 		tf.transform(ds, sr);

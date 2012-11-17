@@ -66,6 +66,7 @@ public class ThreadServer extends Thread implements IServer{
 
 			in.receive();
 			doc = docBuilder.parse(in);
+			
 			doTreatement(doc);
 		}
 		catch (Exception e){ e.printStackTrace();}
@@ -90,7 +91,7 @@ public class ThreadServer extends Thread implements IServer{
 		//TODO on commence par verifier l'integrite du doc par rapport a la grammaire
 
 		//on recherche la m√©thode appel√©e
-		String methodeName = getMethodName(doc);
+		String methodName = getMethodName(doc);
 
 		//on recup√®re les parametres de la methode dans le xml
 		ArrayList<Node> paramList = getParameters(doc); 
@@ -100,7 +101,7 @@ public class ThreadServer extends Thread implements IServer{
 		//on verfie qu'elle existe dans l'inteface IServer et
 		//que les parametre de paramList correspondent
 		ArrayList<Object> args = new ArrayList<Object>();
-		Method calledMethod = findCalledMethodInServerInterface(methodeName, args, paramList);
+		Method calledMethod = findCalledMethodInServerInterface(methodName, args, paramList);
 
 		Object ret;
 		if(calledMethod == null){//si on a pas trouvé la methode, message d'erreur
@@ -127,7 +128,7 @@ public class ThreadServer extends Thread implements IServer{
 	 * @return le nom de la methode
 	 */
 	private String getMethodName(Document doc){
-		Node n = doc.getElementsByTagName("methodeName").item(0).getFirstChild();
+		Node n = doc.getElementsByTagName("methodName").item(0).getFirstChild();
 		System.out.println("nom de methode "+n.getTextContent());
 		return n.getTextContent();
 	}
@@ -162,13 +163,13 @@ public class ThreadServer extends Thread implements IServer{
 	 * Pour cela elle se sert du nom de la methode ainsi que de ces parametres.
 	 * De plus, la methode reconstruit les objets parametre d'apres la liste de Node paramList, 
 	 * et les ajoute à la liste args.
-	 * @param methodeName le nom de la methode appelee
+	 * @param methodName le nom de la methode appelee
 	 * @param args la liste des arguments 
 	 * @param paramList la liste des noeuds correspondants aux parametres dans le xml du client
 	 * @return la methode appelee si elle existe, null sinon
 	 * @throws Exception
 	 */
-	private Method findCalledMethodInServerInterface(String methodeName, ArrayList<Object> args, ArrayList<Node> paramList) throws Exception{
+	private Method findCalledMethodInServerInterface(String methodName, ArrayList<Object> args, ArrayList<Node> paramList) throws Exception{
 		Class<IServer> itf = IServer.class;
 		Method[] methods = itf.getDeclaredMethods();
 		Method calledMethod = null;
@@ -178,7 +179,7 @@ public class ThreadServer extends Thread implements IServer{
 		for(Method m : methods)
 		{
 			//on commence par verifier si le nom correspond
-			if( !m.getName().equalsIgnoreCase(methodeName)) continue;
+			if( !m.getName().equalsIgnoreCase(methodName)) continue;
 			//on verifie ensuite les arguments
 			parameterTypes = m.getParameterTypes();
 			if(parameterTypes.length != paramList.size()) continue;

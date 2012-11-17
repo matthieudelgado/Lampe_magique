@@ -2,6 +2,7 @@ package tools;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -12,6 +13,7 @@ import objets.XMLRMISerializable;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 public class TestObjectToXML {
 
@@ -148,17 +150,41 @@ public class TestObjectToXML {
 		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getTextContent().equals("1970-01-01T01:00:00"));
 	}
 
-	//TODO
-//	@org.junit.Test
-//	public void testGetContenuNodePrimitifArrayXMLRMI()
-//	{
-//		XMLRMISerializable[] la = new XMLRMISerializable[1] ;
-//		la[0] = new Point(1,1);
-//		ArrayList<Class<?>> liter =new ArrayList<Class <?>>();
-//		liter.add(XMLRMISerializable.class);
-//		Element e = ObjectToXML.getContenuNodePrimitif(la, doc, liter, null);
-//		assertTrue(e.getFirstChild().getNodeName().equals("object"));
-//	}
+	@org.junit.Test
+	public void testGetContenuNodePrimitifArrayXMLRMI()
+	{
+		XMLRMISerializable[] la = new XMLRMISerializable[1] ;
+		la[0] = new Point(1,1);
+		ArrayList<Class<?>> liter =new ArrayList<Class <?>>();
+		liter.add(XMLRMISerializable.class);
+		Element e = ObjectToXML.getContenuNodePrimitif(la, doc, liter, 0);
+		doc.appendChild(e);
+		ObjectToXML.afficherDocument(doc);
+		String expected = "<value ><array ><value >"+
+				"<object oid=\"Point_0\" type=\"objets.XMLRMISerializable\" >"+
+				"<fields >"+
+					"<field name=\"x\" >"+
+						"<value >"+
+							"<double >1.0</double>"+
+						"</value>"+
+					"</field>"+
+					"<field name=\"y\" >"+
+						"<value >"+
+							"<double >1.0</double>"+
+						"</value>"+
+					"</field>"+
+					"<field name=\"mark\" >"+
+						"<value >"+
+							"<string >nom de la marque</string>"+
+						"</value>"+
+					"</field>"+
+				"</fields>"+
+				"<methods >"+
+				"</methods>"+
+			"</object>"+
+		"</value></array></value>";
+		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
+	}
 	
 	//test  dateToDateTime
 	@org.junit.Test
@@ -175,7 +201,7 @@ public class TestObjectToXML {
 		Document doc = ObjectToXML.appelClient("test");
 		String retour= ObjectToXML.docToString(doc);
 		String expected ="<methodCall >" +
-							"<methodeName >test</methodeName>" +
+							"<methodName >test</methodName>" +
 							"<params ></params>" +
 						"</methodCall>";
 		assertTrue(retour.equals(expected));
@@ -264,8 +290,8 @@ public class TestObjectToXML {
 		assertTrue(ObjectToXML.docToString(o).equals(expected));
 	}
 	
-	//TODO
-	//@org.junit.Test
+	
+	@org.junit.Test
 	public void testUpdateObjectFromElement()
 	{
 		Point p = new Point(0,0);
@@ -294,7 +320,9 @@ public class TestObjectToXML {
 		"</object>";
 		
 		Document d = ObjectToXML.stringToDoc(stringDoc);
-		ObjectToXML.updateObjectFromElement((Element)d.getFirstChild(),p);
+		
+		
+		ObjectToXML.updateObjectFromElement((Element)d.getFirstChild().getFirstChild(),p);
 		assertTrue(p.getX()==1.0);
 		assertTrue(p.getY()==2.0);
 		
@@ -321,7 +349,7 @@ public class TestObjectToXML {
 		params.add(p);
 		Document d = ObjectToXML.createAppelClient(inters, "display", params);
 		String ex ="<methodCall >"+
-							"<methodeName >display</methodeName>"+
+							"<methodName >display</methodName>"+
 							"<params >"+
 								"<param >"+
 									"<value >"+
@@ -358,7 +386,16 @@ public class TestObjectToXML {
 							"</params>"+
 						"</methodCall>";
 		
-		assertTrue(ex.equals(ObjectToXML.docToString(d)));
+		String rendu = ObjectToXML.docToString(d);
+		try {
+			Validateur.validateXmlAgainstRnc(rendu, "schemas/xml-rmi.rnc");
+		} catch (SAXException e) {
+			assertTrue(false);
+			return ;
+		} catch (IOException e) {
+			System.out.println("File non trouve");
+		}
+		assertTrue(ex.equals(rendu));
 	}
 
 	@org.junit.Test
@@ -368,10 +405,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -389,10 +424,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -409,10 +442,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, null, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -430,10 +461,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -451,10 +480,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -473,10 +500,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, a, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -498,10 +523,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -530,10 +553,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
@@ -562,10 +583,8 @@ public class TestObjectToXML {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, liste, null, doc);
 			doc.appendChild(e);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String expected = "<value >"+

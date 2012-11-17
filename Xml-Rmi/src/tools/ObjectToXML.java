@@ -246,9 +246,9 @@ public class ObjectToXML {
 		Document doc = ObjectToXML.creerDocument();
 		Element racine=doc.createElement("methodCall");
 		doc.appendChild(racine);
-		Element methodeName = doc.createElement("methodeName");
-		methodeName.setTextContent(methode);
-		racine.appendChild(methodeName);
+		Element methodName = doc.createElement("methodName");
+		methodName.setTextContent(methode);
+		racine.appendChild(methodName);
 		Element params = doc.createElement("params");
 		racine.appendChild(params);
 		return doc;

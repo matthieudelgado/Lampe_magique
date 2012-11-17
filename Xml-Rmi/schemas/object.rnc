@@ -1,0 +1,24 @@
+# *****************************************************************************
+# ALADYN -- Architectures logicielles pour l'auto-adaptabilitÈ dynamique.
+# Copyright (C) 2005 <Jacques.Malenfant@lip6.fr>
+# GPL version>=2
+# *****************************************************************************
+
+start = object
+
+object = element object {
+    attribute oid { xsd:anyURI },
+    attribute type { xsd:NMTOKEN }?,
+    element fields { field* },
+    element methods { method* }
+}
+
+field = element field {
+    attribute name { xsd:NMTOKEN },
+    parent value    # value pattern as defined in the parent schema
+}
+
+method = element method {
+    attribute language { xsd:NMTOKEN }?, # programming language used
+    text                                 # method definition
+}

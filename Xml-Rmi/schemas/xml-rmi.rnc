@@ -1,0 +1,55 @@
+# *****************************************************************************
+# ALADYN -- Architectures logicielles pour l'auto-adaptabilitÈ dynamique.
+# Copyright (C) 2012 <Jacques.Malenfant@lip6.fr>
+# GPL version>=2
+# *****************************************************************************
+
+start = methodcall | methodresponse
+
+#******************************************************************************
+# Appel par le client
+#******************************************************************************
+
+methodcall   = element methodCall {
+  methodname, element params { param+ }?
+}
+methodname  = element methodName { xsd:string {pattern = "[a-zA-Z0-9_\.,/]+"} }
+param       = element param      { value }
+value       = element value      { typedvalue | text }
+typedvalue  = integer | boolean | stringval | # string is a keyword
+              double | datetime | base64 | array | struct | object
+integer     = element i4         { xsd:int } |
+              element int        { xsd:int } 
+boolean     = element boolean    { "0" | "1" }
+stringval   = element string     { text } 
+double      = element double     { xsd:double }
+datetime    = element dateTime.iso8601 {
+  xsd:string {pattern =          # xsd:date does not allow "20051130T12:10:56"
+        "[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"}
+}
+base64      = element base64     { xsd:base64Binary }
+array       = element array      { element data { value+ } }
+struct      = element struct     { namedmember+ }
+namedmember = element member     { membername & value }
+membername  = element name       { xsd:NMTOKEN }
+object      = external "object.rnc"
+
+#******************************************************************************
+# Retour du resultat du client
+#******************************************************************************
+
+methodresponse = element methodResponse {
+  fault | element params { param+ }
+}
+fault          = element fault   { faultvalue }
+faultvalue     = element value   { faultstruct }
+faultstruct    = element struct  {
+  (faultcode, faultstring) | (faultstring, faultcode)
+}
+faultcode      = element member  {
+  element name { "faultCode" } & element value { integer }
+}
+faultstring    = element member  {
+  element name { "faultString" } & element value { stringval | text }
+}
+
