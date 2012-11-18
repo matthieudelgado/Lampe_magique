@@ -24,8 +24,8 @@ boolean     = element boolean    { "0" | "1" }
 stringval   = element string     { text } 
 double      = element double     { xsd:double }
 datetime    = element dateTime.iso8601 {
-  xsd:string {pattern =          # xsd:date does not allow "20051130T12:10:56"
-        "[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"}
+  xsd:string #{pattern =          # xsd:date does not allow "20051130T12:10:56"
+        #"[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"}
 }
 base64      = element base64     { xsd:base64Binary }
 array       = element array      {  value+  }
