@@ -18,8 +18,16 @@ import org.xml.sax.SAXException;
 
 
 //TODO Ajouter une doc a tout les test
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelagado
+ * 
+ * Classe de Test de la classe ObjectToXML
+ */
 public class TestObjectToXML {
 
+	
 	private Document doc;
 
 	@Before
@@ -46,6 +54,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'un entier construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifInt()
 	{
 		int a = 3;
@@ -56,6 +67,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'un double construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifDouble()
 	{
 		double a = 3.0;
@@ -65,6 +79,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'un booleen construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifBoolean()
 	{
 		boolean a = true;
@@ -74,6 +91,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'un string construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifString()
 	{
 		String a = "Hello";
@@ -83,6 +103,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'une date construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifDate()
 	{
 		Date a = new Date();
@@ -93,6 +116,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'une liste d'entier construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifArrayInt()
 	{
 		Integer[] la = new Integer[1];
@@ -106,6 +132,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'un liste de double construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifArrayDouble()
 	{
 		Double[] la = new Double[1];
@@ -119,6 +148,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'une liste de booleen construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifArrayBoolean()
 	{
 		Boolean[] la = new Boolean[1];
@@ -132,6 +164,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'une liste de string construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifArrayString()
 	{
 		String[] la = new String[1];
@@ -145,6 +180,11 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * /**
+	 * Test de la methode getContenuPrimitif qui a partir d'une liste de Date construit l'element correspondant
+	 */
+	 
 	public void testGetContenuNodePrimitifArrayDate()
 	{
 		Date[] la = new Date[1];
@@ -159,6 +199,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode getContenuPrimitif qui a partir d'une liste d'objets serializable construit l'element correspondant
+	 */
 	public void testGetContenuNodePrimitifArrayXMLRMI()
 	{
 		XMLRMISerializable[] la = new XMLRMISerializable[1] ;
@@ -194,8 +237,10 @@ public class TestObjectToXML {
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
 	}
 
-	//test  dateTodateTime.iso8601
 	@org.junit.Test
+	/**
+	 * Test de la conversion d'une Date en dateTime.iso8601
+	 */
 	public void testDateToDateTime()
 	{
 		Date d = new Date();
@@ -205,6 +250,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode appelClient
+	 */
 	public void testAppelClient(){
 		Document doc = ObjectToXML.appelClient("test");
 		String retour= ObjectToXML.docToString(doc);
@@ -216,6 +264,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de serialization d'un objet
+	 */
 	public void testObjectToElement(){
 		Stringable p = new Point(1,2);
 		String meth ="public void toString (){return \"hello\";";
@@ -252,6 +303,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test qui retourne l'oid d'un object dans un XML 
+	 */
 	public void testGetOidFromXML()
 	{
 		Stringable p = new Point(1,2);
@@ -266,6 +320,9 @@ public class TestObjectToXML {
 
 
 	@org.junit.Test
+	/**
+	 * Test qui retourne les fields d'un objet en fonction de son OID
+	 */
 	public void testGetFieldsByOID()
 	{
 		Stringable p = new Point(1.0,2.0);
@@ -300,6 +357,9 @@ public class TestObjectToXML {
 
 
 	@org.junit.Test
+	/**
+	 * Test qui met a jour un objet en fonction d'un element
+	 */
 	public void testUpdateObjectFromElement()
 	{
 		Point p = new Point(0,0);
@@ -346,6 +406,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode createAppelClient
+	 */
 	public void testCreateAppelClient()
 	{
 		int a =2 ;
@@ -407,6 +470,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre un entier
+	 */
 	public void TestObjectWithoutAnnotationsToElementInt(){
 		int a  = 2;
 		try {
@@ -426,6 +492,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre un double
+	 */
 	public void TestObjectWithoutAnnotationsToElementDouble(){
 		double a  = 2.0;
 		try {
@@ -445,6 +514,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre un element null
+	 */
 	public void TestObjectWithoutAnnotationsToElementVoid(){
 		try {
 			Element e = ObjectToXML.objectWithoutAnnotationsToElement(null, null, null, null, doc);
@@ -463,6 +535,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre un boolean
+	 */
 	public void TestObjectWithoutAnnotationsToElementBoolean(){
 		boolean a = true;
 		try {
@@ -482,6 +557,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre un string
+	 */
 	public void TestObjectWithoutAnnotationsToElementString(){
 		String  a = "Hello" ;
 		try {
@@ -501,6 +579,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre une date
+	 */
 	public void TestObjectWithoutAnnotationsToElementDate(){
 		Date a = new Date();
 		a.setTime(0);
@@ -521,6 +602,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre une liste d'entier
+	 */
 	public void TestObjectWithoutAnnotationsToElementArrayInt(){
 		int a = 1;
 		int b = 2;
@@ -551,6 +635,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre d'une liste de double
+	 */
 	public void TestObjectWithoutAnnotationsToElementArrayDouble(){
 		double a = 1.0;
 		double b = 2.0;
@@ -581,6 +668,9 @@ public class TestObjectToXML {
 	}
 
 	@org.junit.Test
+	/**
+	 * Test de la methode objectWithoutAnnotationToElement en lui passant en parametre une liste de boolean
+	 */
 	public void TestObjectWithoutAnnotationsToElementArrayBoolean(){
 		boolean a = true;
 		boolean b = false;

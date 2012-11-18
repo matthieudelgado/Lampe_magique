@@ -109,7 +109,7 @@ public class ThreadServer extends Thread implements IServer{
 			ret = "methode introuvable";
 			System.out.println("methode introuvable"); //TODO  il arrive pas a trouver la methode !!!!!
 		} else {//sinon on l'applique
-			System.out.print("do Treatement : le serveur applique "+calledMethod.getName()+"(");
+
 			for(Class<?> c : calledMethod.getParameterTypes())
 			{
 				System.out.print(c.getSimpleName()+",");
@@ -130,7 +130,6 @@ public class ThreadServer extends Thread implements IServer{
 	 */
 	private String getMethodName(Document doc){
 		Node n = doc.getElementsByTagName("methodName").item(0).getFirstChild();
-		System.out.println("nom de methode "+n.getTextContent());
 		return n.getTextContent();
 	}
 

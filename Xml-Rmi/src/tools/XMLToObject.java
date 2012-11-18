@@ -44,7 +44,6 @@ public class XMLToObject {
 		String y = doc.getElementsByTagName("double").item(1).getTextContent();
 		String a =doc.getElementsByTagName("string").item(0).getTextContent();
 		a="\""+a+"\"";
-		System.out.println(corpsMethode);
 
 
 		CtClass point = ClassPool.getDefault().makeClass("Point");
@@ -210,12 +209,10 @@ public class XMLToObject {
 							else if(granChild.getNodeName().equals("array")){
 								Class<?> typeArray = Array.newInstance(Class.forName(getFirstGranChild(granChild).getAttributes().getNamedItem("type").getTextContent()), 0).getClass();
 								value = createObjectFromNode(granChild, typeArray);
-								System.out.println("nom de la liste en parametre = "+name.toString());
 								fieldMap.put(name, value);
 							}
 							else
 							{
-								System.out.println("name : "+name+", type : "+granChild.getNodeName());
 								value = createObjectFromNode(granChild, Object.class);
 							}	
 							addCtFieldToCtClass(granChild, name, clazz, value);
@@ -234,7 +231,6 @@ public class XMLToObject {
 							if(!n.getNodeName().equals("method"))continue;
 							if(!n.getAttributes().getNamedItem("language").getNodeValue().equalsIgnoreCase("java"))continue;
 							//String nm ="public String toString(){return \"x = \"+this.x+ \" y = \" + this.y;}";
-							System.out.println("affichage de clazz "+clazz.getName());
 							CtMethod m = CtNewMethod.make(n.getTextContent(), clazz);
 							clazz.addMethod(m);
 						}
@@ -261,7 +257,6 @@ public class XMLToObject {
 				for(CtField f1 : clazz.getFields()) 
 					System.out.println(f1.getName());
 
-				System.out.println();
 			}
 
 			return o;
@@ -349,7 +344,6 @@ public class XMLToObject {
 			}
 			return tab;
 		}
-		System.err.println("class a caster : "+arrayClass.getName());
 		return array.toArray((T[]) Array.newInstance(arrayClass, array.size()));	
 	}
 

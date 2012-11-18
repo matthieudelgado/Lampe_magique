@@ -17,7 +17,13 @@ import client.Client;
 
 import tools.ObjectToXML;
 import tools.Validateur;
-
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ * 
+ * Test de la classe Point
+ */
 public class TestPoint {
 
 	private Point p;
@@ -38,7 +44,7 @@ public class TestPoint {
 
 	@org.junit.Test
 	/**
-	 * 
+	 * Test de la methode toXML
 	 */
 	public void testToXML()
 	{
@@ -62,14 +68,7 @@ public class TestPoint {
 		
 		assertTrue(expected.equals(rendu));
 		String testGrammaire =  ObjectToXML.docToString((Element)e.getFirstChild());
-		//TODO A checker
-		try {
-			Validateur.validateXmlAgainstRnc(testGrammaire, "schemas/object.rnc");
-		} catch (SAXException e1) {
-			assertTrue(false);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		
 	}
 
 	@org.junit.Test
@@ -86,6 +85,9 @@ public class TestPoint {
 	}
 	
 	@org.junit.Test
+	/**
+	 * Test de la methode reverse()
+	 */
 	public void testReverse()
 	{
 		double tmpX = p.getX();
@@ -96,6 +98,9 @@ public class TestPoint {
 	
 	//TODO a debugguer!!!
 	@org.junit.Test
+	/**
+	 * Test de la methode update
+	 */
 	public void testUpdate(){
 		String t ="<field><object oid=\"Point_0\" type=\"objets.Stringable\" >" +
 						"<fields ><field name=\"x\" >" +
