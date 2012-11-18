@@ -1,5 +1,10 @@
 package objets;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public interface Movable {
 
 	

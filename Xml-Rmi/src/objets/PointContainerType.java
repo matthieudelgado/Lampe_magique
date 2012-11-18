@@ -11,6 +11,11 @@ import client.Client;
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public class PointContainerType implements XMLRMISerializable, StringableContainerType{
 
 	@XMLRMIField(serializationName="lpoint",serializationType="array")

@@ -9,6 +9,11 @@ import org.xml.sax.SAXException;
 import com.thaiopensource.validate.ValidationDriver;
 import com.thaiopensource.validate.rng.CompactSchemaReader;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public class Validateur {
 	public static void validateXmlAgainstRnc(String message, String rncFilePath) 
             throws SAXException, IOException{

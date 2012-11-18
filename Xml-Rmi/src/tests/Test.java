@@ -566,18 +566,5 @@ public class Test{
 		}
 	}
 
-	//sans retour
-	//test avec un int
-	//test avec un objet
-
-	//plusieurs parametre
-	//avec retour
-	//int et double
-	//bool et array
-	//struct et objet
-	//objet et objet	
-
-	//test malformation
-	//test mauvais nom de methode, le serveur ne doit pas planter
-
+	
 }

@@ -9,6 +9,11 @@ import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
 import client.Client;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelgado
+ */
 public class ReversibleXYContainerImpl implements XMLRMISerializable, ReversibleXYContainer {
 	@XMLRMIField(serializationName = "point", serializationType = "objets.ReversibleXY")
 	Point p; 

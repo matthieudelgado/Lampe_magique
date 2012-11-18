@@ -17,7 +17,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 
-//TODO Ajouter une doc a tout les test
 /**
  * 
  * @author marcgregoire

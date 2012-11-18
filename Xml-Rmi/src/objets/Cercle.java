@@ -5,6 +5,11 @@ import org.w3c.dom.Element;
 
 import xmlrmi.XMLRMIField;
 
+/**
+ * 
+ * @author marcgregoire
+ * @author matthieudelagado
+ */
 public class Cercle implements XMLRMISerializable, Stringable{
 
 	@XMLRMIField(serializationName="c", serializationType="Point")

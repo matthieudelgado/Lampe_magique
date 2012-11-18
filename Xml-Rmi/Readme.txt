@@ -19,7 +19,7 @@ Notre main est sous forme d'un Junit pour tester diffrents appelClient vers un 
 1)Lancer le serveur : src.server.Server.java
 2)Lancer le client  : src.tests.Test.java
 
-Le client est compos de $$ tests
+Le client est compos de 14 tests
 
 #############################
 ###### Pour Lancer les tests#
