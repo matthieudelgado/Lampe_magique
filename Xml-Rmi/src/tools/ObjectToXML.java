@@ -10,6 +10,7 @@ import java.io.StringReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,7 @@ import javax.xml.transform.stream.StreamResult;
 import objets.XMLRMISerializable;
 
 import org.w3c.dom.Attr;
+import org.w3c.dom.CharacterData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -231,7 +233,7 @@ public class ObjectToXML {
 	public static String dateToDateTime(Date d)
 	{
 		//DateFormat df = new SimpleDateFormat("[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		String dateString = df.format(d);
 		return dateString;
 	}
@@ -564,8 +566,9 @@ public class ObjectToXML {
 	 * @param obj
 	 * @param fieldObj
 	 * @param valueElement
+	 * @throws ParseException 
 	 */
-	public static void updateFieldByType(String type,Object obj,Field fieldObj, Node valueElement){
+	public static void updateFieldByType(String type,Object obj,Field fieldObj, Node valueElement) {
 		try{
 			if(type.equals("double")){
 				double value=Double.parseDouble(valueElement.getTextContent());
@@ -579,7 +582,10 @@ public class ObjectToXML {
 				boolean value = Boolean.parseBoolean(valueElement.getTextContent());
 				fieldObj.setBoolean(obj, value);
 			}else if(type.equals("dateTime.iso8601")){
-				//TODO
+				SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+				String date = (String) ((CharacterData) valueElement).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
+				Date value =  ISO8601DATEFORMAT.parse(date);
+				fieldObj.set(obj,value);
 			}else if(type.equals("base64")){
 				//TODO
 			}else if(type.equals("string")){
@@ -589,6 +595,9 @@ public class ObjectToXML {
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

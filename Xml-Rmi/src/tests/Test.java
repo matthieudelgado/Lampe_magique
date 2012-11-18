@@ -56,6 +56,7 @@ public class Test{
 		
 		
 		DOMSource ds = new DOMSource(doc);
+		Validateur.validateXmlAgainstRnc(ObjectToXML.docToString(doc), "schemas/xml-rmi.rnc");
 		Transformer tf = TransformerFactory.newInstance().newTransformer();
 		tf.transform(ds, sr);
 		out.send();
