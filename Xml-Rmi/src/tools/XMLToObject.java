@@ -88,7 +88,7 @@ public class XMLToObject {
 			return new String(((Text)node.getFirstChild()).getData());
 		} else if(node.getNodeName().equalsIgnoreCase("dateTime.iso8601")){
 			//SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]");
-			SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+			SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 			String date = ((Text)node.getFirstChild()).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
 			return ISO8601DATEFORMAT.parse(date);
 		} else if(node.getNodeName().equalsIgnoreCase("base64")){

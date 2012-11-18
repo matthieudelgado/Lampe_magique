@@ -37,5 +37,3 @@ Le client est composé de 14 tests
 -Attention ! Le test testCreateAppelClient du Junit : test.tools.TestObjectToXMl.java est à relancer
 	            pour qu'il marche. Idem pour le test testToXML  du Junit: test.objets.TestPoint
 	        
-- Nous avons du modifier la grammaire du dateTime pour qu'elle puisse valider une dateTime.iso8601 
-	            

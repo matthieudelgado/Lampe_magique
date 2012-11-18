@@ -128,7 +128,7 @@ public class TestXMLToObject {
 	 * Test qui cree un DateTime a partir d'un xml
 	 */
 	public void testCreateObjectFromNodeDateTime(){
-		String appelClient ="<value ><dateTime.iso8601 >1970-01-01T01:00:00+0100</dateTime.iso8601></value>";
+		String appelClient ="<value ><dateTime.iso8601 >19700101T01:00:00</dateTime.iso8601></value>";
 		Document d = ObjectToXML.stringToDoc(appelClient);
 		try {
 			Object  o = XMLToObject.createObjectFromNode(d.getFirstChild().getFirstChild(), Integer.class);

@@ -233,7 +233,7 @@ public class ObjectToXML {
 	public static String dateToDateTime(Date d)
 	{
 		//DateFormat df = new SimpleDateFormat("[0-9]{4}[0-1][0-9][0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]");
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 		String dateString = df.format(d);
 		return dateString;
 	}
@@ -582,7 +582,7 @@ public class ObjectToXML {
 				boolean value = Boolean.parseBoolean(valueElement.getTextContent());
 				fieldObj.setBoolean(obj, value);
 			}else if(type.equals("dateTime.iso8601")){
-				SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+				SimpleDateFormat ISO8601DATEFORMAT = new SimpleDateFormat("yyyyMMdd'T'HH:mm:ss");
 				String date = (String) ((CharacterData) valueElement).getData().replaceAll("\\+0([0-9]){1}\\:00", "+0$100");
 				Date value =  ISO8601DATEFORMAT.parse(date);
 				fieldObj.set(obj,value);
