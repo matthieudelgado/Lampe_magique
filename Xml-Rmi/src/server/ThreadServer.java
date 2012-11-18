@@ -174,7 +174,6 @@ public class ThreadServer extends Thread implements IServer{
 		Method[] methods = itf.getDeclaredMethods();
 		Method calledMethod = null;
 		Class<?>[] parameterTypes = null;
-		boolean trouve = false;
 		boolean broken = false;
 		for(Method m : methods)
 		{

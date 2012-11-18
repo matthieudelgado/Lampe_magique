@@ -2,22 +2,13 @@ package objets;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
-import client.Client;
 
 import tools.ObjectToXML;
-import tools.Validateur;
+import client.Client;
 /**
  * 
  * @author marcgregoire

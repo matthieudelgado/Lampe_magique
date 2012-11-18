@@ -1,15 +1,13 @@
 package objets;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import client.Client;
-
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
+import client.Client;
 
 /**
  * 

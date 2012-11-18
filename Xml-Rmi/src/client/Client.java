@@ -13,7 +13,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import objets.Movable;
 import objets.Point;
-import objets.Stringable;
+
 import objets.XMLRMISerializable;
 
 import org.w3c.dom.Document;

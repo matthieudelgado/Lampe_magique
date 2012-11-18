@@ -29,10 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import tools.ObjectToXML;
-
 import tools.Validateur;
 import tools.XMLToObject;
 import xmlrmi.XMLInputStream;

@@ -1,16 +1,10 @@
 package objets;
 
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-
-import javassist.ClassPool;
-import javassist.CtField;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import tools.ObjectToXML;
 import xmlrmi.XMLRMIField;
