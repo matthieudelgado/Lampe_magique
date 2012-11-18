@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -39,6 +40,11 @@ public class TestPoint {
 		Client c =new Client();
 		p = new Point(2,2);
 		doc = ObjectToXML.creerDocument();
+	}
+	
+	@After
+	public void afterTest(){
+		doc = null;
 	}
 
 
@@ -97,7 +103,7 @@ public class TestPoint {
 	}
 	
 	//TODO a debugguer!!!
-	@org.junit.Test
+	//@org.junit.Test
 	/**
 	 * Test de la methode update
 	 */

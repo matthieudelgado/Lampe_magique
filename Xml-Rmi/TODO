@@ -2,9 +2,10 @@ TODO Liste :
 
 - Changer le format de dateTime pour qu'il corresponde ˆ la grammaire
 - ajouter des test
-- ajouter un readme file
+- ajouter un readme file ----> A completer
 - ajouter des updates ---->Done
 - ajouter un object PointAllTest
-- Verifier par rapport aux exigences du projet que l'on est conforme
+- Verifier par rapport aux exigences du projet que l'on est conforme ---> A faire a la fin
 - ajouter le test de la grammaire a l'envoie cot client ---->Done
-- nettoyer le projet
+- nettoyer le projet -----> Done 
+- Refaire le test update sur Point

@@ -37,7 +37,7 @@ public class TestObjectToXML {
 
 	@After
 	public void afterTest(){
-		doc= null;
+		//doc= null;
 	}
 
 	@org.junit.Test
@@ -112,7 +112,7 @@ public class TestObjectToXML {
 		a.setTime(0);
 		Element e = ObjectToXML.getContenuNodePrimitif(a, doc, null, null);
 		assertTrue(e.getFirstChild().getNodeName().equals("dateTime.iso8601"));
-		assertTrue(e.getFirstChild().getTextContent().equals("1970-01-01T01:00:00"));
+		assertTrue(e.getFirstChild().getTextContent().equals("1970-01-01T01:00:00+0100"));
 	}
 
 	@org.junit.Test
@@ -195,7 +195,7 @@ public class TestObjectToXML {
 		assertTrue(e.getFirstChild().getNodeName().equals("array"));
 		assertTrue(e.getFirstChild().getFirstChild().getNodeName().equals("value"));
 		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getNodeName().equals("dateTime.iso8601"));
-		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getTextContent().equals("1970-01-01T01:00:00"));
+		assertTrue(e.getFirstChild().getFirstChild().getFirstChild().getTextContent().equals("1970-01-01T01:00:00+0100"));
 	}
 
 	@org.junit.Test
@@ -246,7 +246,7 @@ public class TestObjectToXML {
 		Date d = new Date();
 		d.setTime(0);
 		String date = ObjectToXML.dateToDateTime(d);
-		assertTrue(date.equals("1970-01-01T01:00:00"));
+		assertTrue(date.equals("1970-01-01T01:00:00+0100"));
 	}
 
 	@org.junit.Test
@@ -420,44 +420,45 @@ public class TestObjectToXML {
 		params.add(p);
 		doc = ObjectToXML.createAppelClient(inters, "display", params);
 		String ex ="<methodCall >"+
-				"<methodName >display</methodName>"+
-				"<params >"+
-				"<param >"+
-				"<value >"+
-				"<int >2</int>"+
-				"</value>"+
-				"</param>"+
-				"<param >"+
-				"<value >"+
-				"<object oid=\"Point_0\" type=\"objets.Stringable\" >"+
-				"<fields >"+
-				"<field name=\"x\" >"+
-				"<value >"+
-				"<double >1.0</double>"+
-				"</value>"+
-				"</field>"+
-				"<field name=\"y\" >"+
-				"<value >"+
-				"<double >3.0</double>"+
-				"</value>"+
-				"</field>"+
-				"<field name=\"mark\" >"+
-				"<value >"+
-				"<string >nom de la marque</string>"+
-				"</value>"+
-				"</field>"+
-				"</fields>"+
-				"<methods >"+
-				"<method language=\"Java\" >"+
-				"public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}</method>"+
-				"</methods>"+
-				"</object>"+
-				"</value>"+
-				"</param>"+
-				"</params>"+
+						"<methodName >display</methodName>"+
+						"<params >"+
+							"<param >"+
+								"<value >"+
+									"<int >2</int>"+
+								"</value>"+
+							"</param>"+
+							"<param >"+
+								"<value >"+
+									"<object oid=\"Point_0\" type=\"objets.Stringable\" >"+
+										"<fields >"+
+											"<field name=\"x\" >"+
+												"<value >"+
+													"<double >1.0</double>"+
+												"</value>"+
+											"</field>"+
+											"<field name=\"y\" >"+
+												"<value >"+
+													"<double >3.0</double>"+
+												"</value>"+
+											"</field>"+
+											"<field name=\"mark\" >"+
+												"<value >"+
+													"<string >nom de la marque</string>"+
+												"</value>"+
+											"</field>"+
+										"</fields>"+
+										"<methods >"+
+											"<method language=\"Java\" >"+
+												"public String toString(){return \"x = \"+this.x+ \" y =  \" + this.y+ \" marque = \"+this.mark;}</method>"+
+											"</methods>"+
+									"</object>"+
+								"</value>"+
+							"</param>"+
+						"</params>"+
 				"</methodCall>";
 
 		String rend = ObjectToXML.docToString(doc);
+		assertTrue(ex.equals(rend));
 		try {
 			Validateur.validateXmlAgainstRnc(rend, "schemas/xml-rmi.rnc");
 		} catch (SAXException e) {
@@ -466,7 +467,7 @@ public class TestObjectToXML {
 		} catch (IOException e) {
 			System.out.println("File non trouve");
 		}
-		assertTrue(ex.equals(rend));
+		
 	}
 
 	@org.junit.Test
@@ -594,7 +595,7 @@ public class TestObjectToXML {
 			e.printStackTrace();
 		}
 		String expected = "<value >"+
-				"<dateTime.iso8601 >1970-01-01T01:00:00</dateTime.iso8601>" +
+				"<dateTime.iso8601 >1970-01-01T01:00:00+0100</dateTime.iso8601>" +
 				"</value>";
 
 		assertTrue(expected.equals(ObjectToXML.docToString(doc)));
